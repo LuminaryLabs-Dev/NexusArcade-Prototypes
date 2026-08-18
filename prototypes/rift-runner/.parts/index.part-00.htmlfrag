@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#05030b">
+  <title>Rift Runner</title>
+  <style>
+    :root{--cyan:#56f6ff;--magenta:#ff2acb;--orange:#ff8a27;--ink:#05030b;--panel:rgba(6,8,20,.86)}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--ink);color:#fff;font-family:Inter,Segoe UI,Arial,sans-serif;user-select:none}
+    canvas{display:block;width:100%;height:100%;cursor:crosshair}
+    #vignette,#speed-fx,#grain,#flash{position:fixed;inset:0;pointer-events:none}
+    #vignette{background:radial-gradient(ellipse at 50% 44%,transparent 35%,rgba(0,0,0,.78) 115%);z-index:2}
+    #speed-fx{z-index:3;opacity:0;background:repeating-conic-gradient(from 0deg at 50% 52%,rgba(86,246,255,.15) 0 .18deg,transparent .22deg 5deg);mask-image:radial-gradient(circle,transparent 0 25%,#000 70%);mix-blend-mode:screen;transition:opacity .2s;animation:speedSpin 14s linear infinite}
+    #grain{z-index:4;opacity:.11;background-image:radial-gradient(circle at 12% 17%,#fff 0 .5px,transparent .8px),radial-gradient(circle at 72% 63%,#fff 0 .45px,transparent .7px),radial-gradient(circle at 38% 82%,#fff 0 .55px,transparent .9px);background-size:7px 7px,9px 9px,11px 11px;mix-blend-mode:overlay;animation:grainShift .18s steps(2) infinite}
+    #flash{z-index:9;opacity:0;background:#fff;mix-blend-mode:screen}
+    #hud{position:fixed;inset:0;z-index:5;pointer-events:none;display:none;text-shadow:0 2px 6px #000}
+    .top{position:absolute;left:2vw;right:2vw;top:2vh;display:flex;justify-content:space-between;align-items:flex-start;gap:2vw}
+    .stack{min-width:260px}.label{font-size:clamp(11px,1vw,18px);letter-spacing:.15em;color:#b9c9dc;text-transform:uppercase}.big{font-size:clamp(25px,2.5vw,48px);font-weight:900;line-height:1}.right{text-align:right}
+    .bar{width:min(32vw,480px);height:18px;margin-top:8px;border:2px solid rgba(255,255,255,.5);background:rgba(0,0,0,.5);transform:skewX(-12deg);overflow:hidden}
+    .fill{height:100%;width:100%;background:linear-gradient(90deg,#13becd,var(--cyan));box-shadow:0 0 18px var(--cyan);transition:width .12s}
+    #ult-fill{background:linear-gradient(90deg,#8b1fff,var(--magenta));box-shadow:0 0 18px var(--magenta)}
+    #boss-wrap{position:absolute;top:9.5vh;left:25%;right:25%;display:none;text-align:center}.bossbar{width:100%;height:20px;border:2px solid #ff85e4;background:#16061a;box-shadow:0 0 28px rgba(255,42,203,.35)}.bossbar .fill{background:linear-gradient(90deg,#d318a7,#ff4ed2)}
+    #wave{position:absolute;left:50%;top:2vh;transform:translateX(-50%);padding:8px 25px;border:1px solid rgba(86,246,255,.52);background:linear-gradient(90deg,transparent,rgba(5,29,42,.82),transparent);font-size:clamp(14px,1.3vw,23px);font-weight:900;letter-spacing:.18em;color:var(--cyan);box-shadow:0 8px 35px rgba(86,246,255,.12)}
+    #objective{position:absolute;top:17vh;left:50%;transform:translateX(-50%);font-size:clamp(17px,1.6vw,30px);font-weight:800;letter-spacing:.08em;text-align:center;color:#fff}
+    #upgrade{position:absolute;left:2vw;bottom:3vh;font-size:clamp(14px,1.2vw,22px);color:var(--cyan);letter-spacing:.1em}
+    #timer{position:absolute;right:2vw;bottom:3vh;font-size:clamp(18px,1.6vw,28px);font-weight:800}
+    #combo{position:absolute;right:2vw;top:20vh;text-align:right;color:var(--orange);font-weight:900;font-size:clamp(25px,3vw,54px);opacity:0;transform:scale(.9);transition:.1s}
+    #crosshair{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 5px var(--cyan))}
+    #crosshair:before,#crosshair:after{content:"";position:absolute;background:var(--cyan)}#crosshair:before{left:15px;top:1px;width:3px;height:32px}#crosshair:after{left:1px;top:15px;width:32px;height:3px}
+    #crosshair i{position:absolute;inset:10px;border:2px solid #fff;border-radius:50%}
+    #screen{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:3vw;background:linear-gradient(90deg,rgba(2,2,8,.8),rgba(2,2,8,.22) 55%,rgba(2,2,8,.55));text-align:center}
+    .panel{width:min(960px,94vw);padding:clamp(20px,4vw,60px);background:linear-gradient(135deg,rgba(7,10,26,.94),rgba(25,5,31,.84));border:1px solid rgba(96,244,255,.42);clip-path:polygon(3% 0,100% 0,100% 88%,97% 100%,0 100%,0 12%);box-shadow:0 0 70px rgba(255,42,203,.2)}
+    h1{margin:0;font-size:clamp(58px,9vw,150px);line-height:.8;letter-spacing:-.06em;font-style:italic;text-transform:uppercase;background:linear-gradient(180deg,#fff 15%,var(--cyan) 55%,#1397b5);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(86,246,255,.5))}
+    .tag{margin:22px 0 32px;color:#ff9ee8;font-size:clamp(14px,1.5vw,25px);font-weight:800;letter-spacing:.24em;text-transform:uppercase}
+    .prompt{font-size:clamp(23px,2.5vw,43px);font-weight:900;animation:pulse 1s infinite alternate;color:#fff}.small{margin-top:24px;color:#b8c3d4;font-size:clamp(12px,1.1vw,18px);line-height:1.7}
+    .keys{display:flex;justify-content:center;gap:16px 28px;flex-wrap:wrap;margin:25px auto 0}.keys span{color:#dbe7f4}.keys b{color:var(--cyan)}
+    .scores{width:min(520px,90%);margin:20px auto;border-collapse:collapse;font-size:clamp(14px,1.3vw,22px)}.scores td{padding:5px 12px;border-bottom:1px solid rgba(255,255,255,.1)}.scores td:nth-child(2){color:var(--cyan);font-weight:900}.scores td:last-child{text-align:right;color:#ff9ee8}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:25px 0}.stat{padding:14px;background:rgba(255,255,255,.055);border-top:2px solid var(--cyan)}.stat b{display:block;font-size:clamp(19px,2vw,34px)}.stat span{font-size:12px;color:#aebbd0;letter-spacing:.1em}
+    #initial-box{font-size:clamp(50px,7vw,110px);letter-spacing:.2em;font-weight:900;color:var(--cyan);margin:25px 0}.active-char{color:#fff;border-bottom:5px solid var(--magenta)}
+    #toast{position:fixed;left:50%;top:31%;transform:translate(-50%,-50%) scale(.8);z-index:8;font-size:clamp(24px,4vw,68px);font-weight:1000;letter-spacing:.05em;text-align:center;text-shadow:0 0 15px #000;opacity:0;pointer-events:none;transition:.2s}
+    #pause{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);font-size:8vw;font-weight:1000;letter-spacing:.1em}
+    #settings{position:fixed;right:14px;bottom:12px;z-index:30;display:flex;gap:8px}.toggle{border:1px solid rgba(255,255,255,.25);background:rgba(4,5,12,.75);color:#bfc9d8;padding:8px 10px;font:700 11px inherit;letter-spacing:.08em;cursor:pointer}.toggle.on{color:var(--cyan);border-color:var(--cyan)}
+    @keyframes pulse{from{opacity:.55;transform:scale(.99)}to{opacity:1;transform:scale(1.02)}}
+    @keyframes speedSpin{to{transform:rotate(.5deg) scale(1.04)}}@keyframes grainShift{0%{transform:translate(0)}25%{transform:translate(-1%,1%)}50%{transform:translate(1%,-1%)}75%{transform:translate(1%,1%)}}
+    @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.bar{width:42vw}.stack{min-width:0}.panel{padding:22px}.small{line-height:1.45}}
+  </style>
+</head>
+<body>
+  <div id="vignette"></div><div id="speed-fx"></div><div id="grain"></div><div id="flash"></div>
+  <div id="hud">
+    <div class="top">
+      <div class="stack"><div class="label">Integrity</div><div class="bar"><div class="fill" id="health-fill"></div></div><div class="label" style="margin-top:12px">Overdrive</div><div class="bar"><div class="fill" id="ult-fill"></div></div></div>
+      <div class="right"><div class="label">Score</div><div class="big" id="score">000000</div></div>
+    </div>
+    <div id="wave">WAVE 00 // STANDBY</div>
+    <div id="boss-wrap"><div class="label">Apex Warden</div><div class="bossbar"><div class="fill" id="boss-fill"></div></div></div>

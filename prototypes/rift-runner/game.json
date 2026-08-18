@@ -1,0 +1,9 @@
+{
+  "title": "Rift Runner",
+  "slug": "rift-runner",
+  "description": "High-speed over-the-shoulder wave-runner arcade shooter.",
+  "genre": "Arcade Shooter",
+  "status": "prototype",
+  "version": "0.1.0",
+  "controls": ["WASD", "Mouse", "Keyboard", "Gamepad"]
+}

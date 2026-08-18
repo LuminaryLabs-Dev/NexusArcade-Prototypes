@@ -1,84 +1,88 @@
 # NexusArcade Prototypes
 
-A staging repository for self-contained NexusArcade game prototypes.
+A launchable prototype library for NexusArcade games.
 
-## Repository model
+## Deployment states
+
+A game can exist in one of two states.
+
+### 1. Local prototype
+
+The complete prototype lives in this repository:
 
 ```text
-prototypes/
-  _template/
-    index.html
-    game.json
-  <game-slug>/
-    index.html
-    game.json
-    ...assets
-
-catalog/
+prototypes/<game-slug>/
   index.html
-
-scripts/
-  build-site.mjs
-
-.github/workflows/
-  publish-prototypes.yml
+  game.json
+  ...public assets
 ```
 
-Every folder under `prototypes/` that does **not** begin with `_` is treated as a launchable game.
+Every local prototype must contain `game.json` and either `index.html` or `index.parts.json`. Multipart HTML is reassembled into a normal public `index.html` during the build; it is only a repository-storage option for large single-file games.
 
-## Prototype contract
+### 2. Promoted / referenced game
 
-Each prototype must contain:
+After a game is promoted into its own repository, its source becomes independent. NexusArcade-Prototypes keeps only a deployment reference:
 
-- `index.html` — launch entrypoint
-- `game.json` — catalog metadata
+```text
+prototypes/<game-slug>/
+  game.ref.json
+```
 
-Example `game.json`:
+Example:
 
 ```json
 {
   "title": "Rift Runner",
   "slug": "rift-runner",
-  "description": "Fast arcade combat prototype.",
-  "genre": "Arcade",
-  "status": "prototype",
-  "version": "0.1.0",
-  "controls": ["Keyboard", "Mouse"]
+  "description": "High-speed arcade shooter.",
+  "genre": "Arcade Shooter",
+  "status": "promoted",
+  "version": "1.0.0",
+  "controls": ["WASD", "Mouse"],
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-RiftRunner",
+    "ref": "main",
+    "deployPath": "dist"
+  }
 }
 ```
 
-The folder name and `slug` must match and use lowercase kebab-case.
+`deployPath` is the public, deployable directory in the standalone repository and must contain `index.html`.
+
+## Private repositories
+
+The Pages build can read referenced private repositories through the optional repository secret:
+
+```text
+NEXUS_ARCADE_REPO_TOKEN
+```
+
+Use a read-only credential scoped only to the game repositories the library must deploy. The token is used only inside the GitHub Actions build and is never written into `_site`.
+
+The build rejects secret-like files inside a deployment directory, including `.env*` files (except `.env.example`), private keys, certificates, credential files, and `.npmrc`/`.pypirc`.
+
+Runtime secrets must never be included in a browser game. If a public game needs a secret while running, it must call a backend that owns that secret.
 
 ## Publish flow
 
-Every push to `main` runs `.github/workflows/publish-prototypes.yml`:
-
 ```text
-main push
+push to main
    ↓
-validate prototypes
+resolve local prototypes + referenced repositories
    ↓
-generate catalog.json
+validate public deployment contents
    ↓
-copy each prototype into its own /games/<slug>/ directory
+build catalog.json
    ↓
-publish the complete site with GitHub Pages
+copy games to _site/games/<slug>/
+   ↓
+GitHub Pages
 ```
 
-The Pages root is the prototype catalog. Each game is independently launchable at:
+The public library is the Pages root. Each game launches at:
 
 ```text
 .../NexusArcade-Prototypes/games/<slug>/
 ```
 
-## Add a prototype
-
-1. Copy `prototypes/_template/` to `prototypes/<game-slug>/`.
-2. Replace `index.html` with the complete self-contained game.
-3. Update `game.json`.
-4. Push to `main`.
-5. The workflow validates and republishes the catalog automatically.
-
-The build intentionally fails if a prototype is malformed so a bad upload cannot silently replace the live catalog.
-
-> GitHub Pages must use **GitHub Actions** as its deployment source for `actions/deploy-pages` to publish the site.
+The build fails rather than publishing a malformed prototype or a deployment directory containing secret-like files.

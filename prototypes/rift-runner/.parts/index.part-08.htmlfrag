@@ -1,0 +1,11 @@
+    function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));composer.setSize(innerWidth,innerHeight);}
+    function loop(){requestAnimationFrame(loop);const dt=Math.min(.05,clock.getDelta());shaderClock.value+=dt;game.update(dt);bloomPass.strength=game.reduced ? .52 : 1.25+Math.min(game.combo||0,20)*.008;composer.render();}
+    function toggleMute(){game.muted=!game.muted;audio.muted=game.muted;try{localStorage.setItem('rrMuted',game.muted?'1':'0')}catch{}applyToggles();}
+    function toggleEffects(){game.reduced=!game.reduced;try{localStorage.setItem('rrReduced',game.reduced?'1':'0')}catch{}applyToggles();}
+    function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+    function applyToggles(){if(!game)return;$('#mute').textContent='M // SOUND '+(game.muted?'OFF':'ON');$('#mute').classList.toggle('on',!game.muted);$('#effects').textContent='V // '+(game.reduced?'REDUCED FX':'FULL FX');$('#effects').classList.toggle('on',!game.reduced);if(bloomPass)bloomPass.strength=game.reduced ? .52 : 1.25;$('#grain').style.display=game.reduced?'none':'block';}
+    $('#mute').addEventListener('click',()=>{audio.ensure();toggleMute()});$('#effects').addEventListener('click',toggleEffects);$('#fullscreen').addEventListener('click',toggleFullscreen);
+    try{init()}catch(err){console.error(err);$('#panel').innerHTML='<div class="prompt">WAVE SYSTEM ERROR</div><div class="small">WebGL could not start. Update the browser or enable hardware acceleration.</div>';}
+  </script>
+</body>
+</html>

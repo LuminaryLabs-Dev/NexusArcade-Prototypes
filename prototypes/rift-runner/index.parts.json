@@ -1,0 +1,13 @@
+{
+  "parts": [
+    ".parts/index.part-00.htmlfrag",
+    ".parts/index.part-01.htmlfrag",
+    ".parts/index.part-02.htmlfrag",
+    ".parts/index.part-03.htmlfrag",
+    ".parts/index.part-04.htmlfrag",
+    ".parts/index.part-05.htmlfrag",
+    ".parts/index.part-06.htmlfrag",
+    ".parts/index.part-07.htmlfrag",
+    ".parts/index.part-08.htmlfrag"
+  ]
+}

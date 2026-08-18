@@ -32,6 +32,8 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build prototype catalog
+        env:
+          NEXUS_ARCADE_REPO_TOKEN: ${{ secrets.NEXUS_ARCADE_REPO_TOKEN }}
         run: node scripts/build-site.mjs
 
       - name: Upload Pages artifact
