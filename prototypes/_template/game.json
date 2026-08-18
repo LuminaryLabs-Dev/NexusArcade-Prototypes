@@ -1,0 +1,9 @@
+{
+  "title": "Prototype Name",
+  "slug": "prototype-name",
+  "description": "Short description of the prototype.",
+  "genre": "Arcade",
+  "status": "prototype",
+  "version": "0.1.0",
+  "controls": ["Keyboard", "Mouse"]
+}

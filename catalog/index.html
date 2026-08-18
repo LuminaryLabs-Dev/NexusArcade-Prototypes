@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070910">
+  <title>NexusArcade Prototypes</title>
+  <style>
+    :root{color-scheme:dark;--bg:#070910;--panel:#0d1220;--line:#263047;--text:#f4f7fb;--muted:#93a2ba;--accent:#6ef2ff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#14213b 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{width:min(1180px,92vw);margin:0 auto;padding:64px 0 90px}header{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:30px}h1{margin:0;font-size:clamp(36px,6vw,76px);line-height:.95;letter-spacing:-.05em}header p{max-width:500px;margin:0;color:var(--muted)}
+    .toolbar{display:flex;gap:12px;margin:0 0 24px}.search{width:100%;border:1px solid var(--line);border-radius:12px;background:#090d17;color:var(--text);padding:13px 15px;font:inherit;outline:none}.search:focus{border-color:var(--accent)}
+    .count{white-space:nowrap;color:var(--muted);padding:13px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}.card{display:flex;flex-direction:column;min-height:260px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);overflow:hidden}.thumb{aspect-ratio:16/9;background:#090d17 center/cover no-repeat;border-bottom:1px solid var(--line)}.body{display:flex;flex:1;flex-direction:column;padding:18px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.chip{border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);font-size:12px}.title{font-size:22px;font-weight:800;letter-spacing:-.02em}.desc{margin:7px 0 18px;color:var(--muted)}.launch{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:var(--accent);color:#061014;text-decoration:none;font-weight:900;padding:11px 14px}.empty{grid-column:1/-1;padding:48px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);text-align:center}
+    @media(max-width:700px){main{padding-top:36px}header{align-items:start;flex-direction:column}.toolbar{align-items:stretch;flex-direction:column}.count{padding:0}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><div style="color:var(--accent);font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px">Luminary Labs</div><h1>NexusArcade<br>Prototypes</h1></div>
+    <p>Launchable builds published automatically from <code>prototypes/</code> on every push to <code>main</code>.</p>
+  </header>
+  <div class="toolbar">
+    <input id="search" class="search" type="search" placeholder="Search prototypes…" autocomplete="off">
+    <div id="count" class="count">Loading…</div>
+  </div>
+  <section id="grid" class="grid" aria-live="polite"></section>
+</main>
+<script>
+  const grid=document.querySelector('#grid'),search=document.querySelector('#search'),count=document.querySelector('#count');
+  let games=[];
+
+  function text(tag,value,className){
+    const el=document.createElement(tag);
+    if(className)el.className=className;
+    el.textContent=value;
+    return el;
+  }
+
+  function render(query=''){
+    const q=query.trim().toLowerCase();
+    const filtered=games.filter(game=>[game.title,game.description,game.genre,game.status,game.slug,...(game.controls||[])].join(' ').toLowerCase().includes(q));
+    grid.replaceChildren();
+    count.textContent=`${filtered.length} of ${games.length} prototype${games.length===1?'':'s'}`;
+
+    if(!filtered.length){
+      grid.append(text('div',games.length?'No prototypes match this search.':'No launchable prototypes have been published yet.','empty'));
+      return;
+    }
+
+    for(const game of filtered){
+      const card=document.createElement('article');card.className='card';
+      const thumb=document.createElement('div');thumb.className='thumb';
+      if(game.thumbnail)thumb.style.backgroundImage=`url("${game.thumbnail}")`;
+      card.append(thumb);
+
+      const body=document.createElement('div');body.className='body';
+      const meta=document.createElement('div');meta.className='meta';
+      for(const value of [game.genre,game.status,game.version])meta.append(text('span',value,'chip'));
+      body.append(meta,text('div',game.title,'title'),text('div',game.description||game.slug,'desc'));
+
+      const launch=document.createElement('a');launch.className='launch';launch.href=game.launchUrl;launch.textContent='Launch game';launch.setAttribute('aria-label',`Launch ${game.title}`);
+      body.append(launch);card.append(body);grid.append(card);
+    }
+  }
+
+  search.addEventListener('input',()=>render(search.value));
+
+  fetch('./catalog.json',{cache:'no-store'})
+    .then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()})
+    .then(data=>{games=Array.isArray(data.games)?data.games:[];render()})
+    .catch(error=>{count.textContent='Catalog unavailable';grid.replaceChildren(text('div',`Could not load catalog: ${error.message}`,'empty'))});
+</script>
+</body>
+</html>
