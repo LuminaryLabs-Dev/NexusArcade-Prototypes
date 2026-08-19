@@ -1,7 +1,18 @@
+e>
+</head>
+<body>
+  <div id="vignette"></div><div id="speed-fx"></div><div id="grain"></div><div id="flash"></div>
+  <div id="hud">
+    <div class="top">
+      <div class="stack"><div class="label">Integrity</div><div class="bar"><div class="fill" id="health-fill"></div></div><div class="label" style="margin-top:12px">Overdrive</div><div class="bar"><div class="fill" id="ult-fill"></div></div></div>
+      <div class="right"><div class="label">Score</div><div class="big" id="score">000000</div></div>
+    </div>
+    <div id="wave">WAVE 00 // STANDBY</div>
+    <div id="boss-wrap"><div class="label">Apex Warden</div><div class="bossbar"><div class="fill" id="boss-fill"></div></div></div>
     <div id="objective">INITIALIZING WAVE PROTOCOL</div><div id="combo">×1.0<br><span class="label">COMBO</span></div>
     <div id="upgrade">WEAPON // STANDARD</div><div id="timer">00:00.0</div><div id="crosshair"><i></i></div>
   </div>
-  <div id="toast"></div><div id="pause">PAUSED</div>
+  <div id="toast"></div><div id="pause">PAUSED&nbsp; <span style="font-size:1.4vw;color:#56f6ff">ENTER / START TO RESUME</span></div>
   <div id="screen"><div class="panel" id="panel"></div></div>
   <div id="settings"><button class="toggle" id="mute">M // SOUND ON</button><button class="toggle" id="effects">V // FULL FX</button><button class="toggle" id="fullscreen">F // FULLSCREEN</button></div>
 
@@ -16,8 +27,8 @@
     const INPUT_BINDINGS={
       move:{up:['KeyW'],down:['KeyS'],left:['KeyA'],right:['KeyD']},
       aim:{up:['ArrowUp'],down:['ArrowDown'],left:['ArrowLeft'],right:['ArrowRight']},
-      fire:['KeyZ'],dodge:['KeyX','ShiftLeft','ShiftRight'],ultimate:['KeyC','Space'],
-      start:['Enter'],pause:['Escape'],mute:['KeyM'],effects:['KeyV'],fullscreen:['KeyF']
+      fire:['KeyZ'],dodge:['Space','KeyX','ShiftLeft','ShiftRight'],ultimate:['KeyQ','KeyE','KeyC'],
+      start:['Enter'],pause:['Escape','KeyP'],mute:['KeyM'],effects:['KeyV'],fullscreen:['KeyF']
     };
     const STATE={ATTRACT:'ATTRACT',TUTORIAL:'TUTORIAL',ESCAPE:'ESCAPE',ARENA:'ARENA',ROUTE:'ROUTE',ROUTE_RUN:'ROUTE_RUN',FINAL:'FINAL',BOSS:'BOSS',EXTRACT:'EXTRACT',INITIALS:'INITIALS',RESULTS:'RESULTS'};
     const PLAY_STATES=new Set([STATE.TUTORIAL,STATE.ESCAPE,STATE.ARENA,STATE.ROUTE,STATE.ROUTE_RUN,STATE.FINAL,STATE.BOSS,STATE.EXTRACT]);
@@ -26,11 +37,11 @@
     const rand=(a,b)=>a+Math.random()*(b-a), choose=a=>a[(Math.random()*a.length)|0];
 
     class Input{
-      constructor(){this.down=new Set();this.hit=new Set();this.mouse={x:0,y:0,down:false,active:false};this.aim={x:0,y:0};this.pad={moveX:0,moveY:0,aimX:0,aimY:0,fire:false};this.prevPad=[];
+      constructor(){this.down=new Set();this.hit=new Set();this.mouse={x:0,y:0,down:false,hit:false,rightHit:false,active:false};this.aim={x:0,y:0};this.pad={moveX:0,moveY:0,aimX:0,aimY:0,fire:false};this.prevPad=[];
         addEventListener('keydown',e=>{if(!this.down.has(e.code))this.hit.add(e.code);this.down.add(e.code);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();});
         addEventListener('keyup',e=>this.down.delete(e.code));
         addEventListener('mousemove',e=>{this.mouse.x=e.clientX/innerWidth*2-1;this.mouse.y=1-e.clientY/innerHeight*2;this.mouse.active=true;});
-        addEventListener('mousedown',e=>{if(e.button===0){this.mouse.down=true;this.mouse.active=true;audio.ensure();}});addEventListener('mouseup',e=>{if(e.button===0)this.mouse.down=false;});
+        addEventListener('mousedown',e=>{if(e.button===0){this.mouse.down=true;this.mouse.hit=true;this.mouse.active=true;audio.ensure();}if(e.button===2){this.mouse.rightHit=true;audio.ensure();}});addEventListener('mouseup',e=>{if(e.button===0)this.mouse.down=false;});addEventListener('contextmenu',e=>e.preventDefault());
         addEventListener('blur',()=>{this.down.clear();this.mouse.down=false;});
       }
       any(arr){return arr.some(k=>this.down.has(k))} pressed(arr){return arr.some(k=>this.hit.has(k))}
@@ -44,21 +55,12 @@
       pollPad(){const gp=navigator.getGamepads?.()[0];this.pad.startHit=false;this.pad.dodgeHit=false;this.pad.ultHit=false;if(!gp){this.pad.moveX=this.pad.moveY=this.pad.aimX=this.pad.aimY=0;this.pad.fire=false;return;}
         const dz=v=>Math.abs(v)<.14?0:v;this.pad.moveX=dz(gp.axes[0]||0);this.pad.moveY=dz(gp.axes[1]||0);this.pad.aimX=dz(gp.axes[2]||0);this.pad.aimY=dz(gp.axes[3]||0);this.pad.fire=(gp.buttons[7]?.value||0)>.25||gp.buttons[5]?.pressed;
         const map=[[9,'startHit'],[0,'dodgeHit'],[1,'ultHit']];for(const [i,n] of map){const v=!!gp.buttons[i]?.pressed;if(v&&!this.prevPad[i])this.pad[n]=true;this.prevPad[i]=v;}}
-      edge(name){return this.pressed(INPUT_BINDINGS[name])||(name==='start'&&this.pad.startHit)||(name==='dodge'&&this.pad.dodgeHit)||(name==='ultimate'&&this.pad.ultHit)}
-      end(){this.hit.clear()}
+      edge(name){return this.pressed(INPUT_BINDINGS[name])||(name==='start'&&this.pad.startHit)||(name==='dodge'&&(this.pad.dodgeHit||this.mouse.rightHit))||(name==='ultimate'&&this.pad.ultHit)}
+      end(){this.hit.clear();this.mouse.hit=false;this.mouse.rightHit=false}
     }
 
     class AudioSystem{
       constructor(){this.ctx=null;this.muted=false}
       ensure(){if(this.ctx){this.ctx.resume();return}try{this.ctx=new (window.AudioContext||window.webkitAudioContext)()}catch{}}
       tone(freq=300,dur=.08,type='sawtooth',gain=.04,slide=0){if(this.muted)return;this.ensure();if(!this.ctx)return;const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(this.ctx.destination);o.start(t);o.stop(t+dur)}
-      noise(dur=.08,gain=.025,frequency=1200){if(this.muted)return;this.ensure();if(!this.ctx)return;const length=Math.max(1,this.ctx.sampleRate*dur|0),buffer=this.ctx.createBuffer(1,length,this.ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);const src=this.ctx.createBufferSource(),filter=this.ctx.createBiquadFilter(),g=this.ctx.createGain();src.buffer=buffer;filter.type='bandpass';filter.frequency.value=frequency;filter.Q.value=.8;g.gain.setValueAtTime(gain,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,this.ctx.currentTime+dur);src.connect(filter).connect(g).connect(this.ctx.destination);src.start();}
-      shoot(){this.tone(160,.045,'square',.025,190);this.tone(730,.035,'sine',.018,-180);this.noise(.035,.014,2100)} hit(crit){this.tone(crit?980:510,crit?.12:.05,'triangle',crit?.055:.025,crit?420:90);if(crit)this.tone(1480,.08,'sine',.025,-220)} hurt(){this.tone(85,.24,'sawtooth',.07,-42);this.noise(.18,.035,260)} dodge(){this.tone(230,.17,'sine',.045,620);this.noise(.14,.018,1700)} boom(){this.tone(68,.44,'sawtooth',.085,-35);this.noise(.34,.075,180)} ui(){this.tone(620,.06,'square',.025,180);this.tone(980,.09,'sine',.014,-90)} ultimate(){this.tone(92,.9,'sawtooth',.09,980);this.tone(230,.65,'sine',.05,720);this.noise(.6,.04,520)}
-    }
-    const input=new Input(),audio=new AudioSystem();
-
-    let scene,camera,renderer,composer,bloomPass,clock,game,world,player,fx;
-    const mat=(color,emissive=color,ei=.2)=>new THREE.MeshStandardMaterial({color,emissive,emissiveIntensity:ei,roughness:.34,metalness:.72});
-    const box=(w,h,d,m)=>{const x=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);x.castShadow=x.receiveShadow=true;return x};
-    const cyl=(r,h,m)=>{const x=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,12),m);x.castShadow=true;return x};
-    const shaderClock={value:0};
+      noise(dur=.08,gain=.025,frequency=1200){if(this.muted)return;this.ensure();if(!this.ctx)return;const length=Math.max(1,this.ctx.sampleRate*dur|0),buffer=this.ctx.createBuffer(1,length,this.ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);const src=this.ctx.createBufferSource(),filter=this.ctx.createBiquadFilter(),g=this.ctx.createGain();src.buffer=buffer;filter.type='bandpass';filter.frequency.value=frequency;filter.Q.value=.8;g.gain.setValueAtTime(gain,this.ctx.currentT

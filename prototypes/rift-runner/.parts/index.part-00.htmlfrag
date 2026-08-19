@@ -44,14 +44,4 @@
     @keyframes pulse{from{opacity:.55;transform:scale(.99)}to{opacity:1;transform:scale(1.02)}}
     @keyframes speedSpin{to{transform:rotate(.5deg) scale(1.04)}}@keyframes grainShift{0%{transform:translate(0)}25%{transform:translate(-1%,1%)}50%{transform:translate(1%,-1%)}75%{transform:translate(1%,1%)}}
     @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.bar{width:42vw}.stack{min-width:0}.panel{padding:22px}.small{line-height:1.45}}
-  </style>
-</head>
-<body>
-  <div id="vignette"></div><div id="speed-fx"></div><div id="grain"></div><div id="flash"></div>
-  <div id="hud">
-    <div class="top">
-      <div class="stack"><div class="label">Integrity</div><div class="bar"><div class="fill" id="health-fill"></div></div><div class="label" style="margin-top:12px">Overdrive</div><div class="bar"><div class="fill" id="ult-fill"></div></div></div>
-      <div class="right"><div class="label">Score</div><div class="big" id="score">000000</div></div>
-    </div>
-    <div id="wave">WAVE 00 // STANDBY</div>
-    <div id="boss-wrap"><div class="label">Apex Warden</div><div class="bossbar"><div class="fill" id="boss-fill"></div></div></div>
+  </styl
