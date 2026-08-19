@@ -23,6 +23,13 @@ const stringArray = (value, field, slug) => {
   if (!Array.isArray(value) || value.some((v) => typeof v !== 'string' || !v.trim())) fail(`${slug}: "${field}" must be an array of non-empty strings`);
   return value.map((v) => v.trim());
 };
+const optionalString = (value) => typeof value === 'string' && value.trim() ? value.trim() : '';
+const sortOrder = (value, slug) => {
+  if (value === undefined) return 9999;
+  if (typeof value !== 'number' || !Number.isFinite(value)) fail(`${slug}: "sortOrder" must be a finite number`);
+  return value;
+};
+
 async function json(file, label, slug) {
   try { return JSON.parse(await readFile(file, 'utf8')); }
   catch (error) { fail(`${slug}: invalid ${label} (${error.message})`); }
@@ -33,11 +40,14 @@ function gameFrom(manifest, slug, sourceType) {
   return {
     slug,
     title: text(manifest.title, 'title', slug),
-    description: typeof manifest.description === 'string' ? manifest.description.trim() : '',
-    genre: typeof manifest.genre === 'string' && manifest.genre.trim() ? manifest.genre.trim() : 'Prototype',
-    status: typeof manifest.status === 'string' && manifest.status.trim() ? manifest.status.trim() : (sourceType === 'reference' ? 'promoted' : 'prototype'),
-    version: typeof manifest.version === 'string' && manifest.version.trim() ? manifest.version.trim() : '0.0.0',
+    description: optionalString(manifest.description),
+    genre: optionalString(manifest.genre) || 'Prototype',
+    status: optionalString(manifest.status) || (sourceType === 'reference' ? 'promoted' : 'prototype'),
+    version: optionalString(manifest.version) || '0.0.0',
     controls: stringArray(manifest.controls, 'controls', slug),
+    featured: manifest.featured === true,
+    accent: optionalString(manifest.accent) || 'cyan',
+    sortOrder: sortOrder(manifest.sortOrder, slug),
     sourceType,
     launchUrl: `./games/${slug}/`,
   };
@@ -54,8 +64,9 @@ async function noSecrets(root, slug) {
   }
 }
 async function thumbnail(game, manifest, sourceDir, slug) {
-  const value = typeof manifest.thumbnail === 'string' ? manifest.thumbnail.trim() : '';
+  const value = optionalString(manifest.thumbnail);
   if (!value) return;
+  if (path.isAbsolute(value) || value.split(/[\\/]+/).includes('..')) fail(`${slug}: thumbnail must stay inside the deployable game directory`);
   if (!(await exists(path.join(sourceDir, value)))) fail(`${slug}: thumbnail "${value}" does not exist`);
   game.thumbnail = `./games/${slug}/${value.replaceAll('\\', '/')}`;
 }
@@ -102,7 +113,7 @@ async function referencedSource(reference, slug) {
   if (!source || typeof source !== 'object') fail(`${slug}: game.ref.json requires a source object`);
   const repository = text(source.repository, 'source.repository', slug);
   if (!REPO_RE.test(repository)) fail(`${slug}: source.repository must be "owner/repo"`);
-  const ref = typeof source.ref === 'string' && source.ref.trim() ? source.ref.trim() : 'main';
+  const ref = optionalString(source.ref) || 'main';
   const deployPath = text(source.deployPath, 'source.deployPath', slug);
   if (path.isAbsolute(deployPath) || deployPath.split(/[\\/]+/).includes('..')) fail(`${slug}: source.deployPath must stay inside the referenced repository`);
 
@@ -156,7 +167,12 @@ const entries = (await readdir(PROTOTYPES_DIR, { withFileTypes: true }))
   .sort((a, b) => a.name.localeCompare(b.name));
 const games = [];
 for (const entry of entries) games.push(await loadPrototype(entry));
-games.sort((a, b) => a.title.localeCompare(b.title));
+games.sort((a, b) =>
+  Number(b.featured) - Number(a.featured) ||
+  a.sortOrder - b.sortOrder ||
+  a.title.localeCompare(b.title) ||
+  a.slug.localeCompare(b.slug)
+);
 await cp(CATALOG_SOURCE, path.join(OUT_DIR, 'index.html'));
 await writeFile(path.join(OUT_DIR, 'catalog.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), count: games.length, games }, null, 2)}\n`);
 await writeFile(path.join(OUT_DIR, '.nojekyll'), '');

@@ -5,5 +5,8 @@
   "genre": "Arcade Shooter",
   "status": "prototype",
   "version": "0.1.1",
+  "featured": true,
+  "accent": "cyan",
+  "sortOrder": 1,
   "controls": ["WASD", "Mouse", "Keyboard", "Gamepad"]
 }
