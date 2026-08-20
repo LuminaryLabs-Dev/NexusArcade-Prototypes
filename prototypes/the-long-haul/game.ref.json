@@ -1,0 +1,17 @@
+{
+  "title": "The Long Haul",
+  "slug": "the-long-haul",
+  "description": "A deterministic browser truck-delivery game built with NexusEngine and Three.js.",
+  "genre": "Arcade Driving",
+  "status": "prototype",
+  "version": "0.1.0",
+  "featured": false,
+  "accent": "orange",
+  "sortOrder": 2,
+  "controls": ["WASD", "Keyboard"],
+  "source": {
+    "repository": "LuminaryLabs-Publish/TheLongHaul",
+    "ref": "main",
+    "deployPath": "."
+  }
+}
