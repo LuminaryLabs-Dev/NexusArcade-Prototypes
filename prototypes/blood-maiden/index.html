@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#09070b">
+  <title>Blood Maiden</title>
+  <style>
+    :root{--ink:#09070b;--wine:#8e1830;--blood:#d9434d;--bone:#e9dcc0;--ash:#9f9688;--gold:#d1a656;--violet:#9b6bc9}
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050407;color:var(--bone);font-family:Georgia,"Times New Roman",serif;overscroll-behavior:none}
+    button{font:inherit}
+    #shell{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#23131d 0,#09070b 48%,#020203 100%);isolation:isolate}
+    #game{display:block;width:100vw;height:56.25vw;max-width:177.78vh;max-height:100vh;background:#10131a;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair;box-shadow:0 0 0 1px #3b2631,0 0 90px #000}
+    #grain{position:absolute;inset:0;pointer-events:none;opacity:.15;mix-blend-mode:overlay;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.04) 3px,transparent 4px),radial-gradient(circle at center,transparent 45%,#000 100%)}
+    #hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 2px 0 #000,1px 0 0 #000,-1px 0 0 #000;user-select:none}
+    .topline{position:absolute;top:12px;left:50%;transform:translateX(-50%);min-width:248px;text-align:center}
+    #region{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#d9ceb7}
+    #heatLabel{margin-top:4px;font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.12em;color:#bdad9a}
+    .heat-track{height:5px;margin:5px auto 0;width:196px;background:#120d11;border:1px solid #504044;box-shadow:0 0 0 1px #070507}
+    #heatFill{display:block;height:100%;width:0;background:linear-gradient(90deg,#6d2431,#e04945,#f0bd63);box-shadow:0 0 8px #d12737;transition:width .25s}
+    #bossHud{display:none;position:absolute;top:57px;left:50%;transform:translateX(-50%);width:min(420px,62vw);text-align:center}
+    #bossName{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#f1d5bf}
+    .boss-track{height:9px;margin-top:4px;border:1px solid #6f5447;background:#0d080a;box-shadow:0 0 0 1px #000}
+    #bossFill{height:100%;background:linear-gradient(90deg,#711126,#d0353d);width:100%}
+    #objective{position:absolute;top:18px;left:18px;max-width:220px;color:#d9d0bd;font-size:11px;line-height:1.45;letter-spacing:.04em}
+    #objective b{display:block;color:#a89169;font:700 9px/1.4 ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3px}
+    #minimap{position:absolute;right:17px;top:17px;width:128px;height:84px;border:1px solid #6d5549;background:rgba(8,6,9,.82);box-shadow:0 0 0 2px #160f13,0 6px 18px #0008;image-rendering:pixelated}
+    #resources{position:absolute;right:18px;top:110px;text-align:right;font:700 10px/1.6 ui-monospace,monospace;letter-spacing:.08em;color:#d5c7ac}
+    #resources span{color:#f0c76c}
+    .bottomHud{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:flex-end;gap:10px}
+    .orb{position:relative;width:78px;height:78px;border-radius:50%;overflow:hidden;background:#120b10;border:3px solid #78604b;box-shadow:0 0 0 2px #120c0e,0 5px 16px #000b,inset 0 0 14px #000}
+    .orb:before{content:"";position:absolute;inset:5px;border-radius:50%;z-index:2;background:radial-gradient(circle at 35% 24%,rgba(255,255,255,.24),transparent 15%),linear-gradient(115deg,transparent 44%,rgba(255,255,255,.08) 45% 49%,transparent 50%)}
+    .orbFill{position:absolute;left:0;right:0;bottom:0;height:100%;transition:height .15s}
+    #hpFill{background:radial-gradient(circle at 45% 35%,#e2484d,#8f152d 60%,#3f0917)}
+    #manaFill{background:radial-gradient(circle at 45% 35%,#b778cf,#5d2a83 62%,#221036)}
+    .orbText{position:absolute;inset:0;display:grid;place-items:center;z-index:3;font:700 9px ui-monospace,monospace;color:#fff}
+    .centerHud{min-width:290px}
+    .xpTrack{height:5px;background:#0c090c;border:1px solid #534236;margin:0 8px 5px}
+    #xpFill{height:100%;width:0;background:linear-gradient(90deg,#8061ae,#d08ee1)}
+    .abilities{height:58px;padding:5px 7px;display:flex;gap:6px;background:linear-gradient(#21171b,#100b0e);border:2px solid #745b45;box-shadow:0 0 0 2px #0d090b,0 7px 20px #000b}
+    .ability{position:relative;width:48px;height:44px;border:1px solid #7c6350;background:#171017;overflow:hidden;box-shadow:inset 0 0 0 2px #09070a}
+    .abilityIcon{position:absolute;inset:3px;display:grid;place-items:center;font-size:22px;background:radial-gradient(circle,#8a1f35,#28121b 68%,#0a080b);color:#f2c9c3}
+    .ability:nth-child(2) .abilityIcon{background:radial-gradient(circle,#603e83,#191223 68%,#09070b)}
+    .ability:nth-child(3) .abilityIcon{background:radial-gradient(circle,#b3363d,#271115 68%,#09070b)}
+    .ability:nth-child(4) .abilityIcon{background:radial-gradient(circle,#816a2b,#221b10 68%,#09070b)}
+    .cooldown{position:absolute;left:0;right:0;bottom:0;height:0;background:#030205cc;z-index:3}
+    .keycap{position:absolute;right:2px;bottom:1px;z-index:4;font:700 8px ui-monospace,monospace;color:#eee4d0}
+    #levelBadge{position:absolute;left:50%;bottom:77px;transform:translateX(-50%);font:700 10px ui-monospace,monospace;color:#e5cfaa}
+    #prompt{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);min-width:260px;text-align:center;opacity:0;transition:opacity .15s;color:#f1e5ca;font-size:12px;letter-spacing:.04em}
+    #prompt.show{opacity:1}
+    #prompt kbd{font:700 10px ui-monospace,monospace;color:#fff;background:#4f2430;border:1px solid #ba6c70;padding:3px 6px;margin-right:6px}
+    #toastStack{position:absolute;left:50%;top:28%;transform:translateX(-50%);display:flex;flex-direction:column;gap:4px;align-items:center}
+    .toast{animation:toast 2.8s forwards;color:#f6e4c4;font-size:13px;letter-spacing:.06em;white-space:nowrap}
+    @keyframes toast{0%{opacity:0;transform:translateY(8px)}12%,72%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-12px)}}
+    .overlay{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,rgba(48,16,28,.34),rgba(4,3,5,.88));backdrop-filter:blur(1px)}
+    .overlay[hidden]{display:none}
+    .menuPanel{width:min(620px,92vw);padding:36px 38px 30px;text-align:center;border:1px solid #80634d;background:linear-gradient(180deg,rgba(25,16,21,.95),rgba(8,6,9,.97));box-shadow:0 0 0 4px #0d090c,0 0 0 5px #4a3430,0 24px 80px #000}
+    .eyebrow{font:700 10px/1 ui-monospace,monospace;color:#b89a67;letter-spacing:.28em;text-transform:uppercase}
+    h1{margin:10px 0 2px;font-size:clamp(42px,8vw,72px);font-weight:500;line-height:.92;letter-spacing:.04em;color:#ead9bd;text-transform:uppercase;text-shadow:0 3px 0 #5e1528,0 6px 0 #16080e}
+    .subtitle{margin:12px auto 24px;max-width:460px;color:#bfb2a4;font-size:13px;line-height:1.5}
+    .primary{position:relative;min-width:260px;padding:13px 24px;border:1px solid #cc7f6e;background:linear-gradient(#821d36,#4b1022);color:#fff0d8;text-transform:uppercase;letter-spacing:.12em;font-weight:700;box-shadow:0 0 0 2px #200d13,0 7px 0 #240913;cursor:pointer}
+    .primary:hover,.primary:focus-visible{filter:brightness(1.2);transform:translateY(-1px);outline:1px solid #f2b786;outline-offset:3px}
+    .controls{margin:26px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;border-top:1px solid #49383a;padding-top:18px}
+    .control{color:#998f85;font:10px/1.5 ui-monospace,monospace}
+    .control b{display:block;color:#d6c7ae;font-size:11px}
+    #levelup .menuPanel{width:min(700px,94vw)}
+    #levelChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+    .choice{min-height:150px;padding:16px 12px;border:1px solid #6b5048;background:linear-gradient(#24161d,#100b0f);color:#d9cdb8;cursor:pointer;text-align:left}
+    .choice:hover,.choice:focus-visible{border-color:#d28a75;background:linear-gradient(#351923,#170d12);transform:translateY(-2px);outline:none}
+    .choice .num{font:700 9px ui-monospace,monospace;color:#ae8b68}
+    .choice strong{display:block;margin:13px 0 8px;color:#f2dcc1;font-size:15px}
+    .choice small{color:#a99d91;line-height:1.45}
+    #death h2,#pause h2{margin:8px 0 12px;font-size:40px;font-weight:500;color:#e1c8ad;text-transform:uppercase}
+    #death p,#pause p{color:#a99c8e}
+    #tutorial{position:absolute;left:18px;bottom:112px;padding:8px 10px;border-left:2px solid #8f4050;background:#09070bc9;color:#bdb1a0;font:9px/1.5 ui-monospace,monospace;transition:opacity 1s}
+    #soundBtn{position:absolute;right:17px;bottom:17px;width:30px;height:26px;color:#cabda9;border:1px solid #604a42;background:#120d11cc;pointer-events:auto;cursor:pointer}
+    #touch{display:none;position:absolute;inset:0;pointer-events:none}
+    #stick{position:absolute;left:24px;bottom:24px;width:104px;height:104px;border:1px solid #9d7a6880;border-radius:50%;background:#120b1160;pointer-events:auto;touch-action:none}
+    #knob{position:absolute;width:42px;height:42px;left:30px;top:30px;border:1px solid #d4b49e99;border-radius:50%;background:#6b273877}
+    .touchAbilities{position:absolute;right:20px;bottom:22px;display:grid;grid-template-columns:repeat(2,56px);gap:10px;pointer-events:auto}
+    .touchAbilities button{width:56px;height:56px;border-radius:50%;border:1px solid #be7e71aa;background:#3f1422bb;color:#f2dbc8;font-size:20px;touch-action:none}
+    @media (pointer:coarse){#touch{display:block}#tutorial{display:none}#soundBtn{bottom:140px}.bottomHud{bottom:8px;transform:translateX(-50%) scale(.78);transform-origin:bottom center}#prompt{bottom:85px}}
+    @media (max-width:700px){#objective{max-width:150px;font-size:9px}#minimap{width:94px;height:62px}.controls{grid-template-columns:repeat(2,1fr)}.menuPanel{padding:24px 18px}#levelChoices{grid-template-columns:1fr}.choice{min-height:88px}.orb{width:66px;height:66px}.centerHud{min-width:250px}.ability{width:42px}.topline{top:7px}}
+  </style>
+</head>
+<body>
+  <div id="shell">
+    <canvas id="game" width="640" height="360" aria-label="Blood Maiden top-down action role-playing game"></canvas>
+    <div id="grain"></div>
+    <div id="hud" aria-live="polite">
+      <div id="objective"><b>Current Omen</b><span id="objectiveText">Find Blackbriar Crypt beyond the old road.</span></div>
+      <div class="topline"><div id="region">The Gloam March</div><div id="heatLabel">UNSEEN BY THE CROWN</div><div class="heat-track"><span id="heatFill"></span></div></div>
+      <div id="bossHud"><div id="bossName">The Ash Inquisitor</div><div class="boss-track"><div id="bossFill"></div></div></div>
+      <canvas id="minimap" width="128" height="84" aria-label="Area map"></canvas>
+      <div id="resources">COIN <span id="gold">0</span><br>ELIXIRS <span id="potions">3</span><br>CRYPTS <span id="crypts">0 / 2</span></div>
+      <div id="prompt"><kbd>E</kbd><span></span></div>
+      <div id="toastStack"></div>
+      <div id="tutorial">WASD MOVE · MOUSE AIM · HOLD CLICK CAST<br>SPACE RAVEN STEP · R BLOOD RING · Q ELIXIR · E INTERACT</div>
+      <div class="bottomHud">
+        <div class="orb"><div class="orbFill" id="hpFill"></div><div class="orbText" id="hpText">100 / 100</div></div>
+        <div class="centerHud">
+          <div class="xpTrack"><div id="xpFill"></div></div>
+          <div class="abilities">
+            <div class="ability"><div class="abilityIcon">✦</div><div class="cooldown" id="cdBolt"></div><div class="keycap">LMB</div></div>
+            <div class="ability"><div class="abilityIcon">◆</div><div class="cooldown" id="cdDash"></div><div class="keycap">SPACE</div></div>
+            <div class="ability"><div class="abilityIcon">◉</div><div class="cooldown" id="cdNova"></div><div class="keycap">R</div></div>
+            <div class="ability"><div class="abilityIcon">✚</div><div class="cooldown" id="cdPotion"></div><div class="keycap">Q</div></div>
+          </div>
+          <div id="levelBadge">LEVEL <span id="level">1</span> · HEMOMANCER</div>
+        </div>
+        <div class="orb"><div class="orbFill" id="manaFill"></div><div class="orbText" id="manaText">100 / 100</div></div>
+      </div>
+      <button id="soundBtn" type="button" aria-label="Toggle sound">♪</button>
+    </div>
+
+    <div id="title" class="overlay">
+      <div class="menuPanel">
+        <div class="eyebrow">A crimson pilgrimage</div>
+        <h1>Blood Maiden</h1>
+        <p class="subtitle">Cross a haunted countryside. Plunder its estates. Descend into forgotten crypts. Every theft enriches your craft—and draws the empire closer.</p>
+        <button class="primary" id="startBtn" type="button">Begin the pilgrimage</button>
+        <div class="controls">
+          <div class="control"><b>WASD</b>move freely</div>
+          <div class="control"><b>Mouse</b>aim & cast</div>
+          <div class="control"><b>Space / R</b>dash & blood ring</div>
+          <div class="control"><b>E</b>enter or pillage</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="levelup" class="overlay" hidden>
+      <div class="menuPanel">
+        <div class="eyebrow">The blood remembers</div>
+        <h2 style="margin:10px 0 2px;font-size:34px;font-weight:500;text-transform:uppercase">Choose a new rite</h2>
+        <div id="levelChoices"></div>
+      </div>
+    </div>
+
+    <div id="death" class="overlay" hidden>
+      <div class="menuPanel">
+        <div class="eyebrow">The earth refuses you</div>
+        <h2>Bloodless</h2>
+        <p>The empire takes a tithe, but your witchcraft endures.</p>
+        <button class="primary" id="riseBtn" type="button">Rise at the red camp</button>
+      </div>
+    </div>
+
+    <div id="pause" class="overlay" hidden>
+      <div class="menuPanel">
+        <div class="eyebrow">The world waits</div>
+        <h2>Paused</h2>
+        <p>Press Escape to return to the pilgrimage.</p>
+        <button class="primary" id="resumeBtn" type="button">Continue</button>
+      </div>
+    </div>
+
+    <div id="touch">
+      <div id="stick"><div id="knob"></div></div>
+      <div class="touchAbilities"><button data-touch="bolt" aria-label="Cast blood bolt">✦</button><button data-touch="dash" aria-label="Raven step">◆</button><button data-touch="nova" aria-label="Cast blood ring">◉</button><button data-touch="interact" aria-label="Interact">E</button></div>
+    </div>
+  </div>
+
+  <script>
+  (()=>{
+    'use strict';
+    const W=640,H=360,T=32,TAU=Math.PI*2,WORLD_W=3072,WORLD_H=2304;
+    const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d',{alpha:false});
+    const mini=document.querySelector('#minimap'),mctx=mini.getContext('2d');
+    ctx.imageSmoothingEnabled=false;mctx.imageSmoothingEnabled=false;
+    const $=s=>document.querySelector(s);
+    const ui={title:$('#title'),levelup:$('#levelup'),death:$('#death'),pause:$('#pause'),choices:$('#levelChoices'),prompt:$('#prompt'),objective:$('#objectiveText'),region:$('#region'),heatLabel:$('#heatLabel'),heatFill:$('#heatFill'),bossHud:$('#bossHud'),bossName:$('#bossName'),bossFill:$('#bossFill'),gold:$('#gold'),potions:$('#potions'),crypts:$('#crypts'),hpFill:$('#hpFill'),manaFill:$('#manaFill'),hpText:$('#hpText'),manaText:$('#manaText'),xpFill:$('#xpFill'),level:$('#level'),tutorial:$('#tutorial'),toast:$('#toastStack'),sound:$('#soundBtn'),cdBolt:$('#cdBolt'),cdDash:$('#cdDash'),cdNova:$('#cdNova'),cdPotion:$('#cdPotion')};
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const lerp=(a,b,t)=>a+(b-a)*t;
+    const len=(x,y)=>Math.hypot(x,y);
+    const d2=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+    const hash=(x,y=0)=>{let n=(x*374761393+y*668265263)^0x5bf03635;n=(n^(n>>>13))*1274126177;return ((n^(n>>>16))>>>0)/4294967295};
+    const pick=a=>a[(Math.random()*a.length)|0];
+    const game={state:'title',mode:'overworld',time:0,last:0,hitStop:0,shake:0,keys:Object.create(null),mouse:{x:W*.72,y:H*.46,down:false},touch:{x:0,y:0},camera:{x:0,y:0},enemies:[],shots:[],particles:[],pickups:[],texts:[],objects:[],villages:[],dungeons:[],dungeonGrid:[],dungeonSeeded:{},cleared:{},returnPos:null,heat:0,pillaged:0,huntTimer:18,crypts:0,prompt:null,muted:false,audio:null,frame:0};
+    const player={x:350,y:1165,r:9,speed:112,hp:100,maxHp:100,mana:100,maxMana:100,level:1,xp:0,xpNext:70,gold:0,potions:3,damage:18,boltRate:.34,boltCd:0,dashCd:0,dashMax:2.7,novaCd:0,novaMax:5.5,potionCd:0,invuln:0,walk:0,facing:1,echo:0,ringScale:1,imperialBane:0,dead:false};
+    const villageData=[
+      {name:'Merewick Grange',x:780,y:770,kind:'grange'},
+      {name:'Gallowsmere',x:2055,y:1510,kind:'hamlet'},
+      {name:'Saint Orra Estate',x:2570,y:650,kind:'estate'}
+    ];
+    const dungeonData=[
+      {id:'blackbriar',name:'Blackbriar Crypt',x:1230,y:430,difficulty:1},
+      {id:'redvault',name:'The Red Saint\'s Vault',x:2740,y:1940,difficulty:1.45}
+    ];
+    const heatNames=['UNSEEN BY THE CROWN','RUMORED IN TAVERNS','IMPERIAL SCOUTS DISPATCHED','HUNTED BY THE LEGION','BLOOD WARRANT ISSUED','ENEMY OF THE CROWN'];
+    const upgrades=[
+      {name:'Sanguine Edge',desc:'Blood Bolt deals 35% more damage.',apply:()=>player.damage*=1.35},
+      {name:'Blackthorn Heart',desc:'Gain 30 maximum vitality and recover it now.',apply:()=>{player.maxHp+=30;player.hp=player.maxHp}},
+      {name:'Fleet Hex',desc:'Move 12% faster through field and crypt.',apply:()=>player.speed*=1.12},
+      {name:'Crimson Echo',desc:'Blood Bolts gain a 22% chance to split on impact.',apply:()=>player.echo=Math.min(.66,player.echo+.22)},
+      {name:'Raven Covenant',desc:'Raven Step recovers 28% faster.',apply:()=>player.dashMax*=.72},
+      {name:'Circle of Thorns',desc:'Blood Ring grows larger and strikes harder.',apply:()=>player.ringScale+=.24},
+      {name:'Regicide',desc:'Deal 30% more damage to imperial troops.',apply:()=>player.imperialBane+=.3},
+      {name:'Deep Vessel',desc:'Gain 35 maximum will and refill it now.',apply:()=>{player.maxMana+=35;player.mana=player.maxMana}},
+      {name:'Quickening',desc:'Cast Blood Bolt 14% faster.',apply:()=>player.boltRate=Math.max(.16,player.boltRate*.86)}
+    ];
+
+    function roadY(x){return 1128+Math.sin(x*.0026)*142+Math.sin(x*.0061)*35}
+    function riverX(y){return 1515+Math.sin(y*.0032)*128}
+    function terrainAt(x,y){
+      const rx=riverX(y),bridge=y>980&&y<1255;
+      if(Math.abs(x-rx)<62) return bridge?'bridge':'water';
+      if(Math.abs(y-roadY(x))<70) return 'road';
+      for(const v of game.villages) if(Math.abs(x-v.x)<180&&Math.abs(y-v.y)<135) return 'field';
+      return 'grass';
+    }
+    function buildWorld(){
+      game.villages=villageData.map((v,i)=>({...v,id:i,pillaged:false,buildings:[]}));
+      game.dungeons=dungeonData.map(d=>({...d}));
+      for(const v of game.villages){
+        const specs=v.kind==='estate'?[[ -74,-52,70,54],[18,-62,74,64],[-20,28,58,44]]:[[ -66,-44,56,48],[24,-54,62,52],[-28,27,52,42]];
+        specs.forEach((s,j)=>{const b={type:'building',x:v.x+s[0],y:v.y+s[1],w:s[2],h:s[3],village:v,index:j};v.buildings.push(b);game.objects.push(b)});
+      }
+      const safe=[{x:350,y:1165},...game.villages,...game.dungeons,{x:riverX(1110),y:1110}];
+      for(let i=0;i<330;i++){
+        const x=80+hash(i,12)*(WORLD_W-160),y=80+hash(i,77)*(WORLD_H-160);
+        if(Math.abs(y-roadY(x))<125||Math.abs(x-riverX(y))<100||safe.some(p=>Math.hypot(x-p.x,y-p.y)<180))continue;
+        const h=hash(i,5);game.objects.push({type:h>.22?'tree':'rock',x,y,r:h>.22?13+hash(i,8)*5:8+hash(i,9)*5,variant:(hash(i,2)*4)|0});
+      }
+      buildDungeon();
+      for(let i=0;i<22;i++){
+        let x=420+hash(i,32)*(WORLD_W-700),y=180+hash(i,44)*(WORLD_H-360);
+        if(Math.hypot(x-player.x,y-player.y)<350){x+=500;y+=180}
+        spawnEnemy(hash(i,11)>.56?'brigand':'wolf',x,y,'overworld',1);
+      }
+    }
+    function buildDungeon(){
+      const cols=52,rows=32,g=Array.from({length:rows},()=>Array(cols).fill(0));
+      const carve=(x,y,w,h)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(g[yy])g[yy][xx]=1};
+      carve(2,12,11,9);carve(12,15,9,3);carve(20,9,11,15);carve(23,4,6,6);carve(30,14,9,3);carve(38,7,12,19);
+      game.dungeonGrid=g;
+    }
+    function spawnEnemy(type,x,y,scene=game.mode,scale=1){
+      const base={wolf:[34,58,8,11],brigand:[52,42,10,15],skeleton:[46,46,9,14],cultist:[62,43,10,18],imperial:[86,48,11,21],archer:[64,45,10,17],inquisitor:[620,40,17,28]}[type];
+      const e={type,x,y,scene,r:base[2],hp:base[0]*scale,maxHp:base[0]*scale,speed:base[1],damage:base[3]*scale,attackCd:Math.random(),shotCd:1+Math.random(),hurt:0,dead:false,walk:Math.random()*8,vx:0,vy:0,elite:type==='inquisitor',scale,phase:Math.random()*TAU};
+      game.enemies.push(e);return e;
+    }
+    function activeScene(e){return e.scene===game.mode}
+    function dungeonFloor(x,y,r=6){
+      const g=game.dungeonGrid,pts=[[x-r,y],[x+r,y],[x,y-r],[x,y+r]];
+      return pts.every(p=>{const tx=(p[0]/T)|0,ty=(p[1]/T)|0;return g[ty]&&g[ty][tx]===1});
+    }
+    function circleRect(x,y,r,o){const nx=clamp(x,o.x,o.x+o.w),ny=clamp(y,o.y,o.y+o.h);return Math.hypot(x-nx,y-ny)<r}
+    function canStand(x,y,r=8,ignore=null){
+      if(game.mode!=='overworld')return dungeonFloor(x,y,r);
+      if(x<28||y<28||x>WORLD_W-28||y>WORLD_H-28)return false;
+      if(terrainAt(x,y)==='water')return false;
+      for(const o of game.objects){if(o===ignore)continue;if(o.type==='building'){if(circleRect(x,y,r,o))return false}else if(Math.hypot(x-o.x,y-o.y)<r+o.r*.72)return false}
+      return true;
+    }
+    function moveEntity(e,dx,dy){if(canStand(e.x+dx,e.y,e.r,e))e.x+=dx;if(canStand(e.x,e.y+dy,e.r,e))e.y+=dy}
+    function initAudio(){
+      if(game.audio||game.muted)return;
+      try{game.audio=new (window.AudioContext||window.webkitAudioContext)()}catch(_){game.muted=true}
+    }
+    function tone(freq,dur=.08,type='sine',vol=.025,slide=0){
+      const a=game.audio;if(!a||game.muted)return;
+      const o=a.createOscillator(),g=a.createGain(),now=a.currentTime;o.type=type;o.frequency.setValueAtTime(freq,now);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),now+dur);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.0001,now+dur);o.connect(g).connect(a.destination);o.start(now);o.stop(now+dur);
+    }
+    function sfx(name){
+      if(name==='bolt')tone(170,.1,'sawtooth',.018,150);
+      else if(name==='hit')tone(85,.055,'square',.018,-28);
+      else if(name==='dash')tone(280,.16,'sine',.025,-190);
+      else if(name==='ring'){tone(110,.25,'sawtooth',.028,330);setTimeout(()=>tone(220,.18,'sine',.018,-100),45)}
+      else if(name==='coin')tone(740,.08,'square',.015,220);
+      else if(name==='level'){tone(330,.25,'sine',.025,330);setTimeout(()=>tone(660,.35,'sine',.02,440),90)}
+      else if(name==='hurt')tone(72,.13,'sawtooth',.04,-30);
+      else if(name==='pillage'){tone(64,.4,'sawtooth',.035,-22);setTimeout(()=>tone(190,.3,'square',.018,-100),120)}
+    }
+    function burst(x,y,color,count=9,speed=70,life=.5){for(let i=0;i<count;i++){const a=Math.random()*TAU,s=speed*(.3+Math.random()*.7);game.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:life*(.6+Math.random()*.7),max:life,size:1+Math.random()*2,color,scene:game.mode,grav:0})}}
+    function textPop(x,y,text,color='#f2dfbf',size=10){game.texts.push({x,y,text,color,life:1,max:1,size,scene:game.mode})}
+    function toast(msg,color){const d=document.createElement('div');d.className='toast';d.textContent=msg;if(color)d.style.color=color;ui.toast.appendChild(d);setTimeout(()=>d.remove(),2900)}
+    function worldAim(){return{x:game.camera.x+game.mouse.x,y:game.camera.y+game.mouse.y}}
+    function nearestEnemy(range=340){let best=null,bd=range;for(const e of game.enemies)if(!e.dead&&activeScene(e)){const d=d2(player,e);if(d<bd){best=e;bd=d}}return best}
+    function castBolt(target){
+      if(game.state!=='playing'||player.boltCd>0)return;
+      if(!target){const e=nearestEnemy();target=e||{x:player.x+player.facing*100,y:player.y}}
+      let dx=target.x-player.x,dy=target.y-player.y,l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;player.facing=dx>=0?1:-1;player.boltCd=player.boltRate;
+      game.shots.push({x:player.x+dx*12,y:player.y-8+dy*8,vx:dx*430,vy:dy*430,life:1.05,r:4,damage:player.damage,team:'player',kind:'blood',scene:game.mode,pierce:0});
+      burst(player.x+dx*12,player.y-7,'#d94b62',4,30,.28);sfx('bolt');
+    }
+    function dash(){
+      if(game.state!=='playing'||player.dashCd>0)return;
+      let dx=(game.keys.KeyD?1:0)-(game.keys.KeyA?1:0)+game.touch.x,dy=(game.keys.KeyS?1:0)-(game.keys.KeyW?1:0)+game.touch.y;
+      if(!dx&&!dy){const a=worldAim();dx=a.x-player.x;dy=a.y-player.y}
+      const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;player.dashCd=player.dashMax;player.invuln=.32;
+      for(let i=0;i<8;i++){moveEntity(player,dx*13,dy*13);game.particles.push({x:player.x,y:player.y-5,vx:-dx*15+(Math.random()-.5)*18,vy:-dy*15+(Math.random()-.5)*18,life:.38,max:.38,size:3,color:'#5a3a72',scene:game.mode,grav:0})}
+      game.shake=4;sfx('dash');
+    }
+    function bloodRing(){
+      if(game.state!=='playing'||player.novaCd>0||player.mana<30)return;
+      player.mana-=30;player.novaCd=player.novaMax;const radius=92*player.ringScale;let hits=0;
+      for(const e of game.enemies)if(!e.dead&&activeScene(e)&&d2(player,e)<radius+e.r){hurtEnemy(e,player.damage*1.45*player.ringScale,{x:e.x-player.x,y:e.y-player.y});hits++}
+      for(let i=0;i<56;i++){const a=i/56*TAU;game.particles.push({x:player.x+Math.cos(a)*18,y:player.y+Math.sin(a)*18,vx:Math.cos(a)*radius*2.2,vy:Math.sin(a)*radius*2.2,life:.42,max:.42,size:i%3?2:4,color:i%2?'#b51e40':'#ef7180',scene:game.mode,grav:0})}
+      if(hits)player.hp=Math.min(player.maxHp,player.hp+hits*2);game.shake=7;sfx('ring');
+    }
+    function drink(){
+      if(game.state!=='playing'||player.potionCd>0||player.potions<=0||player.hp>=player.maxHp)return;
+      player.potions--;player.potionCd=1.2;const heal=Math.ceil(player.maxHp*.5);player.hp=Math.min(player.maxHp,player.hp+heal);textPop(player.x,player.y-24,'+'+heal,'#84d981',11);burst(player.x,player.y-6,'#79d88b',14,48,.55);tone(410,.2,'sine',.025,210);
+    }
+    function hurtEnemy(e,amount,knock={x:0,y:0}){
+      if(e.dead)return;let mult=(e.type==='imperial'||e.type==='archer'||e.type==='inquisitor')?1+player.imperialBane:1;amount*=mult;const crit=Math.random()<.09;amount*=crit?1.8:1;e.hp-=amount;e.hurt=.14;const l=Math.hypot(knock.x,knock.y)||1;if(!e.elite)moveEntity(e,knock.x/l*7,knock.y/l*7);textPop(e.x,e.y-18,Math.round(amount)+(crit?'!':''),crit?'#ffd37e':'#f4d5c2',crit?12:9);burst(e.x,e.y-6,'#9e1833',crit?12:7,65,.44);game.hitStop=crit?.045:.022;game.shake=Math.max(game.shake,crit?6:2);sfx('hit');if(e.hp<=0)killEnemy(e)
+    }
+    function killEnemy(e){
+      e.dead=true;burst(e.x,e.y-4,e.type==='skeleton'?'#d6d0b6':'#7f1029',18,88,.7);const xp=e.elite?180:e.type==='imperial'?30:e.type==='archer'?24:e.type==='cultist'?22:e.type==='skeleton'?16:e.type==='brigand'?15:10;gainXp(Math.ceil(xp*e.scale));
+      const coins=e.elite?8:Math.random()<.62?1+((Math.random()*3)|0):0;for(let i=0;i<coins;i++)game.pickups.push({type:'coin',x:e.x+(Math.random()-.5)*18,y:e.y+(Math.random()-.5)*18,vx:(Math.random()-.5)*40,vy:-20-Math.random()*25,life:30,scene:game.mode,value:e.elite?12:3});
+      if(Math.random()<.08)game.pickups.push({type:'potion',x:e.x,y:e.y-4,vx:0,vy:-30,life:30,scene:game.mode,value:1});
+      if(e.type==='inquisitor'){
+        const id=game.mode.slice(8);game.cleared[id]=true;game.crypts=Object.keys(game.cleared).length;player.damage+=8;player.maxMana+=12;player.mana=player.maxMana;toast('RELIC CLAIMED · THE VEIN-CROWN','#f2c46f');game.objective='Return to the countryside—or seek another vault.';burst(e.x,e.y,'#e9bd65',45,130,1.2);sfx('level');
+      }
+    }
+    function hurtPlayer(amount,source){
+      if(player.invuln>0||player.dead)return;player.hp-=amount;player.invuln=.65;game.shake=7;sfx('hurt');textPop(player.x,player.y-24,'-'+Math.ceil(amount),'#ff7780',11);burst(player.x,player.y-5,'#ac203a',12,70,.6);
+      if(source){let dx=player.x-source.x,dy=player.y-source.y,l=Math.hypot(dx,dy)||1;moveEntity(player,dx/l*12,dy/l*12)}
+      if(player.hp<=0){player.hp=0;player.dead=true;game.state='dead';setTimeout(()=>{ui.death.hidden=false},450)}
+    }
+    function gainXp(n){player.xp+=n;while(player.xp>=player.xpNext){player.xp-=player.xpNext;player.level++;player.xpNext=Math.round(player.xpNext*1.38+18);offerLevel();break}}
+    function offerLevel(){
+      game.state='levelup';ui.choices.textContent='';const start=(player.level*2)%upgrades.length,opts=[upgrades[start],upgrades[(start+3)%upgrades.length],upgrades[(start+6)%upgrades.length]];
+      opts.forEach((u,i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`<span class="num">${i+1} / RITE</span><strong>${u.name}</strong><small>${u.desc}</small>`;b.onclick=()=>chooseUpgrade(u);ui.choices.appendChild(b)});ui.levelup.hidden=false;sfx('level');
+    }
+    function chooseUpgrade(u){u.apply();player.hp=Math.min(player.maxHp,player.hp+player.maxHp*.2);player.mana=player.maxMana;ui.levelup.hidden=true;game.state='playing';toast(u.name.toUpperCase()+' AWAKENED','#e7c47c');if(player.xp>=player.xpNext){player.xp-=player.xpNext;player.level++;player.xpNext=Math.round(player.xpNext*1.38+18);setTimeout(offerLevel,120)}}
+    function spawnHunterSquad(){
+      if(game.mode!=='overworld'||game.heat<12)return;const count=1+Math.floor(game.heat/24),a=Math.random()*TAU,rad=300;let sx=player.x+Math.cos(a)*rad,sy=player.y+Math.sin(a)*rad;
+      sx=clamp(sx,60,WORLD_W-60);sy=clamp(sy,60,WORLD_H-60);if(!canStand(sx,sy,12)){sx=player.x-Math.cos(a)*rad;sy=player.y-Math.sin(a)*rad}
+      for(let i=0;i<count;i++){const type=i===count-1&&game.heat>38?'archer':'imperial';spawnEnemy(type,sx+(Math.random()-.5)*45,sy+(Math.random()-.5)*45,'overworld',1+game.heat*.004)}
+      toast(count>2?'AN IMPERIAL HUNTING PARTY ARRIVES':'IMPERIAL SCOUTS DRAW NEAR','#ff9a82');tone(96,.45,'square',.018,45);
+    }
+    function seedDungeon(id,diff){
+      const scene='dungeon:'+id;if(game.dungeonSeeded[id])return;game.dungeonSeeded[id]=true;
+      const spots=[[7,15],[9,18],[22,12],[26,13],[24,20],[27,6],[40,11],[42,20],[46,18]];
+      spots.forEach((p,i)=>spawnEnemy(i%3===0?'cultist':'skeleton',(p[0]+.5)*T,(p[1]+.5)*T,scene,diff));
+      if(!game.cleared[id])spawnEnemy('inquisitor',44.5*T,15.5*T,scene,diff);
+    }
+    function enterDungeon(d){
+      game.returnPos={x:player.x,y:player.y};game.mode='dungeon:'+d.id;player.x=5.5*T;player.y=16.5*T;game.shots=[];game.pickups=game.pickups.filter(p=>p.scene==='overworld');seedDungeon(d.id,d.difficulty);ui.region.textContent=d.name;toast(d.name.toUpperCase());game.objective=game.cleared[d.id]?'The vault is silent. Return through the gate.':'Break the Ash Inquisitor guarding the inner vault.';game.shake=8;
+    }
+    function leaveDungeon(){game.mode='overworld';player.x=game.returnPos.x;player.y=game.returnPos.y+54;game.shots=[];ui.region.textContent='The Gloam March';game.objective=game.crypts?'Seek the remaining vault—or tempt the empire.':'Find Blackbriar Crypt beyond the old road.';game.shake=8}
+    function pillage(v){
+      if(v.pillaged)return;v.pillaged=true;game.pillaged++;const haul=55+((Math.random()*65)|0)+game.pillaged*12;player.gold+=haul;game.heat=clamp(game.heat+27,0,100);player.potions=Math.min(9,player.potions+1);toast(`${v.name.toUpperCase()} PILLAGED · +${haul} COIN`,'#f3c170');sfx('pillage');
+      for(let i=0;i<30;i++)game.particles.push({x:v.x+(Math.random()-.5)*100,y:v.y+(Math.random()-.5)*70,vx:(Math.random()-.5)*18,vy:-10-Math.random()*35,life:.7+Math.random(),max:1.7,size:1+Math.random()*3,color:i%3?'#5c4a42':'#d36a42',scene:'overworld',grav:-5});
+      game.huntTimer=Math.min(game.huntTimer,5.5);game.objective='Imperial riders are coming. Move—or stand your ground.';
+    }
+    function interact(){
+      if(game.state!=='playing')return;const p=game.prompt;if(!p)return;
+      if(p.kind==='village')pillage(p.data);else if(p.kind==='dungeon')enterDungeon(p.data);else if(p.kind==='exit')leaveDungeon();else if(p.kind==='camp'){player.hp=player.maxHp;player.mana=player.maxMana;game.heat=Math.max(game.pillaged*13,game.heat-18);toast('THE RED CAMP RESTORES YOU','#a9d9a2')}
+    }
+    function updatePrompt(){
+      let best=null,bd=90;if(game.mode==='overworld'){
+        for(const v of game.villages){const d=d2(player,v);if(d<bd&&!v.pillaged){best={kind:'village',data:v,text:`Pillage ${v.name} · gain coin · raise imperial heat`};bd=d}}
+        for(const dng of game.dungeons){const d=d2(player,dng);if(d<bd){best={kind:'dungeon',data:dng,text:`Enter ${dng.name}${game.cleared[dng.id]?' · cleared':''}`};bd=d}}
+        const camp={x:350,y:1165};if(d2(player,camp)<70)best={kind:'camp',text:'Rest at the Red Camp · restore vitality and will'};
+      }else if(Math.hypot(player.x-4.5*T,player.y-16.5*T)<60)best={kind:'exit',text:'Return to the Gloam March'};
+      game.prompt=best;ui.prompt.classList.toggle('show',!!best);if(best)ui.prompt.querySelector('span').textContent=best.text;
+    }
+    function updatePlayer(dt){
+      player.boltCd=Math.max(0,player.boltCd-dt);player.dashCd=Math.max(0,player.dashCd-dt);player.novaCd=Math.max(0,player.novaCd-dt);player.potionCd=Math.max(0,player.potionCd-dt);player.invuln=Math.max(0,player.invuln-dt);player.mana=Math.min(player.maxMana,player.mana+11*dt);
+      let dx=(game.keys.KeyD?1:0)-(game.keys.KeyA?1:0)+game.touch.x,dy=(game.keys.KeyS?1:0)-(game.keys.KeyW?1:0)+game.touch.y,l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l;l=1}
+      if(l){moveEntity(player,dx*player.speed*dt,dy*player.speed*dt);player.walk+=dt*9;player.facing=dx>=0?1:-1}else player.walk+=dt*2;
+      if(game.mouse.down)castBolt(worldAim());
+    }
+    function updateEnemies(dt){
+      for(const e of game.enemies){if(e.dead||!activeScene(e))continue;e.hurt=Math.max(0,e.hurt-dt);e.attackCd-=dt;e.shotCd-=dt;e.walk+=dt*(2+e.speed*.06);const dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy)||1;let mx=0,my=0;
+        if(e.type==='archer'){
+          if(dist>175){mx=dx/dist;my=dy/dist}else if(dist<120){mx=-dx/dist;my=-dy/dist}
+          if(dist<330&&e.shotCd<=0){e.shotCd=2.1;const lead=.12;const ax=dx/dist,ay=dy/dist;game.shots.push({x:e.x,y:e.y-9,vx:ax*235,vy:ay*235,life:1.8,r:3,damage:e.damage,team:'enemy',kind:'arrow',scene:game.mode});tone(125,.08,'square',.008,40)}
+        }else if(e.type==='inquisitor'){
+          if(dist>58){mx=dx/dist;my=dy/dist}
+          if(e.shotCd<=0&&dist<380){e.shotCd=e.hp<e.maxHp*.5?2.2:3.1;const count=e.hp<e.maxHp*.5?12:8;for(let i=0;i<count;i++){const a=i/count*TAU+e.phase;game.shots.push({x:e.x,y:e.y-8,vx:Math.cos(a)*150,vy:Math.sin(a)*150,life:2.5,r:4,damage:e.damage*.55,team:'enemy',kind:'cinder',scene:game.mode})}e.phase+=.33;game.shake=4;burst(e.x,e.y-8,'#e55f3f',18,75,.65)}
+        }else if(dist<430){mx=dx/dist;my=dy/dist}else if(e.type==='wolf'){mx=Math.cos(e.phase+game.time*.35)*.25;my=Math.sin(e.phase+game.time*.35)*.25}
+        if(dist<e.r+player.r+8&&e.attackCd<=0){e.attackCd=e.type==='wolf'?1.05:e.elite?.75:1.25;hurtPlayer(e.damage,e)}
+        const speed=e.speed*(e.hurt?0.3:1);moveEntity(e,mx*speed*dt,my*speed*dt);
+      }
+    }
+    function updateShots(dt){
+      for(const s of game.shots){if(s.dead||s.scene!==game.mode)continue;s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.life<=0||!canStand(s.x,s.y,2)){s.dead=true;burst(s.x,s.y,s.team==='player'?'#b91f42':'#d8794d',4,25,.25);continue}
+        if(s.team==='player'){
+          for(const e of game.enemies)if(!e.dead&&activeScene(e)&&Math.hypot(s.x-e.x,s.y-e.y)<s.r+e.r){hurtEnemy(e,s.damage,{x:s.vx,y:s.vy});if(Math.random()<player.echo){const targets=game.enemies.filter(o=>!o.dead&&o!==e&&activeScene(o)&&Math.hypot(o.x-e.x,o.y-e.y)<150).slice(0,2);for(const o of targets){const dx=o.x-e.x,dy=o.y-e.y,l=Math.hypot(dx,dy)||1;game.shots.push({x:e.x,y:e.y-5,vx:dx/l*340,vy:dy/l*340,life:.5,r:3,damage:s.damage*.45,team:'player',kind:'echo',scene:game.mode})}}s.dead=true;break}
+        }else if(Math.hypot(s.x-player.x,s.y-player.y)<s.r+player.r){hurtPlayer(s.damage,s);s.dead=true}
+      }
+      game.shots=game.shots.filter(s=>!s.dead&&s.life>0);
+    }
+    function updatePickups(dt){
+      for(const p of game.pickups){if(p.scene!==game.mode)continue;p.life-=dt;p.vy+=55*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.94;p.vy*=.94;const d=d2(player,p);if(d<75){const f=(1-d/75)*520*dt;p.x+=(player.x-p.x)/(d||1)*f;p.y+=(player.y-p.y)/(d||1)*f}if(d<16){if(p.type==='coin'){player.gold+=p.value;sfx('coin')}else{player.potions=Math.min(9,player.potions+1);tone(510,.12,'sine',.015,180)}p.life=0}}
+      game.pickups=game.pickups.filter(p=>p.life>0);
+    }
+    function updateEffects(dt){
+      for(const p of game.particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.grav||0)*dt;p.vx*=.985;p.vy*=.985}
+      for(const t of game.texts){t.life-=dt;t.y-=22*dt}
+      game.particles=game.particles.filter(p=>p.life>0);game.texts=game.texts.filter(t=>t.life>0);
+    }
+    function update(dt){
+      game.time+=dt;game.frame++;if(game.state!=='playing'){updateEffects(dt);return}updatePlayer(dt);updateEnemies(dt);updateShots(dt);updatePickups(dt);updateEffects(dt);updatePrompt();
+      if(game.mode==='overworld'){
+        const floor=game.pillaged*13;game.heat=Math.max(floor,game.heat-.45*dt);game.huntTimer-=dt;if(game.heat>11&&game.huntTimer<=0){spawnHunterSquad();game.huntTimer=Math.max(6,25-game.heat*.17)+Math.random()*5}
+      }
+      game.shake=Math.max(0,game.shake-20*dt);
+      if(game.frame%5===0)updateHud();
+    }
+    function tileRect(x,y,color){ctx.fillStyle=color;ctx.fillRect(x,y,T,T)}
+    function drawTerrain(){
+      const startX=Math.floor(game.camera.x/T)-1,startY=Math.floor(game.camera.y/T)-1,endX=startX+Math.ceil(W/T)+3,endY=startY+Math.ceil(H/T)+3;
+      for(let ty=startY;ty<endY;ty++)for(let tx=startX;tx<endX;tx++){
+        const x=tx*T,y=ty*T;if(x<0||y<0)continue;const h=hash(tx,ty),type=game.mode==='overworld'?terrainAt(x+T/2,y+T/2):'dungeon';
+        if(type==='grass'){
+          tileRect(x,y,h>.48?'#27382a':'#233226');ctx.fillStyle=h>.7?'#354c34':'#1d2b22';ctx.fillRect(x+(h*17|0),y+6+(h*19|0),2,4);if(h>.82){ctx.fillStyle='#8b724b';ctx.fillRect(x+23,y+19,2,2);ctx.fillStyle='#b5945d';ctx.fillRect(x+24,y+18,1,1)}
+        }else if(type==='road'){
+          tileRect(x,y,h>.5?'#665341':'#5c493b');ctx.fillStyle='#43382f';ctx.fillRect(x+(h*23|0),y+(h*13|0),4,2);if(h>.75){ctx.fillStyle='#857058';ctx.fillRect(x+20,y+23,5,2)}
+        }else if(type==='field'){
+          tileRect(x,y,'#3b3e27');ctx.fillStyle=h>.5?'#78703d':'#655f34';for(let i=4;i<T;i+=8)ctx.fillRect(x+i,y,2,T);ctx.fillStyle='#9a8648';ctx.fillRect(x+6,y+8+(h*13|0),1,5)
+        }else if(type==='water'){
+          tileRect(x,y,h>.5?'#183747':'#16313f');ctx.fillStyle='#286076';const wave=((game.time*18+tx*7+ty*5)%28)|0;ctx.fillRect(x+wave,y+8,8,2);ctx.fillStyle='#102a37';ctx.fillRect(x+(wave+14)%28,y+23,10,2)
+        }else if(type==='bridge'){
+          tileRect(x,y,'#203a43');ctx.fillStyle='#705139';ctx.fillRect(x,y+2,T,T-4);ctx.fillStyle='#9a7450';for(let yy=4;yy<T;yy+=7)ctx.fillRect(x,y+yy,T,2);ctx.fillStyle='#3a261f';ctx.fillRect(x+3,y,T-6,2);ctx.fillRect(x+T-5,y,T-6,2)
+        }
+      }
+    }
+    function drawDungeon(){
+      ctx.fillStyle='#08080b';ctx.fillRect(game.camera.x-10,game.camera.y-10,W+20,H+20);const g=game.dungeonGrid;const sx=Math.max(0,(game.camera.x/T|0)-1),sy=Math.max(0,(game.camera.y/T|0)-1),ex=Math.min(52,sx+23),ey=Math.min(32,sy+15);
+      for(let y=sy;y<ey;y++)for(let x=sx;x<ex;x++)if(g[y][x]){
+        const px=x*T,py=y*T,h=hash(x,y);ctx.fillStyle=h>.5?'#29252a':'#252127';ctx.fillRect(px,py,T,T);ctx.fillStyle='#373139';ctx.fillRect(px+2,py+2,T-4,1);if(h>.72){ctx.fillStyle='#17151a';ctx.fillRect(px+11,py+18,9,2);ctx.fillRect(px+18,py+17,2,5)}
+        const wall='#4a3c42',edge='#725b54';if(!g[y-1]?.[x]){ctx.fillStyle=wall;ctx.fillRect(px,py,T,7);ctx.fillStyle=edge;ctx.fillRect(px,py,T,2)}if(!g[y+1]?.[x]){ctx.fillStyle='#171319';ctx.fillRect(px,py+T-5,T,5)}if(!g[y]?.[x-1]){ctx.fillStyle=wall;ctx.fillRect(px,py,5,T)}if(!g[y]?.[x+1]){ctx.fillStyle='#171319';ctx.fillRect(px+T-5,py,5,T)}
+      }
+      for(const p of [[21*T,15*T],[37*T,15*T]])drawTorch(p[0],p[1]);drawPortal(4.5*T,16.5*T,true);
+    }
+    function drawTree(o){
+      const x=Math.round(o.x),y=Math.round(o.y),v=o.variant;ctx.fillStyle='#0b0d0d88';ctx.beginPath();ctx.ellipse(x+3,y+7,18,7,0,0,TAU);ctx.fill();ctx.fillStyle='#493728';ctx.fillRect(x-3,y-9,7,18);ctx.fillStyle='#71533a';ctx.fillRect(x-1,y-8,3,16);
+      const dark=['#14251d','#172a20','#1b2b1d','#18251d'][v],mid=['#21402b','#27452d','#31482a','#23392a'][v],hi=['#3f5d37','#45643b','#59643a','#3a583a'][v];
+      ctx.fillStyle='#0a1410';ctx.fillRect(x-14,y-29,28,24);ctx.fillRect(x-19,y-22,38,13);ctx.fillRect(x-9,y-37,19,10);ctx.fillStyle=dark;ctx.fillRect(x-12,y-31,24,28);ctx.fillRect(x-18,y-21,34,15);ctx.fillStyle=mid;ctx.fillRect(x-10,y-28,18,13);ctx.fillRect(x-15,y-18,12,8);ctx.fillRect(x+4,y-20,11,9);ctx.fillStyle=hi;ctx.fillRect(x-7,y-26,7,5);ctx.fillRect(x+4,y-14,5,4)
+    }
+    function drawRock(o){const x=Math.round(o.x),y=Math.round(o.y);ctx.fillStyle='#090a0b88';ctx.fillRect(x-o.r,y+3,o.r*2,5);ctx.fillStyle='#3e4142';ctx.fillRect(x-o.r,y-o.r*.5,o.r*2,o.r);ctx.fillStyle='#55595a';ctx.fillRect(x-o.r+3,y-o.r*.5-3,o.r*1.3,5);ctx.fillStyle='#292d2f';ctx.fillRect(x+2,y,o.r-2,o.r*.5)}
+    function drawBuilding(o){
+      const v=o.village,p=v.pillaged,x=Math.round(o.x),y=Math.round(o.y),w=o.w,h=o.h;ctx.fillStyle='#09080a88';ctx.fillRect(x+4,y+h-2,w,8);ctx.fillStyle=p?'#51423b':'#766650';ctx.fillRect(x,y+15,w,h-15);ctx.fillStyle=p?'#24191a':'#34212a';ctx.beginPath();ctx.moveTo(x-7,y+17);ctx.lineTo(x+w*.5,y-8);ctx.lineTo(x+w+7,y+17);ctx.closePath();ctx.fill();ctx.fillStyle=p?'#5d2c24':'#7b3440';ctx.beginPath();ctx.moveTo(x-2,y+14);ctx.lineTo(x+w*.5,y-4);ctx.lineTo(x+w+2,y+14);ctx.closePath();ctx.fill();ctx.fillStyle='#2b1b19';ctx.fillRect(x+w*.45,y+h-20,10,20);ctx.fillStyle=p?'#b45035':'#d1a65a';ctx.fillRect(x+8,y+25,7,8);ctx.fillRect(x+w-15,y+25,7,8);if(p){ctx.fillStyle='#151013';ctx.fillRect(x+5,y+24,9,10);ctx.fillRect(x+w-16,y+24,9,10);ctx.fillStyle='#503737';ctx.fillRect(x+w*.25,y+5,4,15)}
+    }
+    function drawCamp(){const x=350,y=1165;ctx.fillStyle='#11101399';ctx.beginPath();ctx.ellipse(x,y+10,56,17,0,0,TAU);ctx.fill();ctx.fillStyle='#4e202b';ctx.beginPath();ctx.moveTo(x-55,y+7);ctx.lineTo(x-26,y-35);ctx.lineTo(x+3,y+7);ctx.closePath();ctx.fill();ctx.strokeStyle='#a06b61';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#24141a';ctx.fillRect(x-28,y-11,3,18);ctx.fillStyle='#6d4432';ctx.fillRect(x+18,y+3,24,3);ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle='#e15b3c';ctx.fillRect(x+24,y-5,6,10);ctx.fillStyle='#f6bb54';ctx.fillRect(x+26,y-7,3,7);ctx.restore()}
+    function drawDungeonEntrance(d){const x=d.x,y=d.y;ctx.fillStyle='#08080aaa';ctx.beginPath();ctx.ellipse(x,y+8,33,13,0,0,TAU);ctx.fill();ctx.fillStyle='#4d4447';for(let i=0;i<9;i++){const a=i/9*Math.PI+Math.PI;ctx.fillRect(x+Math.cos(a)*25-5,y+Math.sin(a)*18-5,10,10)}ctx.fillStyle='#100c15';ctx.fillRect(x-21,y-12,42,25);ctx.fillStyle='#271833';ctx.fillRect(x-16,y-7,32,17);ctx.fillStyle='#8d5cac';ctx.fillRect(x-10,y-3,20,2);if(game.cleared[d.id]){ctx.fillStyle='#b79c61';ctx.fillRect(x-3,y-19,6,6)}}
+    function drawPortal(x,y,exit=false){ctx.save();ctx.globalCompositeOperation='lighter';const pulse=3+Math.sin(game.time*4)*2;ctx.fillStyle=exit?'#704aa2':'#b0294c';ctx.beginPath();ctx.ellipse(x,y,18+pulse,8+pulse*.3,0,0,TAU);ctx.fill();ctx.fillStyle='#d7ace9';ctx.beginPath();ctx.ellipse(x,y-1,9,3,0,0,TAU);ctx.fill();ctx.restore()}
+    function drawTorch(x,y){ctx.fillStyle='#514238';ctx.fillRect(x-2,y-10,4,15);ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle='#e0643d';ctx.fillRect(x-4,y-14,8,7);ctx.fillStyle='#ffc56b';ctx.fillRect(x-2,y-17,4,8);ctx.restore()}
+    function drawVillageMarker(v){if(v.pillaged)return;ctx.fillStyle='#4a261f';ctx.fillRect(v.x-12,v.y-4,24,10);ctx.fillStyle='#c6954d';ctx.fillRect(v.x-7,v.y-9,14,8);ctx.fillStyle='#f3ca65';ctx.fillRect(v.x-2,v.y-6,4,4)}
+    function drawWitch(){
+      const x=Math.round(player.x),y=Math.round(player.y),bob=Math.sin(player.walk)*2,flash=player.invuln>0&&((game.time*18)|0)%2;ctx.save();if(flash)ctx.globalAlpha=.5;ctx.fillStyle='#09080b99';ctx.beginPath();ctx.ellipse(x,y+7,13,5,0,0,TAU);ctx.fill();ctx.fillStyle='#2b172d';ctx.fillRect(x-7,y-13+bob,14,19);ctx.fillStyle='#603051';ctx.fillRect(x-5,y-10+bob,10,14);ctx.fillStyle='#7a3849';ctx.fillRect(x-9,y+1+bob,18,7);ctx.fillStyle='#d7b18b';ctx.fillRect(x-4,y-19+bob,8,7);ctx.fillStyle='#e7d0ae';ctx.fillRect(x-2+(player.facing>0?2:0),y-17+bob,2,2);ctx.fillStyle='#141017';ctx.fillRect(x-6,y-23+bob,12,5);ctx.fillRect(x-3,y-29+bob,7,8);ctx.fillStyle='#4e284c';ctx.fillRect(x-11,y-22+bob,22,4);ctx.fillStyle='#a52a45';ctx.fillRect(x+player.facing*8-2,y-8+bob,4,10);ctx.fillStyle='#cf4d62';ctx.fillRect(x+player.facing*10-1,y-10+bob,3,3);ctx.restore()
+    }
+    function drawEnemy(e){
+      const x=Math.round(e.x),y=Math.round(e.y),bob=Math.sin(e.walk+e.phase)*1.5;ctx.save();if(e.hurt)ctx.globalAlpha=.55;ctx.fillStyle='#07070999';ctx.beginPath();ctx.ellipse(x,y+6,e.r+3,4,0,0,TAU);ctx.fill();
+      if(e.type==='wolf'){ctx.fillStyle='#2b3031';ctx.fillRect(x-10,y-8+bob,17,10);ctx.fillStyle='#4a4d49';ctx.fillRect(x+4,y-12+bob,9,8);ctx.fillStyle='#191d1e';ctx.fillRect(x-8,y+1,3,7);ctx.fillRect(x+5,y+1,3,7);ctx.fillStyle='#d35245';ctx.fillRect(x+10,y-10+bob,2,2);ctx.fillStyle='#333638';ctx.fillRect(x-14,y-11+bob,6,3)}
+      else if(e.type==='skeleton'){ctx.fillStyle='#d0c8ad';ctx.fillRect(x-4,y-17+bob,8,7);ctx.fillRect(x-2,y-10+bob,4,13);ctx.fillRect(x-7,y-7+bob,14,3);ctx.fillRect(x-6,y+1+bob,3,8);ctx.fillRect(x+3,y+1+bob,3,8);ctx.fillStyle='#19151a';ctx.fillRect(x-2,y-15+bob,2,2);ctx.fillRect(x+2,y-15+bob,2,2);ctx.fillStyle='#845e48';ctx.fillRect(x+8,y-9+bob,2,17)}
+      else if(e.type==='brigand'||e.type==='cultist'){const cult=e.type==='cultist';ctx.fillStyle=cult?'#3d263f':'#3b3030';ctx.fillRect(x-7,y-12+bob,14,20);ctx.fillStyle=cult?'#6d3557':'#604036';ctx.fillRect(x-5,y-17+bob,10,9);ctx.fillStyle='#171216';ctx.fillRect(x-4,y-15+bob,8,4);ctx.fillStyle=cult?'#d44866':'#d7a36d';ctx.fillRect(x+2,y-14+bob,2,2);ctx.fillStyle='#87694e';ctx.fillRect(x+8,y-9+bob,2,18)}
+      else if(e.type==='imperial'||e.type==='archer'){ctx.fillStyle='#7b202d';ctx.fillRect(x-8,y-11+bob,16,20);ctx.fillStyle='#a99072';ctx.fillRect(x-6,y-19+bob,12,9);ctx.fillStyle='#d0bd98';ctx.fillRect(x-8,y-20+bob,16,4);ctx.fillStyle='#3a3332';ctx.fillRect(x-4,y-16+bob,8,3);ctx.fillStyle='#d8b34f';ctx.fillRect(x-2,y-7+bob,4,4);if(e.type==='imperial'){ctx.fillStyle='#433c3a';ctx.fillRect(x-13,y-9+bob,6,15);ctx.fillStyle='#8a765d';ctx.fillRect(x+9,y-12+bob,3,21)}else{ctx.strokeStyle='#ae8960';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x+8,y-5+bob,8,-Math.PI/2,Math.PI/2);ctx.stroke()}}
+      else if(e.type==='inquisitor'){ctx.fillStyle='#541927';ctx.fillRect(x-13,y-21+bob,26,31);ctx.fillStyle='#21161c';ctx.fillRect(x-10,y-26+bob,20,12);ctx.fillStyle='#b7a179';ctx.fillRect(x-12,y-29+bob,24,5);ctx.fillStyle='#d0bd98';ctx.fillRect(x-7,y-24+bob,14,3);ctx.fillStyle='#e75348';ctx.fillRect(x-5,y-20+bob,3,3);ctx.fillRect(x+3,y-20+bob,3,3);ctx.fillStyle='#c5a24f';ctx.fillRect(x-4,y-11+bob,8,9);ctx.fillStyle='#83705b';ctx.fillRect(x+14,y-18+bob,4,29)}
+      if(e.hp<e.maxHp&&e.type!=='inquisitor'){ctx.fillStyle='#100b0d';ctx.fillRect(x-11,y-25+bob,22,3);ctx.fillStyle='#a72a3a';ctx.fillRect(x-10,y-24+bob,20*clamp(e.hp/e.maxHp,0,1),1)}ctx.restore()
+    }
+    function drawPickup(p){const x=Math.round(p.x),y=Math.round(p.y);ctx.save();ctx.globalCompositeOperation='lighter';if(p.type==='coin'){ctx.fillStyle='#ad7835';ctx.fillRect(x-3,y-3,7,7);ctx.fillStyle='#f0c766';ctx.fillRect(x-2,y-4,5,5);ctx.fillStyle='#fff0a6';ctx.fillRect(x-1,y-3,2,2)}else{ctx.fillStyle='#b02f42';ctx.fillRect(x-4,y-5,9,10);ctx.fillStyle='#ed7380';ctx.fillRect(x-2,y-3,4,6);ctx.fillStyle='#d2b67d';ctx.fillRect(x-2,y-8,5,3)}ctx.restore()}
+    function drawShot(s){ctx.save();ctx.globalCompositeOperation='lighter';if(s.kind==='arrow'){ctx.strokeStyle='#c29d6a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*.035,s.y-s.vy*.035);ctx.stroke()}else{ctx.fillStyle=s.team==='player'?'#d92f55':'#e26b41';ctx.fillRect(Math.round(s.x-s.r),Math.round(s.y-s.r),s.r*2,s.r*2);ctx.fillStyle=s.team==='player'?'#ff9aaa':'#ffd079';ctx.fillRect(Math.round(s.x-1),Math.round(s.y-1),3,3)}ctx.restore()}
+    function drawEffects(){
+      for(const p of game.particles)if(p.scene===game.mode){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.fillRect(Math.round(p.x-p.size/2),Math.round(p.y-p.size/2),Math.ceil(p.size),Math.ceil(p.size))}ctx.globalAlpha=1;
+      for(const t of game.texts)if(t.scene===game.mode){ctx.save();ctx.globalAlpha=clamp(t.life*2,0,1);ctx.fillStyle=t.color;ctx.font=`700 ${t.size}px ui-monospace,monospace`;ctx.textAlign='center';ctx.fillText(t.text,Math.round(t.x),Math.round(t.y));ctx.restore()}
+    }
+    function drawWorldObjects(){
+      const visible=[];for(const o of game.objects)if(o.x+(o.w||o.r||20)>game.camera.x-50&&o.x<game.camera.x+W+50&&o.y+(o.h||o.r||20)>game.camera.y-70&&o.y<game.camera.y+H+50)visible.push(o);
+      for(const v of game.villages)if(Math.abs(v.x-player.x)<W&&Math.abs(v.y-player.y)<H)visible.push({type:'marker',x:v.x,y:v.y,v});
+      for(const d of game.dungeons)if(Math.abs(d.x-player.x)<W&&Math.abs(d.y-player.y)<H)visible.push({type:'entrance',x:d.x,y:d.y,d});
+      visible.push({type:'camp',x:350,y:1165});for(const e of game.enemies)if(!e.dead&&activeScene(e)&&Math.abs(e.x-player.x)<W&&Math.abs(e.y-player.y)<H)visible.push(e);visible.push({...player,type:'player'});for(const p of game.pickups)if(p.scene===game.mode)visible.push({...p,type:'pickup',ref:p});
+      visible.sort((a,b)=>(a.y+(a.h||0))-(b.y+(b.h||0)));
+      for(const o of visible){if(o===player||o.type==='player')drawWitch();else if(o.ref)drawPickup(o.ref);else if(o.hp!==undefined)drawEnemy(o);else if(o.type==='tree')drawTree(o);else if(o.type==='rock')drawRock(o);else if(o.type==='building')drawBuilding(o);else if(o.type==='marker')drawVillageMarker(o.v);else if(o.type==='entrance')drawDungeonEntrance(o.d);else if(o.type==='camp')drawCamp()}
+    }
+    function drawDungeonObjects(){
+      const visible=game.enemies.filter(e=>!e.dead&&activeScene(e));visible.push({...player,type:'player'});visible.sort((a,b)=>a.y-b.y);for(const o of visible)o.type==='player'?drawWitch():drawEnemy(o);for(const p of game.pickups)if(p.scene===game.mode)drawPickup(p)
+    }
+    function drawLighting(){
+      const px=player.x-game.camera.x,py=player.y-game.camera.y;if(game.mode!=='overworld'){
+        const g=ctx.createRadialGradient(px,py,45,px,py,265);g.addColorStop(0,'rgba(8,4,12,0)');g.addColorStop(.62,'rgba(8,4,12,.18)');g.addColorStop(1,'rgba(2,1,4,.82)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)
+      }else{const g=ctx.createRadialGradient(W*.5,H*.45,90,W*.5,H*.45,430);g.addColorStop(0,'rgba(34,12,24,0)');g.addColorStop(1,'rgba(8,3,10,.34)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(43,20,53,.07)';ctx.fillRect(0,0,W,H)}
+    }
+    function drawMinimap(){
+      const mw=mini.width,mh=mini.height;mctx.clearRect(0,0,mw,mh);mctx.fillStyle='#0d0d11';mctx.fillRect(0,0,mw,mh);
+      if(game.mode==='overworld'){
+        mctx.strokeStyle='#6b5946';mctx.lineWidth=4;mctx.beginPath();for(let x=0;x<WORLD_W;x+=70){const sx=x/WORLD_W*mw,sy=roadY(x)/WORLD_H*mh;x?mctx.lineTo(sx,sy):mctx.moveTo(sx,sy)}mctx.stroke();mctx.strokeStyle='#24536a';mctx.lineWidth=4;mctx.beginPath();for(let y=0;y<WORLD_H;y+=60){const sx=riverX(y)/WORLD_W*mw,sy=y/WORLD_H*mh;y?mctx.lineTo(sx,sy):mctx.moveTo(sx,sy)}mctx.stroke();
+        for(const v of game.villages){mctx.fillStyle=v.pillaged?'#57302d':'#c69758';mctx.fillRect(v.x/WORLD_W*mw-2,v.y/WORLD_H*mh-2,4,4)}for(const d of game.dungeons){mctx.fillStyle=game.cleared[d.id]?'#beaa67':'#8753a8';mctx.fillRect(d.x/WORLD_W*mw-2,d.y/WORLD_H*mh-2,5,5)}mctx.fillStyle='#e44b62';mctx.fillRect(player.x/WORLD_W*mw-2,player.y/WORLD_H*mh-2,4,4)
+      }else{
+        const g=game.dungeonGrid,s=2.25,ox=5,oy=6;mctx.fillStyle='#453b43';for(let y=0;y<g.length;y++)for(let x=0;x<g[y].length;x++)if(g[y][x])mctx.fillRect(ox+x*s,oy+y*s,s+1,s+1);mctx.fillStyle='#e44b62';mctx.fillRect(ox+player.x/T*s-2,oy+player.y/T*s-2,4,4)
+      }
+    }
+    function render(){
+      const worldW=game.mode==='overworld'?WORLD_W:52*T,worldH=game.mode==='overworld'?WORLD_H:32*T;game.camera.x=clamp(lerp(game.camera.x,player.x-W/2,.16),0,worldW-W);game.camera.y=clamp(lerp(game.camera.y,player.y-H/2,.16),0,worldH-H);const sx=game.shake?(Math.random()-.5)*game.shake:0,sy=game.shake?(Math.random()-.5)*game.shake:0;
+      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#08070a';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(Math.round(-game.camera.x+sx),Math.round(-game.camera.y+sy));
+      if(game.mode==='overworld'){drawTerrain();drawWorldObjects()}else{drawDungeon();drawDungeonObjects()}
+      for(const s of game.shots)if(s.scene===game.mode)drawShot(s);drawEffects();ctx.restore();drawLighting();drawMinimap();
+    }
+    function updateHud(){
+      const hp=clamp(player.hp/player.maxHp,0,1),mp=clamp(player.mana/player.maxMana,0,1);ui.hpFill.style.height=(hp*100)+'%';ui.manaFill.style.height=(mp*100)+'%';ui.hpText.textContent=`${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;ui.manaText.textContent=`${Math.ceil(player.mana)} / ${Math.ceil(player.maxMana)}`;ui.gold.textContent=player.gold;ui.potions.textContent=player.potions;ui.crypts.textContent=`${game.crypts} / 2`;ui.level.textContent=player.level;ui.xpFill.style.width=(player.xp/player.xpNext*100)+'%';ui.heatFill.style.width=game.heat+'%';ui.heatLabel.textContent=heatNames[Math.min(5,Math.floor(game.heat/20))];ui.objective.textContent=game.objective||'Find Blackbriar Crypt beyond the old road.';
+      ui.cdBolt.style.height=(player.boltCd/player.boltRate*100)+'%';ui.cdDash.style.height=(player.dashCd/player.dashMax*100)+'%';ui.cdNova.style.height=(player.novaCd/player.novaMax*100)+'%';ui.cdPotion.style.height=(player.potionCd/1.2*100)+'%';
+      const boss=game.enemies.find(e=>e.type==='inquisitor'&&!e.dead&&activeScene(e));ui.bossHud.style.display=boss?'block':'none';if(boss){ui.bossName.textContent=game.mode.includes('redvault')?'THE VEILED MARSHAL':'THE ASH INQUISITOR';ui.bossFill.style.width=clamp(boss.hp/boss.maxHp*100,0,100)+'%'}
+    }
+    function loop(ts){const raw=Math.min(.05,(ts-game.last)/1000||0);game.last=ts;if(game.hitStop>0)game.hitStop-=raw;else update(raw);render();requestAnimationFrame(loop)}
+    function begin(){initAudio();game.state='playing';ui.title.hidden=true;game.objective='Find Blackbriar Crypt beyond the old road.';toast('THE GLOAM MARCH');updateHud()}
+    function rise(){player.dead=false;player.hp=player.maxHp;player.mana=player.maxMana;player.gold=Math.floor(player.gold*.8);game.heat=Math.max(game.pillaged*13,game.heat-22);game.mode='overworld';player.x=350;player.y=1165;game.shots=[];game.state='playing';ui.death.hidden=true;ui.region.textContent='The Gloam March';toast('THE BLOOD REMEMBERS')}
+    function togglePause(){if(game.state==='playing'){game.state='paused';ui.pause.hidden=false}else if(game.state==='paused'){game.state='playing';ui.pause.hidden=true}}
+    function keyDown(e){
+      if(['KeyW','KeyA','KeyS','KeyD','Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();game.keys[e.code]=true;
+      if(e.repeat)return;if(game.state==='levelup'&&['Digit1','Digit2','Digit3'].includes(e.code)){ui.choices.children[Number(e.code.slice(-1))-1]?.click();return}
+      if(e.code==='Space')dash();else if(e.code==='KeyR')bloodRing();else if(e.code==='KeyQ')drink();else if(e.code==='KeyE')interact();else if(e.code==='Escape')togglePause();
+    }
+    function pointerPos(e){const r=canvas.getBoundingClientRect();game.mouse.x=(e.clientX-r.left)/r.width*W;game.mouse.y=(e.clientY-r.top)/r.height*H}
+    window.addEventListener('keydown',keyDown,{passive:false});window.addEventListener('keyup',e=>game.keys[e.code]=false);window.addEventListener('blur',()=>{game.mouse.down=false;if(game.state==='playing')togglePause()});
+    canvas.addEventListener('pointermove',pointerPos);canvas.addEventListener('pointerdown',e=>{pointerPos(e);if(e.pointerType==='mouse'&&e.button===0){game.mouse.down=true;castBolt(worldAim())}else if(e.pointerType==='touch'&&e.clientX>innerWidth*.48)castBolt(worldAim())});window.addEventListener('pointerup',()=>game.mouse.down=false);canvas.addEventListener('contextmenu',e=>{e.preventDefault();dash()});
+    $('#startBtn').onclick=begin;$('#riseBtn').onclick=rise;$('#resumeBtn').onclick=togglePause;ui.sound.onclick=()=>{game.muted=!game.muted;ui.sound.textContent=game.muted?'×':'♪';if(!game.muted)initAudio()};
+    const stick=$('#stick'),knob=$('#knob');let stickId=null;function stickMove(e){const r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),m=Math.min(34,l),nx=l?x/l:0,ny=l?y/l:0;game.touch.x=nx*Math.min(1,l/24);game.touch.y=ny*Math.min(1,l/24);knob.style.transform=`translate(${nx*m}px,${ny*m}px)`}
+    stick.addEventListener('pointerdown',e=>{stickId=e.pointerId;stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)stickMove(e)});const endStick=e=>{if(e.pointerId===stickId){stickId=null;game.touch.x=game.touch.y=0;knob.style.transform=''}};stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);
+    document.querySelectorAll('[data-touch]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.touch;if(a==='bolt')castBolt();else if(a==='dash')dash();else if(a==='nova')bloodRing();else interact()}));
+    buildWorld();game.objective='Find Blackbriar Crypt beyond the old road.';game.camera.x=player.x-W/2;game.camera.y=player.y-H/2;updateHud();requestAnimationFrame(loop);setTimeout(()=>ui.tutorial.style.opacity='0',12000);
+  })();
+  </script>
+</body>
+</html>
