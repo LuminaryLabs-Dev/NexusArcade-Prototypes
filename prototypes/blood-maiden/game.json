@@ -1,10 +1,10 @@
 {
   "title": "Blood Maiden",
   "slug": "blood-maiden",
-  "description": "A high-fidelity pixel-art action RPG about a witch who raids the countryside, clears haunted crypts, and survives escalating imperial pursuit.",
+  "description": "A high-fidelity pixel-art action RPG spanning ten kingdoms, expanding crypts and castles, deep witchcraft progression, varied bosses, and escalating imperial pursuit.",
   "genre": "Action RPG",
   "status": "prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "featured": false,
   "accent": "crimson",
   "sortOrder": 3,
