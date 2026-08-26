@@ -1,0 +1,12 @@
+{
+  "title": "Knockout Circuit",
+  "slug": "knockout-circuit",
+  "description": "Slide, dodge, and piston-punch through five patterned robot bosses or challenge a friend in PeerJS best-of-three multiplayer.",
+  "genre": "Arcade Fighter",
+  "status": "prototype",
+  "version": "0.1.0",
+  "featured": true,
+  "accent": "gold",
+  "sortOrder": 1,
+  "controls": ["A / D", "Arrow keys", "Space", "Touch", "PeerJS"]
+}
