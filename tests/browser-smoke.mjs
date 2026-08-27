@@ -162,15 +162,15 @@ async function reviewKnockout() {
       await delay(1000);
       let sample = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
       if (sample.ui.upgradeVisible) {
-        await evaluate(sessionId, 'KnockoutCircuit.chooseUpgrade("power")');
-        interactions.push({ atSeconds: second, action: 'Install Piston Force and continue' });
+        const installed = await evaluate(sessionId, '(()=>{const button=[...document.querySelectorAll("#upgradeGrid button")].find((candidate)=>!candidate.disabled);if(!button)return null;const name=button.querySelector("b")?.textContent;button.click();return name})()');
+        if (installed) interactions.push({ atSeconds: second, action: `Install ${installed} and continue` });
       } else if (sample.ui.resultVisible) {
         await evaluate(sessionId, 'document.querySelector("#resultBtn").click()');
         interactions.push({ atSeconds: second, action: 'Fight again after result' });
       }
       await evaluate(sessionId, 'KnockoutCircuit.setInput("right",true);KnockoutCircuit.setInput("punch",true)');
       sample = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
-      samples.push({ second, ui: sample.ui, tick: sample.state.tick, round: sample.state.round, phase: sample.state.phase, fighters: sample.state.fighters.map(({ name, health, x }) => ({ name, health, x })) });
+      samples.push({ second, ui: sample.ui, tick: sample.state.tick, round: sample.state.round, phase: sample.state.phase, fighters: sample.state.fighters.map(({ name, hp, maxHp, x }) => ({ name, hp, maxHp, x })) });
       if (second % 5 === 0) await screenshot(sessionId, `${String(second).padStart(2, '0')}-gameplay.png`);
     }
     await evaluate(sessionId, 'KnockoutCircuit.setInput("right",false);KnockoutCircuit.setInput("punch",false)');
@@ -192,7 +192,7 @@ async function reviewKnockout() {
       checks: {
         fullDuration: durationSeconds >= 60,
         fixedTickAdvanced: samples.at(-1)?.tick > samples[0]?.tick,
-        combatChangedHealth: samples.some((sample) => sample.fighters.some((fighter) => fighter.health < 100)),
+        combatChangedHealth: samples.some((sample) => sample.fighters.some((fighter) => fighter.hp < fighter.maxHp)),
         noBrowserErrors: !browserFindings.some((finding) => finding.level === 'error')
       }
     };
@@ -210,8 +210,8 @@ async function reviewKnockout() {
 
 try {
   await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===3", null, "document.querySelectorAll('.card').length===7");
-  await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   if (REVIEW_DIR) await reviewKnockout();
+  await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await scenario('Blood Maiden', 'games/blood-maiden/', 'window.BloodMaiden', "document.querySelector('#startBtn').click();BloodMaiden.saveProgress()", "BloodMaiden.getProgress()?.schema==='blood-maiden-pilgrimage/1'");
   await scenario('Bubble Raft Assault', 'games/bubble-raft-assault/', 'window.BubbleRaftAssault', 'BubbleRaftAssault.startCampaign()', "BubbleRaftAssault.getSavedCampaign()?.schema==='bubble-raft-campaign/1'");
   await scenario('Gothic Revolt', 'games/gothic-revolt/?review', 'window.__GothicRevolt?.ready', '__GothicRevolt.start(76100);__GothicRevolt.advance(1)', "__GothicRevolt.snapshot().mode==='run' && __GothicRevolt.snapshot().elapsed>=1");

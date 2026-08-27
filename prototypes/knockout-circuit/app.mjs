@@ -98,7 +98,7 @@ function announce(text) {
 
 function sound(type) {
   try {
-    audio ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (!audio || audio.state !== "running") return;
     const oscillator = audio.createOscillator(), gain = audio.createGain(), time = audio.currentTime;
     oscillator.connect(gain); gain.connect(audio.destination);
     oscillator.type = type === "hit" ? "sawtooth" : "square";
@@ -106,6 +106,13 @@ function sound(type) {
     oscillator.frequency.exponentialRampToValueAtTime(type === "hit" ? 55 : type === "ko" ? 34 : 330, time + 0.12);
     gain.gain.setValueAtTime(0.055, time); gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
     oscillator.start(time); oscillator.stop(time + 0.16);
+  } catch {}
+}
+
+function unlockAudio() {
+  try {
+    audio ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === "suspended") void audio.resume().catch(() => {});
   } catch {}
 }
 
@@ -507,6 +514,8 @@ addEventListener("keyup", (event) => {
   if (["Space", "KeyJ"].includes(event.code)) setInput("punch", false);
 });
 addEventListener("blur", clearInput);
+addEventListener("pointerdown", unlockAudio, { capture: true });
+addEventListener("keydown", unlockAudio, { capture: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden) clearInput(); });
 document.querySelectorAll("[data-control]").forEach((button) => {
   const name = button.dataset.control;
