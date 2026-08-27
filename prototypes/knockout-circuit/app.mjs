@@ -449,8 +449,8 @@ function renderState() {
     const alpha = Math.max(0, Math.min(1, (target - left.tick) / Math.max(1, right.tick - left.tick)));
     const remote = 0;
     state.fighters[remote].x = left.state.fighters[remote].x + (right.state.fighters[remote].x - left.state.fighters[remote].x) * alpha;
-    state.fighters[remote].punchTicks = alpha < 0.5 ? left.state.fighters[remote].punchTicks : right.state.fighters[remote].punchTicks;
-    state.fighters[remote].hitTicks = alpha < 0.5 ? left.state.fighters[remote].hitTicks : right.state.fighters[remote].hitTicks;
+    state.fighters[remote].punchTicks = left.state.fighters[remote].punchTicks + (right.state.fighters[remote].punchTicks - left.state.fighters[remote].punchTicks) * alpha;
+    state.fighters[remote].hitTicks = left.state.fighters[remote].hitTicks + (right.state.fighters[remote].hitTicks - left.state.fighters[remote].hitTicks) * alpha;
     state.fighters[remote].dead = alpha < 0.5 ? left.state.fighters[remote].dead : right.state.fighters[remote].dead;
   }
   if (sessionRole === "client" && frame.reconciliation?.sequence !== lastCorrectionSequence) {
