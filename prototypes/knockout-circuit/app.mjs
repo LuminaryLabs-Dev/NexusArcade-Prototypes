@@ -514,6 +514,7 @@ addEventListener("keyup", (event) => {
   if (["Space", "KeyJ"].includes(event.code)) setInput("punch", false);
 });
 addEventListener("blur", clearInput);
+addEventListener("pagehide", disposeSession);
 addEventListener("pointerdown", unlockAudio, { capture: true });
 addEventListener("keydown", unlockAudio, { capture: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden) clearInput(); });

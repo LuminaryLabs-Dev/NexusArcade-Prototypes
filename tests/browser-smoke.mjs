@@ -208,10 +208,85 @@ async function reviewKnockout() {
   }
 }
 
+async function openKnockoutPeer(label, findings) {
+  const { targetId } = await call('Target.createTarget', { url: 'about:blank' });
+  const { sessionId } = await call('Target.attachToTarget', { targetId, flatten: true });
+  const capture = (message) => {
+    if (message.sessionId !== sessionId) return;
+    if (message.method === 'Runtime.exceptionThrown') findings.push({ peer: label, level: 'error', message: message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text });
+    if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') findings.push({ peer: label, level: 'error', message: message.params.args.map((arg) => arg.value || arg.description).join(' ') });
+    if (message.method === 'Log.entryAdded' && message.params.entry.level === 'error') findings.push({ peer: label, level: 'error', message: message.params.entry.text, url: message.params.entry.url });
+  };
+  listeners.add(capture);
+  try {
+    await Promise.all([
+      call('Page.enable', {}, sessionId), call('Runtime.enable', {}, sessionId), call('Log.enable', {}, sessionId),
+      call('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false }, sessionId)
+    ]);
+    const loaded = event('Page.loadEventFired', sessionId, 25000);
+    await call('Page.navigate', { url: `http://127.0.0.1:${port}/games/knockout-circuit/` }, sessionId);
+    await loaded;
+    await waitFor(sessionId, 'window.KnockoutCircuit && typeof window.Peer === "function"', 25000);
+    return { label, targetId, sessionId, capture };
+  } catch (error) {
+    listeners.delete(capture);
+    await call('Target.closeTarget', { targetId });
+    throw error;
+  }
+}
+
+async function multiplayerScenario() {
+  const findings = [], peers = [];
+  try {
+    const host = await openKnockoutPeer('host', findings); peers.push(host);
+    const client = await openKnockoutPeer('client', findings); peers.push(client);
+    await evaluate(host.sessionId, 'document.querySelector("#onlineBtn").click();document.querySelector("#hostBtn").click();true');
+    await waitFor(host.sessionId, '/^[A-Z2-9]{6}$/.test(document.querySelector("#roomCode").textContent) && ["Waiting","Syncing","Ready"].includes(KnockoutCircuit.getUiState().status)', 30000);
+    const roomCode = await evaluate(host.sessionId, 'document.querySelector("#roomCode").textContent');
+    await evaluate(client.sessionId, `(()=>{const code=${JSON.stringify(roomCode)};document.querySelector("#onlineBtn").click();document.querySelector("#joinTab").click();document.querySelector("#joinCode").value=code;document.querySelector("#joinBtn").click();return true})()`);
+    await Promise.all([
+      waitFor(host.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000),
+      waitFor(client.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000)
+    ]);
+    const before = {
+      host: await evaluate(host.sessionId, 'KnockoutCircuit.getState()'),
+      client: await evaluate(client.sessionId, 'KnockoutCircuit.getState()')
+    };
+    await evaluate(host.sessionId, 'KnockoutCircuit.setInput("right",true);KnockoutCircuit.setInput("punch",true)');
+    await evaluate(client.sessionId, 'KnockoutCircuit.setInput("left",true);KnockoutCircuit.setInput("punch",true)');
+    await delay(4000);
+    await evaluate(host.sessionId, 'KnockoutCircuit.setInput("right",false);KnockoutCircuit.setInput("punch",false)');
+    await evaluate(client.sessionId, 'KnockoutCircuit.setInput("left",false);KnockoutCircuit.setInput("punch",false)');
+    await delay(750);
+    const after = {
+      host: await evaluate(host.sessionId, 'KnockoutCircuit.getState()'),
+      client: await evaluate(client.sessionId, 'KnockoutCircuit.getState()')
+    };
+    const checks = {
+      bothAdvanced: after.host.tick > before.host.tick && after.client.tick > before.client.tick,
+      ticksSynchronized: Math.abs(after.host.tick - after.client.tick) <= 20,
+      authorityAgrees: after.host.round === after.client.round && after.host.phase === after.client.phase && after.host.fighters.every((fighter, index) => fighter.hp === after.client.fighters[index].hp),
+      noBrowserErrors: findings.length === 0
+    };
+    if (REVIEW_DIR) await writeFile(path.join(REVIEW_DIR, 'multiplayer-validation.json'), `${JSON.stringify({ schema: 'nexus-peerjs-browser-proof/1', roomCode, before, after, findings, checks }, null, 2)}\n`);
+    assert.ok(checks.bothAdvanced, 'PeerJS match ticks did not advance on both peers');
+    assert.ok(checks.ticksSynchronized, `PeerJS peer ticks drifted: host ${after.host.tick}, client ${after.client.tick}`);
+    assert.ok(checks.authorityAgrees, 'PeerJS peers disagreed on authoritative health, phase, or round');
+    assert.ok(checks.noBrowserErrors, `PeerJS browser errors: ${JSON.stringify(findings)}`);
+    console.log(`browser multiplayer ok: host ${after.host.tick}, client ${after.client.tick}, hp ${after.host.fighters.map((fighter) => fighter.hp).join('/')}`);
+  } finally {
+    for (const peer of peers.reverse()) {
+      listeners.delete(peer.capture);
+      await call('Target.closeTarget', { targetId: peer.targetId });
+    }
+  }
+}
+
 try {
   await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===3", null, "document.querySelectorAll('.card').length===7");
   if (REVIEW_DIR) await reviewKnockout();
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
+  await multiplayerScenario();
   await scenario('Blood Maiden', 'games/blood-maiden/', 'window.BloodMaiden', "document.querySelector('#startBtn').click();BloodMaiden.saveProgress()", "BloodMaiden.getProgress()?.schema==='blood-maiden-pilgrimage/1'");
   await scenario('Bubble Raft Assault', 'games/bubble-raft-assault/', 'window.BubbleRaftAssault', 'BubbleRaftAssault.startCampaign()', "BubbleRaftAssault.getSavedCampaign()?.schema==='bubble-raft-campaign/1'");
   await scenario('Gothic Revolt', 'games/gothic-revolt/?review', 'window.__GothicRevolt?.ready', '__GothicRevolt.start(76100);__GothicRevolt.advance(1)', "__GothicRevolt.snapshot().mode==='run' && __GothicRevolt.snapshot().elapsed>=1");
