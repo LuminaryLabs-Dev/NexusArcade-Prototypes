@@ -241,7 +241,12 @@ async function multiplayerScenario() {
     const host = await openKnockoutPeer('host', findings); peers.push(host);
     const client = await openKnockoutPeer('client', findings); peers.push(client);
     await evaluate(host.sessionId, 'document.querySelector("#onlineBtn").click();document.querySelector("#hostBtn").click();true');
-    await waitFor(host.sessionId, '/^[A-Z2-9]{6}$/.test(document.querySelector("#roomCode").textContent) && ["Waiting","Syncing","Ready"].includes(KnockoutCircuit.getUiState().status)', 30000);
+    try {
+      await waitFor(host.sessionId, '/^[A-Z2-9]{6}$/.test(document.querySelector("#roomCode").textContent) && ["Waiting","Syncing","Ready"].includes(KnockoutCircuit.getUiState().status)', 30000);
+    } catch (error) {
+      const diagnostic = await evaluate(host.sessionId, '({ui:KnockoutCircuit.getUiState(),room:document.querySelector("#roomCode").textContent,detail:document.querySelector("#netState").textContent})');
+      throw new Error(`PeerJS host did not open: ${JSON.stringify({ diagnostic, findings, cause: error.message })}`);
+    }
     const roomCode = await evaluate(host.sessionId, 'document.querySelector("#roomCode").textContent');
     await evaluate(client.sessionId, `(()=>{const code=${JSON.stringify(roomCode)};document.querySelector("#onlineBtn").click();document.querySelector("#joinTab").click();document.querySelector("#joinCode").value=code;document.querySelector("#joinBtn").click();return true})()`);
     await Promise.all([
@@ -284,9 +289,9 @@ async function multiplayerScenario() {
 
 try {
   await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===3", null, "document.querySelectorAll('.card').length===7");
-  if (REVIEW_DIR) await reviewKnockout();
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await multiplayerScenario();
+  if (REVIEW_DIR) await reviewKnockout();
   await scenario('Blood Maiden', 'games/blood-maiden/', 'window.BloodMaiden', "document.querySelector('#startBtn').click();BloodMaiden.saveProgress()", "BloodMaiden.getProgress()?.schema==='blood-maiden-pilgrimage/1'");
   await scenario('Bubble Raft Assault', 'games/bubble-raft-assault/', 'window.BubbleRaftAssault', 'BubbleRaftAssault.startCampaign()', "BubbleRaftAssault.getSavedCampaign()?.schema==='bubble-raft-campaign/1'");
   await scenario('Gothic Revolt', 'games/gothic-revolt/?review', 'window.__GothicRevolt?.ready', '__GothicRevolt.start(76100);__GothicRevolt.advance(1)', "__GothicRevolt.snapshot().mode==='run' && __GothicRevolt.snapshot().elapsed>=1");
