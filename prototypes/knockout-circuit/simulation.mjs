@@ -169,7 +169,8 @@ function resolveHit(state, index, context = {}) {
   const range = attacker.charged ? Math.max(attacker.range, 164) : attacker.range;
   let targetX = target.x;
   if (index === 1 && context.authoritative && typeof context.getHistoricalState === "function" && attacker.attackTick != null) {
-    const rewindTick = clamp(attacker.attackTick, state.tick - 12, state.tick);
+    const sessionTick = Number.isFinite(context.sessionTick) ? context.sessionTick : state.tick;
+    const rewindTick = clamp(attacker.attackTick, sessionTick - 12, sessionTick);
     const historical = context.getHistoricalState(rewindTick);
     targetX = historical?.fighters?.[0]?.x ?? targetX;
   }
@@ -200,7 +201,7 @@ function resetRound(state) {
   pushEvent(state, "round", { round: state.round });
 }
 
-export function stepKnockoutState(state, _delta, _tick, context = {}) {
+export function stepKnockoutState(state, _delta, sessionTick, context = {}) {
   const next = clone(state);
   next.tick += 1;
   next.events = next.events.filter((event) => next.tick - event.tick <= 12);
@@ -218,8 +219,9 @@ export function stepKnockoutState(state, _delta, _tick, context = {}) {
     const active = next.authoritative ? [0, 1] : [1];
     for (const index of active) moveFighter(next.fighters[index], next.inputs[index], index === 1 ? context.inputTicks?.local : next.tick);
     if (next.authoritative) {
-      resolveHit(next, 0, context);
-      resolveHit(next, 1, context);
+      const hitContext = { ...context, sessionTick };
+      resolveHit(next, 0, hitContext);
+      resolveHit(next, 1, hitContext);
     }
   }
 

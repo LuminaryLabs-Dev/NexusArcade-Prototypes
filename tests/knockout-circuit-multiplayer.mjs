@@ -38,11 +38,13 @@ assert.throws(() => createKnockoutSimulationAdapter().loadState({ schema: "wrong
 let rewound = createInitialKnockoutState({ authoritative: true });
 rewound.phase = "fight"; rewound.fighters[0].x = 300; rewound.fighters[1].x = 600;
 const historical = structuredClone(rewound); historical.fighters[0].x = 480;
+let requestedRewindTick = null;
 for (let frame = 0; frame < 7; frame += 1) {
   rewound = applyKnockoutInputs(rewound, { local: { punch: frame === 0 } });
-  rewound = stepKnockoutState(rewound, 1 / 60, frame, { authoritative: true, inputTicks: { local: 10 }, getHistoricalState: () => historical });
+  rewound = stepKnockoutState(rewound, 1 / 60, 100 + frame, { authoritative: true, inputTicks: { local: 94 }, getHistoricalState: (tick) => { requestedRewindTick = tick; return historical; } });
 }
 assert.ok(rewound.fighters[0].hp < 100, "host rewind validates a delayed guest punch against bounded historical position");
+assert.equal(requestedRewindTick, 94, "host rewind stays in the session clock domain after handshakes and rematches");
 
 assert.deepEqual(KNOCKOUT_BOSSES.map((boss) => boss.name), ["Boiler Bruiser", "Volt Viper", "Iron Warden", "Phantom Gear", "Crown Crusher"]);
 assert.deepEqual(new Set(KNOCKOUT_BOSSES.map((boss) => boss.pattern)), new Set(["jab", "double", "charge", "counter", "fury"]));
