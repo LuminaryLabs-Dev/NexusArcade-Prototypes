@@ -65,7 +65,7 @@ for (let bossIndex = 0; bossIndex < KNOCKOUT_BOSSES.length; bossIndex += 1) {
 const html = await readFile(new URL("../prototypes/knockout-circuit/index.html", import.meta.url), "utf8");
 const app = await readFile(new URL("../prototypes/knockout-circuit/app.mjs", import.meta.url), "utf8");
 assert.match(html, /NexusEngine@8a60167f/);
-assert.match(html, /NexusEngine-Kits@2aeaa2b/);
+assert.match(html, /NexusEngine-Kits@2ef76f0/);
 assert.match(html, /multiplayer-host-kit\/controller\.js/, "browser loads the lean controller without the full NexusEngine bootstrap");
 assert.doesNotMatch(html, /reliable:true/);
 assert.match(html, /Create room/);
