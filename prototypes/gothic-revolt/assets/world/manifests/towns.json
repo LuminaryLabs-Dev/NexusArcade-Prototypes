@@ -1,0 +1,32 @@
+{
+  "schema": "gothic-revolt-towns/v1",
+  "states": [
+    "friendly",
+    "abandoned",
+    "occupied",
+    "corrupted",
+    "besieged"
+  ],
+  "macroChunks": 4,
+  "buildingLots": 10,
+  "placeKits": {
+    "rotwood": {
+      "kit": "rotwood-village-v1",
+      "zones": [
+        "village-square",
+        "shrine-court",
+        "fungal-grove"
+      ],
+      "pathRule": "door-to-town-cross",
+      "propClusters": [
+        "elder-trees",
+        "root-clusters",
+        "fungus-clusters",
+        "lantern-court",
+        "shrine",
+        "well",
+        "fences"
+      ]
+    }
+  }
+}

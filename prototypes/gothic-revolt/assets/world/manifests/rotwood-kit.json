@@ -1,0 +1,114 @@
+{
+  "schema": "gothic-revolt-rotwood-kit/v1",
+  "id": "rotwood-village-v1",
+  "seed": 76100,
+  "selectedCandidate": "c15",
+  "parameters": {
+    "id": "c15",
+    "label": "Curated Rotwood",
+    "moss": 0.92,
+    "contrast": 1,
+    "decay": 0.56,
+    "warmth": 0.52,
+    "detail": 1
+  },
+  "atlas": "../atlases/rotwood.webp",
+  "atlasSha256": "d45138e0e723d60def94502bd4c6acb565ae228070780ad1e8e379baec8c5158",
+  "tileSize": 32,
+  "frameGroups": {
+    "ground": {
+      "start": 0,
+      "count": 16
+    },
+    "moss": {
+      "start": 16,
+      "count": 16
+    },
+    "roads": {
+      "start": 32,
+      "count": 16
+    },
+    "foundations": {
+      "start": 48,
+      "count": 16
+    },
+    "floors": {
+      "start": 64,
+      "count": 16
+    },
+    "walls": {
+      "start": 80,
+      "count": 16
+    },
+    "roofs": {
+      "start": 96,
+      "count": 32
+    },
+    "props": {
+      "start": 128,
+      "count": 64
+    },
+    "details": {
+      "start": 192,
+      "count": 32
+    },
+    "effects": {
+      "start": 224,
+      "count": 32
+    }
+  },
+  "materialVocabulary": [
+    "soil",
+    "moss",
+    "mud",
+    "roots",
+    "timber",
+    "stone",
+    "slate",
+    "fungus",
+    "lantern-light"
+  ],
+  "compositionVocabulary": [
+    "ground",
+    "transitions",
+    "roads",
+    "foundations",
+    "floors",
+    "walls",
+    "roofs",
+    "props",
+    "details",
+    "effects"
+  ],
+  "buildingArchetypes": [
+    {
+      "id": "root-cottage",
+      "minWidth": 6,
+      "maxWidth": 7,
+      "minHeight": 5,
+      "maxHeight": 6,
+      "roof": "moss-gable"
+    },
+    {
+      "id": "fungal-workshop",
+      "minWidth": 7,
+      "maxWidth": 8,
+      "minHeight": 5,
+      "maxHeight": 6,
+      "roof": "broken-hip"
+    },
+    {
+      "id": "thorn-chapel",
+      "minWidth": 6,
+      "maxWidth": 7,
+      "minHeight": 6,
+      "maxHeight": 7,
+      "roof": "spire-gable"
+    }
+  ],
+  "placeZones": [
+    "village-square",
+    "shrine-court",
+    "fungal-grove"
+  ]
+}

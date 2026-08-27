@@ -1,0 +1,4861 @@
+{
+  "schema": "gothic-revolt-tiles/v2",
+  "seed": 76100,
+  "tileSize": 32,
+  "atlasColumns": 8,
+  "atlasRows": 4,
+  "atlases": {
+    "ground": "../atlases/ground.webp",
+    "roads": "../atlases/roads.webp",
+    "buildings": "../atlases/buildings.webp",
+    "roofs": "../atlases/roofs.webp",
+    "interiors": "../atlases/interiors.webp",
+    "props": "../atlases/props.webp",
+    "effects": "../atlases/effects.webp",
+    "rotwood": "../atlases/rotwood.webp"
+  },
+  "frames": [
+    {
+      "id": "ground-00",
+      "atlas": "ground",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3640244272
+    },
+    {
+      "id": "ground-01",
+      "atlas": "ground",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3657021891
+    },
+    {
+      "id": "ground-02",
+      "atlas": "ground",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3673799510
+    },
+    {
+      "id": "ground-03",
+      "atlas": "ground",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3690577129
+    },
+    {
+      "id": "ground-04",
+      "atlas": "ground",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3707354748
+    },
+    {
+      "id": "ground-05",
+      "atlas": "ground",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3724132367
+    },
+    {
+      "id": "ground-06",
+      "atlas": "ground",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3740909986
+    },
+    {
+      "id": "ground-07",
+      "atlas": "ground",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3757687605
+    },
+    {
+      "id": "ground-08",
+      "atlas": "ground",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3774465224
+    },
+    {
+      "id": "ground-09",
+      "atlas": "ground",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3791242843
+    },
+    {
+      "id": "ground-10",
+      "atlas": "ground",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 387955081
+    },
+    {
+      "id": "ground-11",
+      "atlas": "ground",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 371177462
+    },
+    {
+      "id": "ground-12",
+      "atlas": "ground",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 354399843
+    },
+    {
+      "id": "ground-13",
+      "atlas": "ground",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 337622224
+    },
+    {
+      "id": "ground-14",
+      "atlas": "ground",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 455065557
+    },
+    {
+      "id": "ground-15",
+      "atlas": "ground",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 438287938
+    },
+    {
+      "id": "ground-16",
+      "atlas": "ground",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 421510319
+    },
+    {
+      "id": "ground-17",
+      "atlas": "ground",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 404732700
+    },
+    {
+      "id": "ground-18",
+      "atlas": "ground",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 522176033
+    },
+    {
+      "id": "ground-19",
+      "atlas": "ground",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 505398414
+    },
+    {
+      "id": "ground-20",
+      "atlas": "ground",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 488767890
+    },
+    {
+      "id": "ground-21",
+      "atlas": "ground",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 505545509
+    },
+    {
+      "id": "ground-22",
+      "atlas": "ground",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 455212652
+    },
+    {
+      "id": "ground-23",
+      "atlas": "ground",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 471990271
+    },
+    {
+      "id": "ground-24",
+      "atlas": "ground",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 421657414
+    },
+    {
+      "id": "ground-25",
+      "atlas": "ground",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 438435033
+    },
+    {
+      "id": "ground-26",
+      "atlas": "ground",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 388102176
+    },
+    {
+      "id": "ground-27",
+      "atlas": "ground",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 404879795
+    },
+    {
+      "id": "ground-28",
+      "atlas": "ground",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 622988842
+    },
+    {
+      "id": "ground-29",
+      "atlas": "ground",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 639766461
+    },
+    {
+      "id": "ground-30",
+      "atlas": "ground",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 589580699
+    },
+    {
+      "id": "ground-31",
+      "atlas": "ground",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 572803080
+    },
+    {
+      "id": "roads-00",
+      "atlas": "roads",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1971111508
+    },
+    {
+      "id": "roads-01",
+      "atlas": "roads",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1987889127
+    },
+    {
+      "id": "roads-02",
+      "atlas": "roads",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2004666746
+    },
+    {
+      "id": "roads-03",
+      "atlas": "roads",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2021444365
+    },
+    {
+      "id": "roads-04",
+      "atlas": "roads",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1904001032
+    },
+    {
+      "id": "roads-05",
+      "atlas": "roads",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1920778651
+    },
+    {
+      "id": "roads-06",
+      "atlas": "roads",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1937556270
+    },
+    {
+      "id": "roads-07",
+      "atlas": "roads",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1954333889
+    },
+    {
+      "id": "roads-08",
+      "atlas": "roads",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1836890556
+    },
+    {
+      "id": "roads-09",
+      "atlas": "roads",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1853668175
+    },
+    {
+      "id": "roads-10",
+      "atlas": "roads",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1567528821
+    },
+    {
+      "id": "roads-11",
+      "atlas": "roads",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1550751202
+    },
+    {
+      "id": "roads-12",
+      "atlas": "roads",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1533973583
+    },
+    {
+      "id": "roads-13",
+      "atlas": "roads",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1517195964
+    },
+    {
+      "id": "roads-14",
+      "atlas": "roads",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1500418345
+    },
+    {
+      "id": "roads-15",
+      "atlas": "roads",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1483640726
+    },
+    {
+      "id": "roads-16",
+      "atlas": "roads",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1466863107
+    },
+    {
+      "id": "roads-17",
+      "atlas": "roads",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1450085488
+    },
+    {
+      "id": "roads-18",
+      "atlas": "roads",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1701749773
+    },
+    {
+      "id": "roads-19",
+      "atlas": "roads",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1684972154
+    },
+    {
+      "id": "roads-20",
+      "atlas": "roads",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1668341630
+    },
+    {
+      "id": "roads-21",
+      "atlas": "roads",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1685119249
+    },
+    {
+      "id": "roads-22",
+      "atlas": "roads",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1634786392
+    },
+    {
+      "id": "roads-23",
+      "atlas": "roads",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1651564011
+    },
+    {
+      "id": "roads-24",
+      "atlas": "roads",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1735452106
+    },
+    {
+      "id": "roads-25",
+      "atlas": "roads",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1752229725
+    },
+    {
+      "id": "roads-26",
+      "atlas": "roads",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1701896868
+    },
+    {
+      "id": "roads-27",
+      "atlas": "roads",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1718674487
+    },
+    {
+      "id": "roads-28",
+      "atlas": "roads",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1534120678
+    },
+    {
+      "id": "roads-29",
+      "atlas": "roads",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1550898297
+    },
+    {
+      "id": "roads-30",
+      "atlas": "roads",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3916689671
+    },
+    {
+      "id": "roads-31",
+      "atlas": "roads",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3899912052
+    },
+    {
+      "id": "buildings-00",
+      "atlas": "buildings",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 852580978
+    },
+    {
+      "id": "buildings-01",
+      "atlas": "buildings",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 869358597
+    },
+    {
+      "id": "buildings-02",
+      "atlas": "buildings",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 819025740
+    },
+    {
+      "id": "buildings-03",
+      "atlas": "buildings",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 835803359
+    },
+    {
+      "id": "buildings-04",
+      "atlas": "buildings",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 785470502
+    },
+    {
+      "id": "buildings-05",
+      "atlas": "buildings",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 802248121
+    },
+    {
+      "id": "buildings-06",
+      "atlas": "buildings",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 751915264
+    },
+    {
+      "id": "buildings-07",
+      "atlas": "buildings",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 768692883
+    },
+    {
+      "id": "buildings-08",
+      "atlas": "buildings",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 986801930
+    },
+    {
+      "id": "buildings-09",
+      "atlas": "buildings",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1003579549
+    },
+    {
+      "id": "buildings-10",
+      "atlas": "buildings",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3348375407
+    },
+    {
+      "id": "buildings-11",
+      "atlas": "buildings",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3331597788
+    },
+    {
+      "id": "buildings-12",
+      "atlas": "buildings",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3381930645
+    },
+    {
+      "id": "buildings-13",
+      "atlas": "buildings",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3365153026
+    },
+    {
+      "id": "buildings-14",
+      "atlas": "buildings",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3281264931
+    },
+    {
+      "id": "buildings-15",
+      "atlas": "buildings",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3264487312
+    },
+    {
+      "id": "buildings-16",
+      "atlas": "buildings",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3314820169
+    },
+    {
+      "id": "buildings-17",
+      "atlas": "buildings",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3298042550
+    },
+    {
+      "id": "buildings-18",
+      "atlas": "buildings",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3482596359
+    },
+    {
+      "id": "buildings-19",
+      "atlas": "buildings",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3465818740
+    },
+    {
+      "id": "buildings-20",
+      "atlas": "buildings",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1435285556
+    },
+    {
+      "id": "buildings-21",
+      "atlas": "buildings",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1452063175
+    },
+    {
+      "id": "buildings-22",
+      "atlas": "buildings",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1468840794
+    },
+    {
+      "id": "buildings-23",
+      "atlas": "buildings",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1485618413
+    },
+    {
+      "id": "buildings-24",
+      "atlas": "buildings",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1368175080
+    },
+    {
+      "id": "buildings-25",
+      "atlas": "buildings",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1384952699
+    },
+    {
+      "id": "buildings-26",
+      "atlas": "buildings",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1401730318
+    },
+    {
+      "id": "buildings-27",
+      "atlas": "buildings",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1418507937
+    },
+    {
+      "id": "buildings-28",
+      "atlas": "buildings",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1301064604
+    },
+    {
+      "id": "buildings-29",
+      "atlas": "buildings",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1317842223
+    },
+    {
+      "id": "buildings-30",
+      "atlas": "buildings",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1536098365
+    },
+    {
+      "id": "buildings-31",
+      "atlas": "buildings",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1519320746
+    },
+    {
+      "id": "roofs-00",
+      "atlas": "roofs",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4111388028
+    },
+    {
+      "id": "roofs-01",
+      "atlas": "roofs",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4128165647
+    },
+    {
+      "id": "roofs-02",
+      "atlas": "roofs",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4144943266
+    },
+    {
+      "id": "roofs-03",
+      "atlas": "roofs",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4161720885
+    },
+    {
+      "id": "roofs-04",
+      "atlas": "roofs",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4044277552
+    },
+    {
+      "id": "roofs-05",
+      "atlas": "roofs",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4061055171
+    },
+    {
+      "id": "roofs-06",
+      "atlas": "roofs",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4077832790
+    },
+    {
+      "id": "roofs-07",
+      "atlas": "roofs",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 4094610409
+    },
+    {
+      "id": "roofs-08",
+      "atlas": "roofs",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 4245608980
+    },
+    {
+      "id": "roofs-09",
+      "atlas": "roofs",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 4262386599
+    },
+    {
+      "id": "roofs-10",
+      "atlas": "roofs",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2555396141
+    },
+    {
+      "id": "roofs-11",
+      "atlas": "roofs",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2538618522
+    },
+    {
+      "id": "roofs-12",
+      "atlas": "roofs",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2521840903
+    },
+    {
+      "id": "roofs-13",
+      "atlas": "roofs",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2505063284
+    },
+    {
+      "id": "roofs-14",
+      "atlas": "roofs",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2488285665
+    },
+    {
+      "id": "roofs-15",
+      "atlas": "roofs",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2471508046
+    },
+    {
+      "id": "roofs-16",
+      "atlas": "roofs",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2454730427
+    },
+    {
+      "id": "roofs-17",
+      "atlas": "roofs",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2437952808
+    },
+    {
+      "id": "roofs-18",
+      "atlas": "roofs",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2421175189
+    },
+    {
+      "id": "roofs-19",
+      "atlas": "roofs",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2404397570
+    },
+    {
+      "id": "roofs-20",
+      "atlas": "roofs",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2119325142
+    },
+    {
+      "id": "roofs-21",
+      "atlas": "roofs",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2136102761
+    },
+    {
+      "id": "roofs-22",
+      "atlas": "roofs",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2085769904
+    },
+    {
+      "id": "roofs-23",
+      "atlas": "roofs",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2102547523
+    },
+    {
+      "id": "roofs-24",
+      "atlas": "roofs",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2186435618
+    },
+    {
+      "id": "roofs-25",
+      "atlas": "roofs",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2203213237
+    },
+    {
+      "id": "roofs-26",
+      "atlas": "roofs",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2152880380
+    },
+    {
+      "id": "roofs-27",
+      "atlas": "roofs",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2169657999
+    },
+    {
+      "id": "roofs-28",
+      "atlas": "roofs",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2253546094
+    },
+    {
+      "id": "roofs-29",
+      "atlas": "roofs",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2270323713
+    },
+    {
+      "id": "roofs-30",
+      "atlas": "roofs",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2220137951
+    },
+    {
+      "id": "roofs-31",
+      "atlas": "roofs",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2203360332
+    },
+    {
+      "id": "interiors-00",
+      "atlas": "interiors",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 723732498
+    },
+    {
+      "id": "interiors-01",
+      "atlas": "interiors",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 740510117
+    },
+    {
+      "id": "interiors-02",
+      "atlas": "interiors",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 690177260
+    },
+    {
+      "id": "interiors-03",
+      "atlas": "interiors",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 706954879
+    },
+    {
+      "id": "interiors-04",
+      "atlas": "interiors",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 656622022
+    },
+    {
+      "id": "interiors-05",
+      "atlas": "interiors",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 673399641
+    },
+    {
+      "id": "interiors-06",
+      "atlas": "interiors",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 623066784
+    },
+    {
+      "id": "interiors-07",
+      "atlas": "interiors",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 639844403
+    },
+    {
+      "id": "interiors-08",
+      "atlas": "interiors",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 857953450
+    },
+    {
+      "id": "interiors-09",
+      "atlas": "interiors",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 874731069
+    },
+    {
+      "id": "interiors-10",
+      "atlas": "interiors",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 277665167
+    },
+    {
+      "id": "interiors-11",
+      "atlas": "interiors",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 260887548
+    },
+    {
+      "id": "interiors-12",
+      "atlas": "interiors",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 311220405
+    },
+    {
+      "id": "interiors-13",
+      "atlas": "interiors",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 294442786
+    },
+    {
+      "id": "interiors-14",
+      "atlas": "interiors",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 210554691
+    },
+    {
+      "id": "interiors-15",
+      "atlas": "interiors",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 193777072
+    },
+    {
+      "id": "interiors-16",
+      "atlas": "interiors",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 244109929
+    },
+    {
+      "id": "interiors-17",
+      "atlas": "interiors",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 227332310
+    },
+    {
+      "id": "interiors-18",
+      "atlas": "interiors",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 411886119
+    },
+    {
+      "id": "interiors-19",
+      "atlas": "interiors",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 395108500
+    },
+    {
+      "id": "interiors-20",
+      "atlas": "interiors",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2659542612
+    },
+    {
+      "id": "interiors-21",
+      "atlas": "interiors",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2676320231
+    },
+    {
+      "id": "interiors-22",
+      "atlas": "interiors",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2693097850
+    },
+    {
+      "id": "interiors-23",
+      "atlas": "interiors",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2709875469
+    },
+    {
+      "id": "interiors-24",
+      "atlas": "interiors",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2592432136
+    },
+    {
+      "id": "interiors-25",
+      "atlas": "interiors",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2609209755
+    },
+    {
+      "id": "interiors-26",
+      "atlas": "interiors",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2625987374
+    },
+    {
+      "id": "interiors-27",
+      "atlas": "interiors",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2642764993
+    },
+    {
+      "id": "interiors-28",
+      "atlas": "interiors",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2525321660
+    },
+    {
+      "id": "interiors-29",
+      "atlas": "interiors",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2542099279
+    },
+    {
+      "id": "interiors-30",
+      "atlas": "interiors",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2760355421
+    },
+    {
+      "id": "interiors-31",
+      "atlas": "interiors",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2743577802
+    },
+    {
+      "id": "props-00",
+      "atlas": "props",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3220375237
+    },
+    {
+      "id": "props-01",
+      "atlas": "props",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3203597618
+    },
+    {
+      "id": "props-02",
+      "atlas": "props",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3186819999
+    },
+    {
+      "id": "props-03",
+      "atlas": "props",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3170042380
+    },
+    {
+      "id": "props-04",
+      "atlas": "props",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3153264761
+    },
+    {
+      "id": "props-05",
+      "atlas": "props",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3136487142
+    },
+    {
+      "id": "props-06",
+      "atlas": "props",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3119709523
+    },
+    {
+      "id": "props-07",
+      "atlas": "props",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3102931904
+    },
+    {
+      "id": "props-08",
+      "atlas": "props",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3354596189
+    },
+    {
+      "id": "props-09",
+      "atlas": "props",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3337818570
+    },
+    {
+      "id": "props-10",
+      "atlas": "props",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2593186342
+    },
+    {
+      "id": "props-11",
+      "atlas": "props",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2609963961
+    },
+    {
+      "id": "props-12",
+      "atlas": "props",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2559631104
+    },
+    {
+      "id": "props-13",
+      "atlas": "props",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2576408723
+    },
+    {
+      "id": "props-14",
+      "atlas": "props",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2660296818
+    },
+    {
+      "id": "props-15",
+      "atlas": "props",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2677074437
+    },
+    {
+      "id": "props-16",
+      "atlas": "props",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2626741580
+    },
+    {
+      "id": "props-17",
+      "atlas": "props",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2643519199
+    },
+    {
+      "id": "props-18",
+      "atlas": "props",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2727407294
+    },
+    {
+      "id": "props-19",
+      "atlas": "props",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2744184913
+    },
+    {
+      "id": "props-20",
+      "atlas": "props",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3029257341
+    },
+    {
+      "id": "props-21",
+      "atlas": "props",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3012479722
+    },
+    {
+      "id": "props-22",
+      "atlas": "props",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2995702103
+    },
+    {
+      "id": "props-23",
+      "atlas": "props",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2978924484
+    },
+    {
+      "id": "props-24",
+      "atlas": "props",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2962146865
+    },
+    {
+      "id": "props-25",
+      "atlas": "props",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2945369246
+    },
+    {
+      "id": "props-26",
+      "atlas": "props",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2928591627
+    },
+    {
+      "id": "props-27",
+      "atlas": "props",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2911814008
+    },
+    {
+      "id": "props-28",
+      "atlas": "props",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2895036389
+    },
+    {
+      "id": "props-29",
+      "atlas": "props",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2878258770
+    },
+    {
+      "id": "props-30",
+      "atlas": "props",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2928444532
+    },
+    {
+      "id": "props-31",
+      "atlas": "props",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 2945222151
+    },
+    {
+      "id": "effects-00",
+      "atlas": "effects",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1778665893
+    },
+    {
+      "id": "effects-01",
+      "atlas": "effects",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1761888274
+    },
+    {
+      "id": "effects-02",
+      "atlas": "effects",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1745110655
+    },
+    {
+      "id": "effects-03",
+      "atlas": "effects",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1728333036
+    },
+    {
+      "id": "effects-04",
+      "atlas": "effects",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1711555417
+    },
+    {
+      "id": "effects-05",
+      "atlas": "effects",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1694777798
+    },
+    {
+      "id": "effects-06",
+      "atlas": "effects",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1678000179
+    },
+    {
+      "id": "effects-07",
+      "atlas": "effects",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 1661222560
+    },
+    {
+      "id": "effects-08",
+      "atlas": "effects",
+      "index": 8,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1912886845
+    },
+    {
+      "id": "effects-09",
+      "atlas": "effects",
+      "index": 9,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1896109226
+    },
+    {
+      "id": "effects-10",
+      "atlas": "effects",
+      "index": 10,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1941802374
+    },
+    {
+      "id": "effects-11",
+      "atlas": "effects",
+      "index": 11,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1958579993
+    },
+    {
+      "id": "effects-12",
+      "atlas": "effects",
+      "index": 12,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1908247136
+    },
+    {
+      "id": "effects-13",
+      "atlas": "effects",
+      "index": 13,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1925024755
+    },
+    {
+      "id": "effects-14",
+      "atlas": "effects",
+      "index": 14,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2008912850
+    },
+    {
+      "id": "effects-15",
+      "atlas": "effects",
+      "index": 15,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 2025690469
+    },
+    {
+      "id": "effects-16",
+      "atlas": "effects",
+      "index": 16,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1975357612
+    },
+    {
+      "id": "effects-17",
+      "atlas": "effects",
+      "index": 17,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1992135231
+    },
+    {
+      "id": "effects-18",
+      "atlas": "effects",
+      "index": 18,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2076023326
+    },
+    {
+      "id": "effects-19",
+      "atlas": "effects",
+      "index": 19,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 2092800945
+    },
+    {
+      "id": "effects-20",
+      "atlas": "effects",
+      "index": 20,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 230338141
+    },
+    {
+      "id": "effects-21",
+      "atlas": "effects",
+      "index": 21,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 213560522
+    },
+    {
+      "id": "effects-22",
+      "atlas": "effects",
+      "index": 22,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 196782903
+    },
+    {
+      "id": "effects-23",
+      "atlas": "effects",
+      "index": 23,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 180005284
+    },
+    {
+      "id": "effects-24",
+      "atlas": "effects",
+      "index": 24,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 163227665
+    },
+    {
+      "id": "effects-25",
+      "atlas": "effects",
+      "index": 25,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 146450046
+    },
+    {
+      "id": "effects-26",
+      "atlas": "effects",
+      "index": 26,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 129672427
+    },
+    {
+      "id": "effects-27",
+      "atlas": "effects",
+      "index": 27,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 112894808
+    },
+    {
+      "id": "effects-28",
+      "atlas": "effects",
+      "index": 28,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 96117189
+    },
+    {
+      "id": "effects-29",
+      "atlas": "effects",
+      "index": 29,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 79339570
+    },
+    {
+      "id": "effects-30",
+      "atlas": "effects",
+      "index": 30,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 129525332
+    },
+    {
+      "id": "effects-31",
+      "atlas": "effects",
+      "index": 31,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 146302951
+    },
+    {
+      "id": "rotwood-000",
+      "atlas": "rotwood",
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2946884451
+    },
+    {
+      "id": "rotwood-001",
+      "atlas": "rotwood",
+      "index": 1,
+      "x": 32,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2930106832
+    },
+    {
+      "id": "rotwood-002",
+      "atlas": "rotwood",
+      "index": 2,
+      "x": 64,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2980439689
+    },
+    {
+      "id": "rotwood-003",
+      "atlas": "rotwood",
+      "index": 3,
+      "x": 96,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2963662070
+    },
+    {
+      "id": "rotwood-004",
+      "atlas": "rotwood",
+      "index": 4,
+      "x": 128,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3013994927
+    },
+    {
+      "id": "rotwood-005",
+      "atlas": "rotwood",
+      "index": 5,
+      "x": 160,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 2997217308
+    },
+    {
+      "id": "rotwood-006",
+      "atlas": "rotwood",
+      "index": 6,
+      "x": 192,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3047550165
+    },
+    {
+      "id": "rotwood-007",
+      "atlas": "rotwood",
+      "index": 7,
+      "x": 224,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3030772546
+    },
+    {
+      "id": "rotwood-008",
+      "atlas": "rotwood",
+      "index": 8,
+      "x": 256,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3081105403
+    },
+    {
+      "id": "rotwood-009",
+      "atlas": "rotwood",
+      "index": 9,
+      "x": 288,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3064327784
+    },
+    {
+      "id": "rotwood-010",
+      "atlas": "rotwood",
+      "index": 10,
+      "x": 320,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3475149728
+    },
+    {
+      "id": "rotwood-011",
+      "atlas": "rotwood",
+      "index": 11,
+      "x": 352,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3491927347
+    },
+    {
+      "id": "rotwood-012",
+      "atlas": "rotwood",
+      "index": 12,
+      "x": 384,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3508704966
+    },
+    {
+      "id": "rotwood-013",
+      "atlas": "rotwood",
+      "index": 13,
+      "x": 416,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3525482585
+    },
+    {
+      "id": "rotwood-014",
+      "atlas": "rotwood",
+      "index": 14,
+      "x": 448,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3542260204
+    },
+    {
+      "id": "rotwood-015",
+      "atlas": "rotwood",
+      "index": 15,
+      "x": 480,
+      "y": 0,
+      "width": 32,
+      "height": 32,
+      "seed": 3559037823
+    },
+    {
+      "id": "rotwood-016",
+      "atlas": "rotwood",
+      "index": 16,
+      "x": 0,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3575815442
+    },
+    {
+      "id": "rotwood-017",
+      "atlas": "rotwood",
+      "index": 17,
+      "x": 32,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3592593061
+    },
+    {
+      "id": "rotwood-018",
+      "atlas": "rotwood",
+      "index": 18,
+      "x": 64,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3609370680
+    },
+    {
+      "id": "rotwood-019",
+      "atlas": "rotwood",
+      "index": 19,
+      "x": 96,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3626148299
+    },
+    {
+      "id": "rotwood-020",
+      "atlas": "rotwood",
+      "index": 20,
+      "x": 128,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1630156091
+    },
+    {
+      "id": "rotwood-021",
+      "atlas": "rotwood",
+      "index": 21,
+      "x": 160,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1613378472
+    },
+    {
+      "id": "rotwood-022",
+      "atlas": "rotwood",
+      "index": 22,
+      "x": 192,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1663711329
+    },
+    {
+      "id": "rotwood-023",
+      "atlas": "rotwood",
+      "index": 23,
+      "x": 224,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1646933710
+    },
+    {
+      "id": "rotwood-024",
+      "atlas": "rotwood",
+      "index": 24,
+      "x": 256,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1697266567
+    },
+    {
+      "id": "rotwood-025",
+      "atlas": "rotwood",
+      "index": 25,
+      "x": 288,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1680488948
+    },
+    {
+      "id": "rotwood-026",
+      "atlas": "rotwood",
+      "index": 26,
+      "x": 320,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1730821805
+    },
+    {
+      "id": "rotwood-027",
+      "atlas": "rotwood",
+      "index": 27,
+      "x": 352,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1714044186
+    },
+    {
+      "id": "rotwood-028",
+      "atlas": "rotwood",
+      "index": 28,
+      "x": 384,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1495935139
+    },
+    {
+      "id": "rotwood-029",
+      "atlas": "rotwood",
+      "index": 29,
+      "x": 416,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 1479157520
+    },
+    {
+      "id": "rotwood-030",
+      "atlas": "rotwood",
+      "index": 30,
+      "x": 448,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3676775346
+    },
+    {
+      "id": "rotwood-031",
+      "atlas": "rotwood",
+      "index": 31,
+      "x": 480,
+      "y": 32,
+      "width": 32,
+      "height": 32,
+      "seed": 3693552965
+    },
+    {
+      "id": "rotwood-032",
+      "atlas": "rotwood",
+      "index": 32,
+      "x": 0,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3643220108
+    },
+    {
+      "id": "rotwood-033",
+      "atlas": "rotwood",
+      "index": 33,
+      "x": 32,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3659997727
+    },
+    {
+      "id": "rotwood-034",
+      "atlas": "rotwood",
+      "index": 34,
+      "x": 64,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3609664870
+    },
+    {
+      "id": "rotwood-035",
+      "atlas": "rotwood",
+      "index": 35,
+      "x": 96,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3626442489
+    },
+    {
+      "id": "rotwood-036",
+      "atlas": "rotwood",
+      "index": 36,
+      "x": 128,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3576109632
+    },
+    {
+      "id": "rotwood-037",
+      "atlas": "rotwood",
+      "index": 37,
+      "x": 160,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3592887251
+    },
+    {
+      "id": "rotwood-038",
+      "atlas": "rotwood",
+      "index": 38,
+      "x": 192,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3810996298
+    },
+    {
+      "id": "rotwood-039",
+      "atlas": "rotwood",
+      "index": 39,
+      "x": 224,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 3827773917
+    },
+    {
+      "id": "rotwood-040",
+      "atlas": "rotwood",
+      "index": 40,
+      "x": 256,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1831781709
+    },
+    {
+      "id": "rotwood-041",
+      "atlas": "rotwood",
+      "index": 41,
+      "x": 288,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1815004090
+    },
+    {
+      "id": "rotwood-042",
+      "atlas": "rotwood",
+      "index": 42,
+      "x": 320,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1798226471
+    },
+    {
+      "id": "rotwood-043",
+      "atlas": "rotwood",
+      "index": 43,
+      "x": 352,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1781448852
+    },
+    {
+      "id": "rotwood-044",
+      "atlas": "rotwood",
+      "index": 44,
+      "x": 384,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1764671233
+    },
+    {
+      "id": "rotwood-045",
+      "atlas": "rotwood",
+      "index": 45,
+      "x": 416,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1747893614
+    },
+    {
+      "id": "rotwood-046",
+      "atlas": "rotwood",
+      "index": 46,
+      "x": 448,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1731115995
+    },
+    {
+      "id": "rotwood-047",
+      "atlas": "rotwood",
+      "index": 47,
+      "x": 480,
+      "y": 64,
+      "width": 32,
+      "height": 32,
+      "seed": 1714338376
+    },
+    {
+      "id": "rotwood-048",
+      "atlas": "rotwood",
+      "index": 48,
+      "x": 0,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1697560757
+    },
+    {
+      "id": "rotwood-049",
+      "atlas": "rotwood",
+      "index": 49,
+      "x": 32,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1680783138
+    },
+    {
+      "id": "rotwood-050",
+      "atlas": "rotwood",
+      "index": 50,
+      "x": 64,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1730968900
+    },
+    {
+      "id": "rotwood-051",
+      "atlas": "rotwood",
+      "index": 51,
+      "x": 96,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1747746519
+    },
+    {
+      "id": "rotwood-052",
+      "atlas": "rotwood",
+      "index": 52,
+      "x": 128,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1764524138
+    },
+    {
+      "id": "rotwood-053",
+      "atlas": "rotwood",
+      "index": 53,
+      "x": 160,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1781301757
+    },
+    {
+      "id": "rotwood-054",
+      "atlas": "rotwood",
+      "index": 54,
+      "x": 192,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1663858424
+    },
+    {
+      "id": "rotwood-055",
+      "atlas": "rotwood",
+      "index": 55,
+      "x": 224,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1680636043
+    },
+    {
+      "id": "rotwood-056",
+      "atlas": "rotwood",
+      "index": 56,
+      "x": 256,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1697413662
+    },
+    {
+      "id": "rotwood-057",
+      "atlas": "rotwood",
+      "index": 57,
+      "x": 288,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1714191281
+    },
+    {
+      "id": "rotwood-058",
+      "atlas": "rotwood",
+      "index": 58,
+      "x": 320,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1596747948
+    },
+    {
+      "id": "rotwood-059",
+      "atlas": "rotwood",
+      "index": 59,
+      "x": 352,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 1613525567
+    },
+    {
+      "id": "rotwood-060",
+      "atlas": "rotwood",
+      "index": 60,
+      "x": 384,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3644058751
+    },
+    {
+      "id": "rotwood-061",
+      "atlas": "rotwood",
+      "index": 61,
+      "x": 416,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3627281132
+    },
+    {
+      "id": "rotwood-062",
+      "atlas": "rotwood",
+      "index": 62,
+      "x": 448,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3677613989
+    },
+    {
+      "id": "rotwood-063",
+      "atlas": "rotwood",
+      "index": 63,
+      "x": 480,
+      "y": 96,
+      "width": 32,
+      "height": 32,
+      "seed": 3660836370
+    },
+    {
+      "id": "rotwood-064",
+      "atlas": "rotwood",
+      "index": 64,
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3576948275
+    },
+    {
+      "id": "rotwood-065",
+      "atlas": "rotwood",
+      "index": 65,
+      "x": 32,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3560170656
+    },
+    {
+      "id": "rotwood-066",
+      "atlas": "rotwood",
+      "index": 66,
+      "x": 64,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3610503513
+    },
+    {
+      "id": "rotwood-067",
+      "atlas": "rotwood",
+      "index": 67,
+      "x": 96,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3593725894
+    },
+    {
+      "id": "rotwood-068",
+      "atlas": "rotwood",
+      "index": 68,
+      "x": 128,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3778279703
+    },
+    {
+      "id": "rotwood-069",
+      "atlas": "rotwood",
+      "index": 69,
+      "x": 160,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3761502084
+    },
+    {
+      "id": "rotwood-070",
+      "atlas": "rotwood",
+      "index": 70,
+      "x": 192,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3543245942
+    },
+    {
+      "id": "rotwood-071",
+      "atlas": "rotwood",
+      "index": 71,
+      "x": 224,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3560023561
+    },
+    {
+      "id": "rotwood-072",
+      "atlas": "rotwood",
+      "index": 72,
+      "x": 256,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3509690704
+    },
+    {
+      "id": "rotwood-073",
+      "atlas": "rotwood",
+      "index": 73,
+      "x": 288,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3526468323
+    },
+    {
+      "id": "rotwood-074",
+      "atlas": "rotwood",
+      "index": 74,
+      "x": 320,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3610356418
+    },
+    {
+      "id": "rotwood-075",
+      "atlas": "rotwood",
+      "index": 75,
+      "x": 352,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3627134037
+    },
+    {
+      "id": "rotwood-076",
+      "atlas": "rotwood",
+      "index": 76,
+      "x": 384,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3576801180
+    },
+    {
+      "id": "rotwood-077",
+      "atlas": "rotwood",
+      "index": 77,
+      "x": 416,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3593578799
+    },
+    {
+      "id": "rotwood-078",
+      "atlas": "rotwood",
+      "index": 78,
+      "x": 448,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3677466894
+    },
+    {
+      "id": "rotwood-079",
+      "atlas": "rotwood",
+      "index": 79,
+      "x": 480,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "seed": 3694244513
+    },
+    {
+      "id": "rotwood-080",
+      "atlas": "rotwood",
+      "index": 80,
+      "x": 0,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3845684369
+    },
+    {
+      "id": "rotwood-081",
+      "atlas": "rotwood",
+      "index": 81,
+      "x": 32,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3828906750
+    },
+    {
+      "id": "rotwood-082",
+      "atlas": "rotwood",
+      "index": 82,
+      "x": 64,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3812129131
+    },
+    {
+      "id": "rotwood-083",
+      "atlas": "rotwood",
+      "index": 83,
+      "x": 96,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3795351512
+    },
+    {
+      "id": "rotwood-084",
+      "atlas": "rotwood",
+      "index": 84,
+      "x": 128,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3912794845
+    },
+    {
+      "id": "rotwood-085",
+      "atlas": "rotwood",
+      "index": 85,
+      "x": 160,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3896017226
+    },
+    {
+      "id": "rotwood-086",
+      "atlas": "rotwood",
+      "index": 86,
+      "x": 192,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3879239607
+    },
+    {
+      "id": "rotwood-087",
+      "atlas": "rotwood",
+      "index": 87,
+      "x": 224,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3862461988
+    },
+    {
+      "id": "rotwood-088",
+      "atlas": "rotwood",
+      "index": 88,
+      "x": 256,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3711463417
+    },
+    {
+      "id": "rotwood-089",
+      "atlas": "rotwood",
+      "index": 89,
+      "x": 288,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3694685798
+    },
+    {
+      "id": "rotwood-090",
+      "atlas": "rotwood",
+      "index": 90,
+      "x": 320,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3744871560
+    },
+    {
+      "id": "rotwood-091",
+      "atlas": "rotwood",
+      "index": 91,
+      "x": 352,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3761649179
+    },
+    {
+      "id": "rotwood-092",
+      "atlas": "rotwood",
+      "index": 92,
+      "x": 384,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3778426798
+    },
+    {
+      "id": "rotwood-093",
+      "atlas": "rotwood",
+      "index": 93,
+      "x": 416,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3795204417
+    },
+    {
+      "id": "rotwood-094",
+      "atlas": "rotwood",
+      "index": 94,
+      "x": 448,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3811982036
+    },
+    {
+      "id": "rotwood-095",
+      "atlas": "rotwood",
+      "index": 95,
+      "x": 480,
+      "y": 160,
+      "width": 32,
+      "height": 32,
+      "seed": 3828759655
+    },
+    {
+      "id": "rotwood-096",
+      "atlas": "rotwood",
+      "index": 96,
+      "x": 0,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 3845537274
+    },
+    {
+      "id": "rotwood-097",
+      "atlas": "rotwood",
+      "index": 97,
+      "x": 32,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 3862314893
+    },
+    {
+      "id": "rotwood-098",
+      "atlas": "rotwood",
+      "index": 98,
+      "x": 64,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 3610650608
+    },
+    {
+      "id": "rotwood-099",
+      "atlas": "rotwood",
+      "index": 99,
+      "x": 96,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 3627428227
+    },
+    {
+      "id": "rotwood-100",
+      "atlas": "rotwood",
+      "index": 100,
+      "x": 128,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2741914544
+    },
+    {
+      "id": "rotwood-101",
+      "atlas": "rotwood",
+      "index": 101,
+      "x": 160,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2758692163
+    },
+    {
+      "id": "rotwood-102",
+      "atlas": "rotwood",
+      "index": 102,
+      "x": 192,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2775469782
+    },
+    {
+      "id": "rotwood-103",
+      "atlas": "rotwood",
+      "index": 103,
+      "x": 224,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2792247401
+    },
+    {
+      "id": "rotwood-104",
+      "atlas": "rotwood",
+      "index": 104,
+      "x": 256,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2809025020
+    },
+    {
+      "id": "rotwood-105",
+      "atlas": "rotwood",
+      "index": 105,
+      "x": 288,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2825802639
+    },
+    {
+      "id": "rotwood-106",
+      "atlas": "rotwood",
+      "index": 106,
+      "x": 320,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2842580258
+    },
+    {
+      "id": "rotwood-107",
+      "atlas": "rotwood",
+      "index": 107,
+      "x": 352,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2859357877
+    },
+    {
+      "id": "rotwood-108",
+      "atlas": "rotwood",
+      "index": 108,
+      "x": 384,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2876135496
+    },
+    {
+      "id": "rotwood-109",
+      "atlas": "rotwood",
+      "index": 109,
+      "x": 416,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2892913115
+    },
+    {
+      "id": "rotwood-110",
+      "atlas": "rotwood",
+      "index": 110,
+      "x": 448,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2842727353
+    },
+    {
+      "id": "rotwood-111",
+      "atlas": "rotwood",
+      "index": 111,
+      "x": 480,
+      "y": 192,
+      "width": 32,
+      "height": 32,
+      "seed": 2825949734
+    },
+    {
+      "id": "rotwood-112",
+      "atlas": "rotwood",
+      "index": 112,
+      "x": 0,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2809172115
+    },
+    {
+      "id": "rotwood-113",
+      "atlas": "rotwood",
+      "index": 113,
+      "x": 32,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2792394496
+    },
+    {
+      "id": "rotwood-114",
+      "atlas": "rotwood",
+      "index": 114,
+      "x": 64,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2909837829
+    },
+    {
+      "id": "rotwood-115",
+      "atlas": "rotwood",
+      "index": 115,
+      "x": 96,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2893060210
+    },
+    {
+      "id": "rotwood-116",
+      "atlas": "rotwood",
+      "index": 116,
+      "x": 128,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2876282591
+    },
+    {
+      "id": "rotwood-117",
+      "atlas": "rotwood",
+      "index": 117,
+      "x": 160,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2859504972
+    },
+    {
+      "id": "rotwood-118",
+      "atlas": "rotwood",
+      "index": 118,
+      "x": 192,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2976948305
+    },
+    {
+      "id": "rotwood-119",
+      "atlas": "rotwood",
+      "index": 119,
+      "x": 224,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 2960170686
+    },
+    {
+      "id": "rotwood-120",
+      "atlas": "rotwood",
+      "index": 120,
+      "x": 256,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 796108098
+    },
+    {
+      "id": "rotwood-121",
+      "atlas": "rotwood",
+      "index": 121,
+      "x": 288,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 812885717
+    },
+    {
+      "id": "rotwood-122",
+      "atlas": "rotwood",
+      "index": 122,
+      "x": 320,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 762552860
+    },
+    {
+      "id": "rotwood-123",
+      "atlas": "rotwood",
+      "index": 123,
+      "x": 352,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 779330479
+    },
+    {
+      "id": "rotwood-124",
+      "atlas": "rotwood",
+      "index": 124,
+      "x": 384,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 728997622
+    },
+    {
+      "id": "rotwood-125",
+      "atlas": "rotwood",
+      "index": 125,
+      "x": 416,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 745775241
+    },
+    {
+      "id": "rotwood-126",
+      "atlas": "rotwood",
+      "index": 126,
+      "x": 448,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 695442384
+    },
+    {
+      "id": "rotwood-127",
+      "atlas": "rotwood",
+      "index": 127,
+      "x": 480,
+      "y": 224,
+      "width": 32,
+      "height": 32,
+      "seed": 712220003
+    },
+    {
+      "id": "rotwood-128",
+      "atlas": "rotwood",
+      "index": 128,
+      "x": 0,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 930329050
+    },
+    {
+      "id": "rotwood-129",
+      "atlas": "rotwood",
+      "index": 129,
+      "x": 32,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 947106669
+    },
+    {
+      "id": "rotwood-130",
+      "atlas": "rotwood",
+      "index": 130,
+      "x": 64,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 896920907
+    },
+    {
+      "id": "rotwood-131",
+      "atlas": "rotwood",
+      "index": 131,
+      "x": 96,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 880143288
+    },
+    {
+      "id": "rotwood-132",
+      "atlas": "rotwood",
+      "index": 132,
+      "x": 128,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 930476145
+    },
+    {
+      "id": "rotwood-133",
+      "atlas": "rotwood",
+      "index": 133,
+      "x": 160,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 913698526
+    },
+    {
+      "id": "rotwood-134",
+      "atlas": "rotwood",
+      "index": 134,
+      "x": 192,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 964031383
+    },
+    {
+      "id": "rotwood-135",
+      "atlas": "rotwood",
+      "index": 135,
+      "x": 224,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 947253764
+    },
+    {
+      "id": "rotwood-136",
+      "atlas": "rotwood",
+      "index": 136,
+      "x": 256,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 997586621
+    },
+    {
+      "id": "rotwood-137",
+      "atlas": "rotwood",
+      "index": 137,
+      "x": 288,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 980809002
+    },
+    {
+      "id": "rotwood-138",
+      "atlas": "rotwood",
+      "index": 138,
+      "x": 320,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 762699955
+    },
+    {
+      "id": "rotwood-139",
+      "atlas": "rotwood",
+      "index": 139,
+      "x": 352,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 745922336
+    },
+    {
+      "id": "rotwood-140",
+      "atlas": "rotwood",
+      "index": 140,
+      "x": 384,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 997733716
+    },
+    {
+      "id": "rotwood-141",
+      "atlas": "rotwood",
+      "index": 141,
+      "x": 416,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 1014511335
+    },
+    {
+      "id": "rotwood-142",
+      "atlas": "rotwood",
+      "index": 142,
+      "x": 448,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 1031288954
+    },
+    {
+      "id": "rotwood-143",
+      "atlas": "rotwood",
+      "index": 143,
+      "x": 480,
+      "y": 256,
+      "width": 32,
+      "height": 32,
+      "seed": 1048066573
+    },
+    {
+      "id": "rotwood-144",
+      "atlas": "rotwood",
+      "index": 144,
+      "x": 0,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 930623240
+    },
+    {
+      "id": "rotwood-145",
+      "atlas": "rotwood",
+      "index": 145,
+      "x": 32,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 947400859
+    },
+    {
+      "id": "rotwood-146",
+      "atlas": "rotwood",
+      "index": 146,
+      "x": 64,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 964178478
+    },
+    {
+      "id": "rotwood-147",
+      "atlas": "rotwood",
+      "index": 147,
+      "x": 96,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 980956097
+    },
+    {
+      "id": "rotwood-148",
+      "atlas": "rotwood",
+      "index": 148,
+      "x": 128,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 863512764
+    },
+    {
+      "id": "rotwood-149",
+      "atlas": "rotwood",
+      "index": 149,
+      "x": 160,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 880290383
+    },
+    {
+      "id": "rotwood-150",
+      "atlas": "rotwood",
+      "index": 150,
+      "x": 192,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1098546525
+    },
+    {
+      "id": "rotwood-151",
+      "atlas": "rotwood",
+      "index": 151,
+      "x": 224,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1081768906
+    },
+    {
+      "id": "rotwood-152",
+      "atlas": "rotwood",
+      "index": 152,
+      "x": 256,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1064991287
+    },
+    {
+      "id": "rotwood-153",
+      "atlas": "rotwood",
+      "index": 153,
+      "x": 288,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1048213668
+    },
+    {
+      "id": "rotwood-154",
+      "atlas": "rotwood",
+      "index": 154,
+      "x": 320,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1031436049
+    },
+    {
+      "id": "rotwood-155",
+      "atlas": "rotwood",
+      "index": 155,
+      "x": 352,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 1014658430
+    },
+    {
+      "id": "rotwood-156",
+      "atlas": "rotwood",
+      "index": 156,
+      "x": 384,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 997880811
+    },
+    {
+      "id": "rotwood-157",
+      "atlas": "rotwood",
+      "index": 157,
+      "x": 416,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 981103192
+    },
+    {
+      "id": "rotwood-158",
+      "atlas": "rotwood",
+      "index": 158,
+      "x": 448,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 964325573
+    },
+    {
+      "id": "rotwood-159",
+      "atlas": "rotwood",
+      "index": 159,
+      "x": 480,
+      "y": 288,
+      "width": 32,
+      "height": 32,
+      "seed": 947547954
+    },
+    {
+      "id": "rotwood-160",
+      "atlas": "rotwood",
+      "index": 160,
+      "x": 0,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2810010758
+    },
+    {
+      "id": "rotwood-161",
+      "atlas": "rotwood",
+      "index": 161,
+      "x": 32,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2826788377
+    },
+    {
+      "id": "rotwood-162",
+      "atlas": "rotwood",
+      "index": 162,
+      "x": 64,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2776455520
+    },
+    {
+      "id": "rotwood-163",
+      "atlas": "rotwood",
+      "index": 163,
+      "x": 96,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2793233139
+    },
+    {
+      "id": "rotwood-164",
+      "atlas": "rotwood",
+      "index": 164,
+      "x": 128,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2877121234
+    },
+    {
+      "id": "rotwood-165",
+      "atlas": "rotwood",
+      "index": 165,
+      "x": 160,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2893898853
+    },
+    {
+      "id": "rotwood-166",
+      "atlas": "rotwood",
+      "index": 166,
+      "x": 192,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2843565996
+    },
+    {
+      "id": "rotwood-167",
+      "atlas": "rotwood",
+      "index": 167,
+      "x": 224,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2860343615
+    },
+    {
+      "id": "rotwood-168",
+      "atlas": "rotwood",
+      "index": 168,
+      "x": 256,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2944231710
+    },
+    {
+      "id": "rotwood-169",
+      "atlas": "rotwood",
+      "index": 169,
+      "x": 288,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2961009329
+    },
+    {
+      "id": "rotwood-170",
+      "atlas": "rotwood",
+      "index": 170,
+      "x": 320,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2910823567
+    },
+    {
+      "id": "rotwood-171",
+      "atlas": "rotwood",
+      "index": 171,
+      "x": 352,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2894045948
+    },
+    {
+      "id": "rotwood-172",
+      "atlas": "rotwood",
+      "index": 172,
+      "x": 384,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2944378805
+    },
+    {
+      "id": "rotwood-173",
+      "atlas": "rotwood",
+      "index": 173,
+      "x": 416,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2927601186
+    },
+    {
+      "id": "rotwood-174",
+      "atlas": "rotwood",
+      "index": 174,
+      "x": 448,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2843713091
+    },
+    {
+      "id": "rotwood-175",
+      "atlas": "rotwood",
+      "index": 175,
+      "x": 480,
+      "y": 320,
+      "width": 32,
+      "height": 32,
+      "seed": 2826935472
+    },
+    {
+      "id": "rotwood-176",
+      "atlas": "rotwood",
+      "index": 176,
+      "x": 0,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 2877268329
+    },
+    {
+      "id": "rotwood-177",
+      "atlas": "rotwood",
+      "index": 177,
+      "x": 32,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 2860490710
+    },
+    {
+      "id": "rotwood-178",
+      "atlas": "rotwood",
+      "index": 178,
+      "x": 64,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3045044519
+    },
+    {
+      "id": "rotwood-179",
+      "atlas": "rotwood",
+      "index": 179,
+      "x": 96,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3028266900
+    },
+    {
+      "id": "rotwood-180",
+      "atlas": "rotwood",
+      "index": 180,
+      "x": 128,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3011636376
+    },
+    {
+      "id": "rotwood-181",
+      "atlas": "rotwood",
+      "index": 181,
+      "x": 160,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3028413995
+    },
+    {
+      "id": "rotwood-182",
+      "atlas": "rotwood",
+      "index": 182,
+      "x": 192,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3045191614
+    },
+    {
+      "id": "rotwood-183",
+      "atlas": "rotwood",
+      "index": 183,
+      "x": 224,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3061969233
+    },
+    {
+      "id": "rotwood-184",
+      "atlas": "rotwood",
+      "index": 184,
+      "x": 256,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3078746852
+    },
+    {
+      "id": "rotwood-185",
+      "atlas": "rotwood",
+      "index": 185,
+      "x": 288,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3095524471
+    },
+    {
+      "id": "rotwood-186",
+      "atlas": "rotwood",
+      "index": 186,
+      "x": 320,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3112302090
+    },
+    {
+      "id": "rotwood-187",
+      "atlas": "rotwood",
+      "index": 187,
+      "x": 352,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 3129079709
+    },
+    {
+      "id": "rotwood-188",
+      "atlas": "rotwood",
+      "index": 188,
+      "x": 384,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 2877415424
+    },
+    {
+      "id": "rotwood-189",
+      "atlas": "rotwood",
+      "index": 189,
+      "x": 416,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 2894193043
+    },
+    {
+      "id": "rotwood-190",
+      "atlas": "rotwood",
+      "index": 190,
+      "x": 448,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 965017121
+    },
+    {
+      "id": "rotwood-191",
+      "atlas": "rotwood",
+      "index": 191,
+      "x": 480,
+      "y": 352,
+      "width": 32,
+      "height": 32,
+      "seed": 948239502
+    },
+    {
+      "id": "rotwood-192",
+      "atlas": "rotwood",
+      "index": 192,
+      "x": 0,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 931461883
+    },
+    {
+      "id": "rotwood-193",
+      "atlas": "rotwood",
+      "index": 193,
+      "x": 32,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 914684264
+    },
+    {
+      "id": "rotwood-194",
+      "atlas": "rotwood",
+      "index": 194,
+      "x": 64,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 1032127597
+    },
+    {
+      "id": "rotwood-195",
+      "atlas": "rotwood",
+      "index": 195,
+      "x": 96,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 1015349978
+    },
+    {
+      "id": "rotwood-196",
+      "atlas": "rotwood",
+      "index": 196,
+      "x": 128,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 998572359
+    },
+    {
+      "id": "rotwood-197",
+      "atlas": "rotwood",
+      "index": 197,
+      "x": 160,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 981794740
+    },
+    {
+      "id": "rotwood-198",
+      "atlas": "rotwood",
+      "index": 198,
+      "x": 192,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 830796169
+    },
+    {
+      "id": "rotwood-199",
+      "atlas": "rotwood",
+      "index": 199,
+      "x": 224,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 814018550
+    },
+    {
+      "id": "rotwood-200",
+      "atlas": "rotwood",
+      "index": 200,
+      "x": 256,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 7438417
+    },
+    {
+      "id": "rotwood-201",
+      "atlas": "rotwood",
+      "index": 201,
+      "x": 288,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 4285628094
+    },
+    {
+      "id": "rotwood-202",
+      "atlas": "rotwood",
+      "index": 202,
+      "x": 320,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 4268850475
+    },
+    {
+      "id": "rotwood-203",
+      "atlas": "rotwood",
+      "index": 203,
+      "x": 352,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 4252072856
+    },
+    {
+      "id": "rotwood-204",
+      "atlas": "rotwood",
+      "index": 204,
+      "x": 384,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 74548893
+    },
+    {
+      "id": "rotwood-205",
+      "atlas": "rotwood",
+      "index": 205,
+      "x": 416,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 57771274
+    },
+    {
+      "id": "rotwood-206",
+      "atlas": "rotwood",
+      "index": 206,
+      "x": 448,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 40993655
+    },
+    {
+      "id": "rotwood-207",
+      "atlas": "rotwood",
+      "index": 207,
+      "x": 480,
+      "y": 384,
+      "width": 32,
+      "height": 32,
+      "seed": 24216036
+    },
+    {
+      "id": "rotwood-208",
+      "atlas": "rotwood",
+      "index": 208,
+      "x": 0,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4168184761
+    },
+    {
+      "id": "rotwood-209",
+      "atlas": "rotwood",
+      "index": 209,
+      "x": 32,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4151407142
+    },
+    {
+      "id": "rotwood-210",
+      "atlas": "rotwood",
+      "index": 210,
+      "x": 64,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4201592904
+    },
+    {
+      "id": "rotwood-211",
+      "atlas": "rotwood",
+      "index": 211,
+      "x": 96,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4218370523
+    },
+    {
+      "id": "rotwood-212",
+      "atlas": "rotwood",
+      "index": 212,
+      "x": 128,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4235148142
+    },
+    {
+      "id": "rotwood-213",
+      "atlas": "rotwood",
+      "index": 213,
+      "x": 160,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4251925761
+    },
+    {
+      "id": "rotwood-214",
+      "atlas": "rotwood",
+      "index": 214,
+      "x": 192,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4268703380
+    },
+    {
+      "id": "rotwood-215",
+      "atlas": "rotwood",
+      "index": 215,
+      "x": 224,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4285480999
+    },
+    {
+      "id": "rotwood-216",
+      "atlas": "rotwood",
+      "index": 216,
+      "x": 256,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 7291322
+    },
+    {
+      "id": "rotwood-217",
+      "atlas": "rotwood",
+      "index": 217,
+      "x": 288,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 24068941
+    },
+    {
+      "id": "rotwood-218",
+      "atlas": "rotwood",
+      "index": 218,
+      "x": 320,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4067371952
+    },
+    {
+      "id": "rotwood-219",
+      "atlas": "rotwood",
+      "index": 219,
+      "x": 352,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 4084149571
+    },
+    {
+      "id": "rotwood-220",
+      "atlas": "rotwood",
+      "index": 220,
+      "x": 384,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 1819715459
+    },
+    {
+      "id": "rotwood-221",
+      "atlas": "rotwood",
+      "index": 221,
+      "x": 416,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 1802937840
+    },
+    {
+      "id": "rotwood-222",
+      "atlas": "rotwood",
+      "index": 222,
+      "x": 448,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 1853270697
+    },
+    {
+      "id": "rotwood-223",
+      "atlas": "rotwood",
+      "index": 223,
+      "x": 480,
+      "y": 416,
+      "width": 32,
+      "height": 32,
+      "seed": 1836493078
+    },
+    {
+      "id": "rotwood-224",
+      "atlas": "rotwood",
+      "index": 224,
+      "x": 0,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1886825935
+    },
+    {
+      "id": "rotwood-225",
+      "atlas": "rotwood",
+      "index": 225,
+      "x": 32,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1870048316
+    },
+    {
+      "id": "rotwood-226",
+      "atlas": "rotwood",
+      "index": 226,
+      "x": 64,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1920381173
+    },
+    {
+      "id": "rotwood-227",
+      "atlas": "rotwood",
+      "index": 227,
+      "x": 96,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1903603554
+    },
+    {
+      "id": "rotwood-228",
+      "atlas": "rotwood",
+      "index": 228,
+      "x": 128,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1953936411
+    },
+    {
+      "id": "rotwood-229",
+      "atlas": "rotwood",
+      "index": 229,
+      "x": 160,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 1937158792
+    },
+    {
+      "id": "rotwood-230",
+      "atlas": "rotwood",
+      "index": 230,
+      "x": 192,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2255786458
+    },
+    {
+      "id": "rotwood-231",
+      "atlas": "rotwood",
+      "index": 231,
+      "x": 224,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2272564077
+    },
+    {
+      "id": "rotwood-232",
+      "atlas": "rotwood",
+      "index": 232,
+      "x": 256,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2222231220
+    },
+    {
+      "id": "rotwood-233",
+      "atlas": "rotwood",
+      "index": 233,
+      "x": 288,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2239008839
+    },
+    {
+      "id": "rotwood-234",
+      "atlas": "rotwood",
+      "index": 234,
+      "x": 320,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2188675982
+    },
+    {
+      "id": "rotwood-235",
+      "atlas": "rotwood",
+      "index": 235,
+      "x": 352,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2205453601
+    },
+    {
+      "id": "rotwood-236",
+      "atlas": "rotwood",
+      "index": 236,
+      "x": 384,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2155120744
+    },
+    {
+      "id": "rotwood-237",
+      "atlas": "rotwood",
+      "index": 237,
+      "x": 416,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2171898363
+    },
+    {
+      "id": "rotwood-238",
+      "atlas": "rotwood",
+      "index": 238,
+      "x": 448,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2121565506
+    },
+    {
+      "id": "rotwood-239",
+      "atlas": "rotwood",
+      "index": 239,
+      "x": 480,
+      "y": 448,
+      "width": 32,
+      "height": 32,
+      "seed": 2138343125
+    },
+    {
+      "id": "rotwood-240",
+      "atlas": "rotwood",
+      "index": 240,
+      "x": 0,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4168876309
+    },
+    {
+      "id": "rotwood-241",
+      "atlas": "rotwood",
+      "index": 241,
+      "x": 32,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4152098690
+    },
+    {
+      "id": "rotwood-242",
+      "atlas": "rotwood",
+      "index": 242,
+      "x": 64,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4135321071
+    },
+    {
+      "id": "rotwood-243",
+      "atlas": "rotwood",
+      "index": 243,
+      "x": 96,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4118543452
+    },
+    {
+      "id": "rotwood-244",
+      "atlas": "rotwood",
+      "index": 244,
+      "x": 128,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4101765833
+    },
+    {
+      "id": "rotwood-245",
+      "atlas": "rotwood",
+      "index": 245,
+      "x": 160,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4084988214
+    },
+    {
+      "id": "rotwood-246",
+      "atlas": "rotwood",
+      "index": 246,
+      "x": 192,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4068210595
+    },
+    {
+      "id": "rotwood-247",
+      "atlas": "rotwood",
+      "index": 247,
+      "x": 224,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4051432976
+    },
+    {
+      "id": "rotwood-248",
+      "atlas": "rotwood",
+      "index": 248,
+      "x": 256,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 8129965
+    },
+    {
+      "id": "rotwood-249",
+      "atlas": "rotwood",
+      "index": 249,
+      "x": 288,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 4286319642
+    },
+    {
+      "id": "rotwood-250",
+      "atlas": "rotwood",
+      "index": 250,
+      "x": 320,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1920528268
+    },
+    {
+      "id": "rotwood-251",
+      "atlas": "rotwood",
+      "index": 251,
+      "x": 352,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1937305887
+    },
+    {
+      "id": "rotwood-252",
+      "atlas": "rotwood",
+      "index": 252,
+      "x": 384,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1954083506
+    },
+    {
+      "id": "rotwood-253",
+      "atlas": "rotwood",
+      "index": 253,
+      "x": 416,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1970861125
+    },
+    {
+      "id": "rotwood-254",
+      "atlas": "rotwood",
+      "index": 254,
+      "x": 448,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1853417792
+    },
+    {
+      "id": "rotwood-255",
+      "atlas": "rotwood",
+      "index": 255,
+      "x": 480,
+      "y": 480,
+      "width": 32,
+      "height": 32,
+      "seed": 1870195411
+    }
+  ],
+  "atlasLayouts": {
+    "ground": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "roads": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "buildings": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "roofs": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "interiors": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "props": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "effects": {
+      "columns": 8,
+      "rows": 4,
+      "frameCount": 32
+    },
+    "rotwood": {
+      "columns": 16,
+      "rows": 16,
+      "frameCount": 256
+    }
+  }
+}

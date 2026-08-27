@@ -1,0 +1,125 @@
+{
+  "schema": "gothic-revolt-buildings/v1",
+  "styles": [
+    {
+      "id": "style-0",
+      "wallFrame": 0,
+      "roofFrames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "interiorFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "style-1",
+      "wallFrame": 4,
+      "roofFrames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "interiorFrames": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "style-2",
+      "wallFrame": 8,
+      "roofFrames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "interiorFrames": [
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "id": "style-3",
+      "wallFrame": 12,
+      "roofFrames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "interiorFrames": [
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "id": "style-4",
+      "wallFrame": 16,
+      "roofFrames": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "interiorFrames": [
+        16,
+        17,
+        18,
+        19
+      ]
+    }
+  ],
+  "kits": {
+    "rotwood-village-v1": {
+      "atlas": "rotwood",
+      "archetypes": [
+        {
+          "id": "root-cottage",
+          "minWidth": 6,
+          "maxWidth": 7,
+          "minHeight": 5,
+          "maxHeight": 6,
+          "roof": "moss-gable"
+        },
+        {
+          "id": "fungal-workshop",
+          "minWidth": 7,
+          "maxWidth": 8,
+          "minHeight": 5,
+          "maxHeight": 6,
+          "roof": "broken-hip"
+        },
+        {
+          "id": "thorn-chapel",
+          "minWidth": 6,
+          "maxWidth": 7,
+          "minHeight": 6,
+          "maxHeight": 7,
+          "roof": "spire-gable"
+        }
+      ],
+      "layers": [
+        "foundation",
+        "floor",
+        "wall",
+        "door-window",
+        "roof",
+        "corruption",
+        "lighting"
+      ]
+    }
+  }
+}

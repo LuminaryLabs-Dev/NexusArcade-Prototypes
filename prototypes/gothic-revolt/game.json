@@ -1,13 +1,13 @@
 {
   "title": "Gothic Revolt",
   "slug": "gothic-revolt",
-  "description": "A five-minute gothic action roguelite. Slaughter escalating armies, extract with permanent loot, and build your rebel through branching ability trees.",
+  "description": "A five-minute gothic exploration roguelite set in one infinite, persistent world of roads, towns, enterable buildings, permanent shortcuts, and escalating armies.",
   "genre": "Action Roguelite",
   "status": "prototype",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "featured": false,
   "thumbnail": "cover.webp",
   "accent": "crimson",
   "sortOrder": 4,
-  "controls": ["WASD", "Mouse", "Keyboard", "Touch"]
+  "controls": ["WASD", "Mouse", "E Interact", "Keyboard", "Touch"]
 }

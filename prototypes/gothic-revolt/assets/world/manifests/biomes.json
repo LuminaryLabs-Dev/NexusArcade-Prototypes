@@ -1,0 +1,77 @@
+{
+  "schema": "gothic-revolt-biomes/v1",
+  "regions": [
+    {
+      "id": "spirelands",
+      "groundFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "rotwood",
+      "groundFrames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "kit": "rotwood-village-v1",
+      "materials": [
+        "soil",
+        "moss",
+        "mud",
+        "roots",
+        "timber",
+        "stone",
+        "slate",
+        "fungus",
+        "lantern-light"
+      ],
+      "pathFamily": "rotwood-mud-and-cobble",
+      "placeFamilies": [
+        "village-square",
+        "shrine-court",
+        "fungal-grove"
+      ]
+    },
+    {
+      "id": "bone-barrens",
+      "groundFrames": [
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "id": "bloodfen",
+      "groundFrames": [
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "id": "iron-march",
+      "groundFrames": [
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "id": "black-verge",
+      "groundFrames": [
+        20,
+        21,
+        22,
+        23
+      ]
+    }
+  ]
+}

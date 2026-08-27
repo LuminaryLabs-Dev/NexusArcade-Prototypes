@@ -2,9 +2,31 @@ const KEY = new URLSearchParams(location.search).has('review') ? 'gothic-revolt-
 const SKILLS = new Set(['cleave','lunge','counter','whirl','break','rush','guillotine','lance','shield','burst','chain','decoy','prison','tempest','thorns','root','spore','vine','seed','totem','forest']);
 const SLOTS = new Set(['weapon','offhand','helmet','chest','gloves','boots','charm']);
 const STATS = new Set(['damage','health','speed','armor','crit','cooldown','gold']);
+const WORLD_LISTS = ['discoveredChunks','discoveredTowns','knownLandmarks','openedShortcuts','openedDoors','defeatedBosses','lootedUniqueContainers'];
 
 export function freshSave() {
-  return { version: 1, gold: 0, threat: 1, expeditions: 0, kills: 0, inventory: [], equipped: {}, skills: {}, inventoryCap: 30 };
+  return {
+    version: 2,
+    gold: 0,
+    threat: 1,
+    expeditions: 0,
+    kills: 0,
+    inventory: [],
+    equipped: {},
+    skills: {},
+    inventoryCap: 30,
+    world: {
+      worldSeed: 76100,
+      generatorVersion: 1,
+      discoveredChunks: [],
+      discoveredTowns: [],
+      knownLandmarks: [],
+      openedShortcuts: [],
+      openedDoors: [],
+      defeatedBosses: [],
+      lootedUniqueContainers: []
+    }
+  };
 }
 
 function finiteInt(value, min, max, fallback) {
@@ -17,9 +39,14 @@ function validItem(item) {
     Number.isFinite(item.value) && item.value >= 1 && item.value <= 999 && Number.isFinite(item.tier) && item.tier >= 1 && item.tier <= 20;
 }
 
+function sanitizeIds(value, limit) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter(id => typeof id === 'string' && id.length > 0 && id.length <= 160))].slice(-limit);
+}
+
 function sanitize(value) {
   const clean = freshSave();
-  if (!value || value.version !== 1 || typeof value !== 'object') return clean;
+  if (!value || typeof value !== 'object' || (value.version !== 1 && value.version !== 2)) return clean;
   clean.gold = finiteInt(value.gold, 0, 1_000_000_000, 0);
   clean.threat = finiteInt(value.threat, 1, 5, 1);
   clean.maxThreat = finiteInt(value.maxThreat, 1, 5, clean.threat);
@@ -37,13 +64,15 @@ function sanitize(value) {
   if (value.skills && typeof value.skills === 'object') {
     for (const [id, rank] of Object.entries(value.skills)) if (SKILLS.has(id)) clean.skills[id] = finiteInt(rank, 0, 3, 0);
   }
+  if (value.version === 2 && value.world && typeof value.world === 'object') {
+    for (const key of WORLD_LISTS) clean.world[key] = sanitizeIds(value.world[key], key === 'discoveredChunks' ? 2048 : 512);
+  }
   return clean;
 }
 
 export function loadSave() {
   try {
-    const value = JSON.parse(localStorage.getItem(KEY));
-    return sanitize(value);
+    return sanitize(JSON.parse(localStorage.getItem(KEY)));
   } catch { return freshSave(); }
 }
 
