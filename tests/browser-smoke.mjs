@@ -249,10 +249,18 @@ async function multiplayerScenario() {
     }
     const roomCode = await evaluate(host.sessionId, 'document.querySelector("#roomCode").textContent');
     await evaluate(client.sessionId, `(()=>{const code=${JSON.stringify(roomCode)};document.querySelector("#onlineBtn").click();document.querySelector("#joinTab").click();document.querySelector("#joinCode").value=code;document.querySelector("#joinBtn").click();return true})()`);
-    await Promise.all([
-      waitFor(host.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000),
-      waitFor(client.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000)
-    ]);
+    try {
+      await Promise.all([
+        waitFor(host.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000),
+        waitFor(client.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000)
+      ]);
+    } catch (error) {
+      const diagnostic = {
+        host: await evaluate(host.sessionId, '({ui:KnockoutCircuit.getUiState(),network:KnockoutCircuit.getNetworkState(),detail:document.querySelector("#netState").textContent})'),
+        client: await evaluate(client.sessionId, '({ui:KnockoutCircuit.getUiState(),network:KnockoutCircuit.getNetworkState(),detail:document.querySelector("#netState").textContent})')
+      };
+      throw new Error(`PeerJS peers did not synchronize: ${JSON.stringify({ diagnostic, findings, cause: error.message })}`);
+    }
     const before = {
       host: await evaluate(host.sessionId, 'KnockoutCircuit.getState()'),
       client: await evaluate(client.sessionId, 'KnockoutCircuit.getState()')

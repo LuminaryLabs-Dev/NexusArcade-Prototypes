@@ -556,6 +556,7 @@ window.KnockoutCircuit = {
   createKnockoutSimulationAdapter,
   getState: () => structuredClone(mode === "multi" && session ? session.getRenderState().state : campaign),
   getUiState: () => ({ mode, status: ui.status.textContent, lobbyVisible: !ui.lobby.hidden, resultVisible: !ui.result.hidden, upgradeVisible: !ui.upgrade.hidden }),
+  getNetworkState: () => session ? structuredClone(session.getStatus()) : null,
   setInput,
   startCampaign: continueCampaign,
   startNewCampaign,
