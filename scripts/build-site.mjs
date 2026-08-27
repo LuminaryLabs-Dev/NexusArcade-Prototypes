@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 const ROOT = process.cwd();
 const PROTOTYPES_DIR = path.join(ROOT, 'prototypes');
 const CATALOG_SOURCE = path.join(ROOT, 'catalog', 'index.html');
+const CATALOG_FAVICON = path.join(ROOT, 'catalog', 'favicon.ico');
 const OUT_DIR = path.join(ROOT, '_site');
 const GAMES_OUT = path.join(OUT_DIR, 'games');
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -185,6 +186,7 @@ async function loadPrototype(entry) {
 await rm(OUT_DIR, { recursive: true, force: true });
 await mkdir(GAMES_OUT, { recursive: true });
 if (!(await exists(CATALOG_SOURCE))) fail('catalog/index.html is missing');
+if (!(await exists(CATALOG_FAVICON))) fail('catalog/favicon.ico is missing');
 const entries = (await readdir(PROTOTYPES_DIR, { withFileTypes: true }))
   .filter((e) => e.isDirectory() && !e.name.startsWith('_') && !e.name.startsWith('.'))
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -197,6 +199,7 @@ games.sort((a, b) =>
   a.slug.localeCompare(b.slug)
 );
 await cp(CATALOG_SOURCE, path.join(OUT_DIR, 'index.html'));
+await cp(CATALOG_FAVICON, path.join(OUT_DIR, 'favicon.ico'));
 await writeFile(path.join(OUT_DIR, 'catalog.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), count: games.length, games }, null, 2)}\n`);
 await writeFile(path.join(OUT_DIR, '.nojekyll'), '');
 console.log(`[prototype-build] ${games.length} launchable prototype(s) built`);
