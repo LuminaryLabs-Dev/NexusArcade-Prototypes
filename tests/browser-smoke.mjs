@@ -156,6 +156,7 @@ async function reviewKnockout() {
     await loaded;
     await waitFor(sessionId, 'window.KnockoutCircuit', 20000);
     const initial = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+    const initialLayout = await evaluate(sessionId, '({innerHeight,scrollHeight:document.documentElement.scrollHeight,cabinet:document.querySelector(".cabinet").getBoundingClientRect().toJSON()})');
     await screenshot(sessionId, '00-start-screen.png');
     await evaluate(sessionId, 'KnockoutCircuit.startNewCampaign();KnockoutCircuit.setInput("right",true);KnockoutCircuit.setInput("punch",true)');
     interactions.push({ atSeconds: 0, action: 'Start Circuit Run; hold right and punch' });
@@ -176,8 +177,10 @@ async function reviewKnockout() {
     }
     await evaluate(sessionId, 'KnockoutCircuit.setInput("right",false);KnockoutCircuit.setInput("punch",false)');
     const final = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+    const finalLayout = await evaluate(sessionId, '({innerHeight,scrollHeight:document.documentElement.scrollHeight,cabinet:document.querySelector(".cabinet").getBoundingClientRect().toJSON()})');
     await screenshot(sessionId, '61-final-state.png');
     const durationSeconds = (Date.now() - startedAt) / 1000;
+    const observedBosses = [...new Set(samples.map((sample) => sample.fighters[1].name))];
     const validation = {
       schema: 'nexus-browser-review/1',
       target: 'Knockout Circuit campaign',
@@ -187,13 +190,18 @@ async function reviewKnockout() {
       viewport: { width: 1280, height: 800 },
       initial,
       final,
+      layout: { initial: initialLayout, final: finalLayout },
+      observedBosses,
       samples,
       interactions,
       browserFindings,
       checks: {
         fullDuration: durationSeconds >= 60,
-        fixedTickAdvanced: samples.at(-1)?.tick > samples[0]?.tick,
+        fixedTickAdvanced: samples.some((sample, index) => index > 0 && sample.tick > samples[index - 1].tick),
         combatChangedHealth: samples.some((sample) => sample.fighters.some((fighter) => fighter.hp < fighter.maxHp)),
+        allBossesObserved: observedBosses.length === 5,
+        campaignCompleted: interactions.some((interaction) => interaction.action === 'Fight again after result'),
+        noViewportOverflow: finalLayout.scrollHeight <= finalLayout.innerHeight,
         noBrowserErrors: !browserFindings.some((finding) => finding.level === 'error')
       }
     };
@@ -201,6 +209,9 @@ async function reviewKnockout() {
     assert.ok(validation.checks.fullDuration, 'Knockout review did not span 60 seconds');
     assert.ok(validation.checks.fixedTickAdvanced, 'Knockout review tick did not advance');
     assert.ok(validation.checks.combatChangedHealth, 'Knockout review did not exercise combat');
+    assert.ok(validation.checks.allBossesObserved, `Knockout review did not show all five bosses: ${observedBosses.join(', ')}`);
+    assert.ok(validation.checks.campaignCompleted, 'Knockout review did not complete a circuit');
+    assert.ok(validation.checks.noViewportOverflow, `Knockout cabinet overflowed the viewport: ${JSON.stringify(finalLayout)}`);
     assert.ok(validation.checks.noBrowserErrors, `Knockout review emitted browser errors: ${JSON.stringify(browserFindings)}`);
     console.log(`browser review ok: Knockout Circuit ${durationSeconds.toFixed(1)}s, ${samples.length} samples`);
   } finally {
