@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 
 const ROOT = path.resolve('_site');
+const REVIEW_DIR = process.env.KNOCKOUT_REVIEW_DIR ? path.resolve(process.env.KNOCKOUT_REVIEW_DIR) : null;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp' };
 const server = createServer(async (request, response) => {
   try {
@@ -27,7 +28,8 @@ assert.ok(chrome, 'Chrome or Chromium is required for the browser smoke gate');
 const profile = await mkdtemp(path.join(tmpdir(), 'nexus-arcade-chrome-'));
 const child = spawn(chrome, [
   '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader',
-  '--ignore-gpu-blocklist', '--window-size=1280,800', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
+  '--ignore-gpu-blocklist', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--window-size=1280,800',
+  '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -97,6 +99,10 @@ async function waitFor(sessionId, expression, timeoutMs = 15000) {
   }
   throw new Error(`Condition did not become true: ${expression}`);
 }
+async function screenshot(sessionId, filename) {
+  const { data } = await call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId);
+  await writeFile(path.join(REVIEW_DIR, filename), Buffer.from(data, 'base64'));
+}
 async function scenario(name, pathname, ready, action, assertion, timeoutMs = 15000) {
   const { targetId } = await call('Target.createTarget', { url: 'about:blank' });
   const { sessionId } = await call('Target.attachToTarget', { targetId, flatten: true });
@@ -124,9 +130,88 @@ async function scenario(name, pathname, ready, action, assertion, timeoutMs = 15
   }
 }
 
+async function reviewKnockout() {
+  await mkdir(REVIEW_DIR, { recursive: true });
+  const { targetId } = await call('Target.createTarget', { url: 'about:blank' });
+  const { sessionId } = await call('Target.attachToTarget', { targetId, flatten: true });
+  const browserFindings = [];
+  const capture = (message) => {
+    if (message.sessionId !== sessionId) return;
+    if (message.method === 'Runtime.exceptionThrown') browserFindings.push({ level: 'error', message: message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text });
+    if (message.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(message.params.type)) browserFindings.push({ level: message.params.type, message: message.params.args.map((arg) => arg.value || arg.description).join(' ') });
+    if (message.method === 'Log.entryAdded' && ['error', 'warning'].includes(message.params.entry.level)) browserFindings.push({ level: message.params.entry.level, message: message.params.entry.text, url: message.params.entry.url });
+  };
+  listeners.add(capture);
+  const samples = [];
+  const interactions = [];
+  const startedAt = Date.now();
+  try {
+    await Promise.all([
+      call('Page.enable', {}, sessionId), call('Runtime.enable', {}, sessionId), call('Log.enable', {}, sessionId),
+      call('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false }, sessionId)
+    ]);
+    const loaded = event('Page.loadEventFired', sessionId, 20000);
+    await call('Page.navigate', { url: `http://127.0.0.1:${port}/games/knockout-circuit/` }, sessionId);
+    await loaded;
+    await waitFor(sessionId, 'window.KnockoutCircuit', 20000);
+    const initial = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+    await screenshot(sessionId, '00-start-screen.png');
+    await evaluate(sessionId, 'KnockoutCircuit.startNewCampaign();KnockoutCircuit.setInput("right",true);KnockoutCircuit.setInput("punch",true)');
+    interactions.push({ atSeconds: 0, action: 'Start Circuit Run; hold right and punch' });
+    for (let second = 1; second <= 60; second += 1) {
+      await delay(1000);
+      let sample = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+      if (sample.ui.upgradeVisible) {
+        await evaluate(sessionId, 'KnockoutCircuit.chooseUpgrade("power")');
+        interactions.push({ atSeconds: second, action: 'Install Piston Force and continue' });
+      } else if (sample.ui.resultVisible) {
+        await evaluate(sessionId, 'document.querySelector("#resultBtn").click()');
+        interactions.push({ atSeconds: second, action: 'Fight again after result' });
+      }
+      await evaluate(sessionId, 'KnockoutCircuit.setInput("right",true);KnockoutCircuit.setInput("punch",true)');
+      sample = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+      samples.push({ second, ui: sample.ui, tick: sample.state.tick, round: sample.state.round, phase: sample.state.phase, fighters: sample.state.fighters.map(({ name, health, x }) => ({ name, health, x })) });
+      if (second % 5 === 0) await screenshot(sessionId, `${String(second).padStart(2, '0')}-gameplay.png`);
+    }
+    await evaluate(sessionId, 'KnockoutCircuit.setInput("right",false);KnockoutCircuit.setInput("punch",false)');
+    const final = await evaluate(sessionId, '({ui:KnockoutCircuit.getUiState(),state:KnockoutCircuit.getState()})');
+    await screenshot(sessionId, '61-final-state.png');
+    const durationSeconds = (Date.now() - startedAt) / 1000;
+    const validation = {
+      schema: 'nexus-browser-review/1',
+      target: 'Knockout Circuit campaign',
+      captureKind: 'timed-screenshot-sequence',
+      nativeVideo: false,
+      durationSeconds,
+      viewport: { width: 1280, height: 800 },
+      initial,
+      final,
+      samples,
+      interactions,
+      browserFindings,
+      checks: {
+        fullDuration: durationSeconds >= 60,
+        fixedTickAdvanced: samples.at(-1)?.tick > samples[0]?.tick,
+        combatChangedHealth: samples.some((sample) => sample.fighters.some((fighter) => fighter.health < 100)),
+        noBrowserErrors: !browserFindings.some((finding) => finding.level === 'error')
+      }
+    };
+    await writeFile(path.join(REVIEW_DIR, 'validation.json'), `${JSON.stringify(validation, null, 2)}\n`);
+    assert.ok(validation.checks.fullDuration, 'Knockout review did not span 60 seconds');
+    assert.ok(validation.checks.fixedTickAdvanced, 'Knockout review tick did not advance');
+    assert.ok(validation.checks.combatChangedHealth, 'Knockout review did not exercise combat');
+    assert.ok(validation.checks.noBrowserErrors, `Knockout review emitted browser errors: ${JSON.stringify(browserFindings)}`);
+    console.log(`browser review ok: Knockout Circuit ${durationSeconds.toFixed(1)}s, ${samples.length} samples`);
+  } finally {
+    listeners.delete(capture);
+    await call('Target.closeTarget', { targetId });
+  }
+}
+
 try {
   await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===3", null, "document.querySelectorAll('.card').length===7");
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
+  if (REVIEW_DIR) await reviewKnockout();
   await scenario('Blood Maiden', 'games/blood-maiden/', 'window.BloodMaiden', "document.querySelector('#startBtn').click();BloodMaiden.saveProgress()", "BloodMaiden.getProgress()?.schema==='blood-maiden-pilgrimage/1'");
   await scenario('Bubble Raft Assault', 'games/bubble-raft-assault/', 'window.BubbleRaftAssault', 'BubbleRaftAssault.startCampaign()', "BubbleRaftAssault.getSavedCampaign()?.schema==='bubble-raft-campaign/1'");
   await scenario('Gothic Revolt', 'games/gothic-revolt/?review', 'window.__GothicRevolt?.ready', '__GothicRevolt.start(76100);__GothicRevolt.advance(1)', "__GothicRevolt.snapshot().mode==='run' && __GothicRevolt.snapshot().elapsed>=1");
