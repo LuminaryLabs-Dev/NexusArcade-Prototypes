@@ -80,4 +80,5 @@ assert.match(app, /preventDefault/);
 assert.match(app, /knockout-circuit-campaign\/1/);
 assert.match(app, /requestRematch/);
 assert.match(app, /recoveryGraceTicks/);
+assert.match(app, /target = frame\.tick - 6/, "remote interpolation uses the session clock across round and rematch resets");
 console.log("knockout-circuit multiplayer and campaign proof ok");

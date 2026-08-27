@@ -441,7 +441,7 @@ function renderState() {
   if (mode !== "multi" || !session) return campaign ?? createInitialKnockoutState({ mode: "campaign" });
   const frame = session.getRenderState(), state = frame.state;
   if (sessionRole === "client" && frame.interpolation.length > 1) {
-    const target = state.tick - 6, samples = frame.interpolation;
+    const target = frame.tick - 6, samples = frame.interpolation;
     let left = samples[0], right = samples.at(-1);
     for (let index = 1; index < samples.length; index += 1) {
       if (samples[index].tick >= target) { left = samples[index - 1]; right = samples[index]; break; }
