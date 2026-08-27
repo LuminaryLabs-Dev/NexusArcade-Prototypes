@@ -27,7 +27,7 @@ assert.ok(chrome, 'Chrome or Chromium is required for the browser smoke gate');
 const profile = await mkdtemp(path.join(tmpdir(), 'nexus-arcade-chrome-'));
 const child = spawn(chrome, [
   '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader',
-  '--ignore-gpu-blocklist', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
+  '--ignore-gpu-blocklist', '--window-size=1280,800', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -98,7 +98,7 @@ async function waitFor(sessionId, expression, timeoutMs = 15000) {
   throw new Error(`Condition did not become true: ${expression}`);
 }
 async function scenario(name, pathname, ready, action, assertion, timeoutMs = 15000) {
-  const { targetId } = await call('Target.createTarget', { url: 'about:blank', width: 1280, height: 800 });
+  const { targetId } = await call('Target.createTarget', { url: 'about:blank' });
   const { sessionId } = await call('Target.attachToTarget', { targetId, flatten: true });
   const errors = [];
   const capture = (message) => {
