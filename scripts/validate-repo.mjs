@@ -47,7 +47,7 @@ const knockout = await read('prototypes/knockout-circuit/app.mjs');
 const knockoutHtml = await read('prototypes/knockout-circuit/index.html');
 assert.match(knockout, /session\.tick\(delta\)/, 'Knockout must pump multiplayer while the lobby is visible');
 assert.match(knockout, /visibilitychange/);
-assert.match(knockoutHtml, /NexusEngine-Kits@310b57d/);
+assert.match(knockoutHtml, /NexusEngine-Kits@2aeaa2b/);
 assert.match(knockoutHtml, /multiplayer-host-kit\/controller\.js/);
 
 const blood = await read('prototypes/blood-maiden/index.html');

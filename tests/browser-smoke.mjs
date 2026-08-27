@@ -263,6 +263,12 @@ async function multiplayerScenario() {
     await evaluate(client.sessionId, `(()=>{const code=${JSON.stringify(roomCode)};document.querySelector("#onlineBtn").click();document.querySelector("#joinTab").click();document.querySelector("#joinCode").value=code;document.querySelector("#joinBtn").click();return true})()`);
     try {
       await Promise.all([
+        waitFor(host.sessionId, 'KnockoutCircuit.getUiState().status==="Ready check"', 35000),
+        waitFor(client.sessionId, 'KnockoutCircuit.getUiState().status==="Ready check"', 35000)
+      ]);
+      await evaluate(host.sessionId, 'document.querySelector("#readyBtn").click()');
+      await evaluate(client.sessionId, 'document.querySelector("#readyBtn").click()');
+      await Promise.all([
         waitFor(host.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000),
         waitFor(client.sessionId, 'KnockoutCircuit.getUiState().mode==="multi" && KnockoutCircuit.getUiState().status==="Ready"', 35000)
       ]);
@@ -298,6 +304,17 @@ async function multiplayerScenario() {
     assert.ok(checks.ticksSynchronized, `PeerJS peer ticks drifted: host ${after.host.tick}, client ${after.client.tick}`);
     assert.ok(checks.authorityAgrees, 'PeerJS peers disagreed on authoritative health, phase, or round');
     assert.ok(checks.noBrowserErrors, `PeerJS browser errors: ${JSON.stringify(findings)}`);
+    await evaluate(client.sessionId, 'document.querySelector("#forfeitBtn").click()');
+    await Promise.all([
+      waitFor(host.sessionId, '!document.querySelector("#result").hidden', 10000),
+      waitFor(client.sessionId, '!document.querySelector("#result").hidden', 10000)
+    ]);
+    await evaluate(host.sessionId, 'document.querySelector("#resultBtn").click()');
+    await evaluate(client.sessionId, 'document.querySelector("#resultBtn").click()');
+    await Promise.all([
+      waitFor(host.sessionId, 'document.querySelector("#result").hidden && KnockoutCircuit.getNetworkState().phase==="ready"', 10000),
+      waitFor(client.sessionId, 'document.querySelector("#result").hidden && KnockoutCircuit.getNetworkState().phase==="ready"', 10000)
+    ]);
     console.log(`browser multiplayer ok: host ${after.host.tick}, client ${after.client.tick}, hp ${after.host.fighters.map((fighter) => fighter.hp).join('/')}`);
   } finally {
     for (const peer of peers.reverse()) {

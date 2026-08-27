@@ -35,6 +35,15 @@ const loaded = createKnockoutSimulationAdapter({ authoritative: false }).loadSta
 assert.equal(loaded.authoritative, false);
 assert.throws(() => createKnockoutSimulationAdapter().loadState({ schema: "wrong" }), /Invalid Knockout/);
 
+let rewound = createInitialKnockoutState({ authoritative: true });
+rewound.phase = "fight"; rewound.fighters[0].x = 300; rewound.fighters[1].x = 600;
+const historical = structuredClone(rewound); historical.fighters[0].x = 480;
+for (let frame = 0; frame < 7; frame += 1) {
+  rewound = applyKnockoutInputs(rewound, { local: { punch: frame === 0 } });
+  rewound = stepKnockoutState(rewound, 1 / 60, frame, { authoritative: true, inputTicks: { local: 10 }, getHistoricalState: () => historical });
+}
+assert.ok(rewound.fighters[0].hp < 100, "host rewind validates a delayed guest punch against bounded historical position");
+
 assert.deepEqual(KNOCKOUT_BOSSES.map((boss) => boss.name), ["Boiler Bruiser", "Volt Viper", "Iron Warden", "Phantom Gear", "Crown Crusher"]);
 assert.deepEqual(new Set(KNOCKOUT_BOSSES.map((boss) => boss.pattern)), new Set(["jab", "double", "charge", "counter", "fury"]));
 assert.deepEqual(KNOCKOUT_UPGRADES.map((upgrade) => upgrade.id), ["power", "armor", "drive"]);
@@ -56,14 +65,19 @@ for (let bossIndex = 0; bossIndex < KNOCKOUT_BOSSES.length; bossIndex += 1) {
 const html = await readFile(new URL("../prototypes/knockout-circuit/index.html", import.meta.url), "utf8");
 const app = await readFile(new URL("../prototypes/knockout-circuit/app.mjs", import.meta.url), "utf8");
 assert.match(html, /NexusEngine@8a60167f/);
-assert.match(html, /NexusEngine-Kits@310b57d/);
+assert.match(html, /NexusEngine-Kits@2aeaa2b/);
 assert.match(html, /multiplayer-host-kit\/controller\.js/, "browser loads the lean controller without the full NexusEngine bootstrap");
 assert.doesNotMatch(html, /reliable:true/);
 assert.match(html, /Create room/);
 assert.match(html, /Copy/);
 assert.match(html, /Install one upgrade/);
+assert.match(html, /Invite link/);
+assert.match(html, /Forfeit/);
+assert.match(html, /Ready/);
 assert.match(app, /import\("nexus-kits-host"\)/, "campaign boot does not require the network Kit");
 assert.match(app, /visibilitychange/);
 assert.match(app, /preventDefault/);
 assert.match(app, /knockout-circuit-campaign\/1/);
+assert.match(app, /requestRematch/);
+assert.match(app, /recoveryGraceTicks/);
 console.log("knockout-circuit multiplayer and campaign proof ok");

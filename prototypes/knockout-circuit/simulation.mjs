@@ -49,6 +49,7 @@ function fighter(side, profile = {}) {
     combo: 0,
     windupTicks: 0,
     charged: false,
+    attackTick: null,
     dead: false
   };
 }
@@ -142,7 +143,7 @@ function pushEvent(state, type, data = {}) {
   state.events = state.events.filter((event) => state.tick - event.tick <= 12).slice(-8);
 }
 
-function moveFighter(fighterValue, intent) {
+function moveFighter(fighterValue, intent, inputTick = null) {
   fighterValue.cooldown = Math.max(0, fighterValue.cooldown - 1);
   fighterValue.punchTicks = Math.max(0, fighterValue.punchTicks - 1);
   fighterValue.hitTicks = Math.max(0, fighterValue.hitTicks - 1);
@@ -156,16 +157,23 @@ function moveFighter(fighterValue, intent) {
     const furyCooldown = fury ? 20 : fighterValue.cooldownTicks;
     fighterValue.cooldown = furyCooldown;
     fighterValue.punchTicks = 12;
+    fighterValue.attackTick = Number.isFinite(inputTick) ? Math.round(inputTick) : null;
     fighterValue.landed = false;
   }
 }
 
-function resolveHit(state, index) {
+function resolveHit(state, index, context = {}) {
   const attacker = state.fighters[index], target = state.fighters[1 - index];
   if (attacker.punchTicks !== 6 || attacker.landed || attacker.dead || target.dead) return;
   attacker.landed = true;
   const range = attacker.charged ? Math.max(attacker.range, 164) : attacker.range;
-  if (Math.abs(attacker.x - target.x) > range) { attacker.charged = false; return; }
+  let targetX = target.x;
+  if (index === 1 && context.authoritative && typeof context.getHistoricalState === "function" && attacker.attackTick != null) {
+    const rewindTick = clamp(attacker.attackTick, state.tick - 12, state.tick);
+    const historical = context.getHistoricalState(rewindTick);
+    targetX = historical?.fighters?.[0]?.x ?? targetX;
+  }
+  if (Math.abs(attacker.x - targetX) > range) { attacker.charged = false; return; }
   const rawDamage = attacker.charged ? Math.max(attacker.damage, 23) : attacker.damage;
   const damage = Math.max(1, Math.round(rawDamage * (1 - target.damageReduction)));
   attacker.charged = false;
@@ -192,7 +200,7 @@ function resetRound(state) {
   pushEvent(state, "round", { round: state.round });
 }
 
-export function stepKnockoutState(state) {
+export function stepKnockoutState(state, _delta, _tick, context = {}) {
   const next = clone(state);
   next.tick += 1;
   next.events = next.events.filter((event) => next.tick - event.tick <= 12);
@@ -208,10 +216,10 @@ export function stepKnockoutState(state) {
   if (next.phase === "fight") {
     if (next.authoritative && next.mode === "campaign") next.inputs[1] = bossIntent(next);
     const active = next.authoritative ? [0, 1] : [1];
-    for (const index of active) moveFighter(next.fighters[index], next.inputs[index]);
+    for (const index of active) moveFighter(next.fighters[index], next.inputs[index], index === 1 ? context.inputTicks?.local : next.tick);
     if (next.authoritative) {
-      resolveHit(next, 0);
-      resolveHit(next, 1);
+      resolveHit(next, 0, context);
+      resolveHit(next, 1, context);
     }
   }
 
@@ -249,7 +257,7 @@ export function hashKnockoutState(state) {
 }
 
 export function createKnockoutSimulationAdapter(options = {}) {
-  const authoritative = options.authoritative !== false;
+  let authoritative = options.authoritative !== false;
   const initial = {
     mode: options.mode ?? "multiplayer",
     bossIndex: options.bossIndex ?? 0,
@@ -266,6 +274,21 @@ export function createKnockoutSimulationAdapter(options = {}) {
     },
     applyInputs: applyKnockoutInputs,
     step: stepKnockoutState,
-    hashState: hashKnockoutState
+    hashState: hashKnockoutState,
+    setAuthority(value) { authoritative = Boolean(value); },
+    configurePlayers(state, playerProfiles = {}) {
+      for (const index of [0, 1]) {
+        const profile = playerProfiles[index] ?? {};
+        if (profile.name) state.fighters[index].name = String(profile.name).slice(0, 18);
+        const palette = profile.robot === "orange" ? { color: "#ed4827", trim: "#ffc33c" } : { color: "#e9b41e", trim: "#fff08a" };
+        Object.assign(state.fighters[index], palette);
+      }
+      return state;
+    },
+    forfeit(value, player) {
+      const next = clone(value), loser = player === 0 ? 0 : 1, winner = 1 - loser;
+      next.fighters[loser].hp = 0; next.fighters[loser].dead = true; next.winner = winner; next.phase = "ended";
+      pushEvent(next, "ended", { winner, reason: "forfeit" }); return next;
+    }
   };
 }

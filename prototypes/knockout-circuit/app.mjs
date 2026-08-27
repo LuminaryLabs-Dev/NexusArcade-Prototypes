@@ -15,7 +15,7 @@ const SAVE_KEY = "nexus.knockout-circuit.campaign.v1";
 const ui = {
   start: $("#start"), lobby: $("#lobby"), actions: $("#menuActions"), hud: $("#hud"),
   status: $("#statusText"), dot: $("#statusDot"), net: $("#netState"),
-  upgrade: $("#upgrade"), result: $("#result"), announcement: $("#announcement")
+  upgrade: $("#upgrade"), result: $("#result"), announcement: $("#announcement"), tools: $("#matchTools")
 };
 
 let mode = "menu";
@@ -37,6 +37,7 @@ let lastEventId = 0;
 let lastCorrectionSequence = -1;
 let audio = null;
 let networkModulesPromise = null;
+let inviteUrl = "";
 
 const randomCode = () => Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
 const currentInput = () => ({ move: (input.right ? 1 : 0) - (input.left ? 1 : 0), punch: input.punch });
@@ -82,7 +83,8 @@ function refreshCampaignAction() {
 function setStatus(phase, detail) {
   const labels = {
     idle: "Online lobby", creating: "Creating", waiting: "Waiting", connecting: "Connecting",
-    syncing: "Syncing", ready: "Ready", campaign: "Circuit run", "connection-lost": "Connection lost",
+    syncing: "Syncing", lobby: "Ready check", ready: "Ready", campaign: "Circuit run", reconnecting: "Reconnecting",
+    resuming: "Restoring match", "migrating-host": "Migrating host", "connection-lost": "Connection lost",
     failed: "Connection failed", closed: "Closed", menu: "Attract mode"
   };
   ui.status.textContent = labels[phase] ?? phase;
@@ -259,6 +261,7 @@ function showMenu() {
   ui.lobby.hidden = true;
   ui.actions.hidden = false;
   ui.hud.hidden = true;
+  ui.tools.hidden = true;
   hideModals();
   setStatus("menu");
   refreshCampaignAction();
@@ -293,31 +296,56 @@ async function createOnlineSession(role) {
     handshakeRetryTicks: 15,
     handshakeTimeoutTicks: 600,
     startDelayTicks: 60,
+    requireReady: true,
+    recoveryGraceTicks: 900,
+    redundantInputFrames: 8,
     reconciliationSnapThreshold: 96,
+    selectReliableEvents(before, after) {
+      return (after.events ?? []).filter((event) => event.id > (before.eventSequence ?? 0) && ["fight", "hit", "ko", "round", "ended"].includes(event.type));
+    },
     measureStateError(predicted, authoritative) {
       return Math.max(...predicted.fighters.map((fighter, index) => Math.abs(fighter.x - authoritative.fighters[index].x)));
     }
   });
   sessionRole = role;
+  next.onAppMessage((message) => {
+    if (message?.type === "match-event") for (const event of message.events ?? []) consumeEvents({ ...next.getRenderState().state, events: [event] });
+    else if (message?.type === "chat") announce(`${message.name}: ${message.text}`);
+    else if (message?.type === "emote") announce(message.value);
+    else if (message?.type === "forfeit") announce("Forfeit");
+    else if (message?.type === "rematch-start") { ui.result.hidden = true; mode = "multi"; resetPresentation(next.getRenderState().state); }
+  });
   unsubscribeStatus = next.onStatus((status) => {
     const details = {
       creating: "Opening signaling…", waiting: "Room open. Share the code and keep this tab active.",
       connecting: "Finding the host…", syncing: "Transport open. Confirming the shared start tick…",
-      ready: `Synchronized · ${status.latencyMs} ms`, failed: status.lastError ?? "The room could not synchronize.",
-      "connection-lost": status.lastError ?? "The peer connection closed."
+      lobby: `Synchronized · choose Ready · rival ${status.ready[1 - status.localPlayer] ? "ready" : "not ready"}`,
+      ready: `${status.connectionQuality} · ${status.latencyMs} ms · jitter ${status.jitterMs} ms · loss ${status.lossPercent}%`,
+      reconnecting: `Recovering session · ${status.recoverySeconds ?? 15}s`, resuming: "Restoring authoritative state…",
+      failed: status.lastError ?? "The room could not synchronize.", "connection-lost": status.lastError ?? "The peer connection closed."
     };
     setStatus(status.phase, details[status.phase]);
+    $("#readyBtn").disabled = status.phase !== "lobby";
+    $("#readyBtn").textContent = status.ready[status.localPlayer] ? "Not ready" : "Ready";
+    $("#reconnectBtn").hidden = !["reconnecting", "resuming"].includes(status.phase);
+    $("#qualityText").textContent = `${status.connectionQuality} · ${status.latencyMs}ms · ±${status.jitterMs} · ${status.lossPercent}% loss`;
+    const mine = status.profiles[status.localPlayer], theirs = status.profiles[1 - status.localPlayer];
+    $("#youRole").textContent = `You · ${mine.name} · ${mine.robot}`;
+    $("#rivalRole").textContent = `${status.ready[1 - status.localPlayer] ? "Ready" : "Not ready"} · ${theirs.name}`;
     if (status.phase === "ready" && mode !== "multi") {
       mode = "multi";
       ui.start.hidden = true;
       ui.hud.hidden = false;
+      ui.tools.hidden = false;
       hideModals();
       resetPresentation(next.getRenderState().state);
       announce("Round 1");
     }
+    if (status.phase === "reconnecting") {
+      ui.start.hidden = false; ui.actions.hidden = true; ui.lobby.hidden = false; ui.tools.hidden = true;
+    }
     if (["connection-lost", "failed"].includes(status.phase)) {
-      if (mode === "multi") showResult("Connection lost", "The peer connection closed. Return to the lobby and create a fresh room.", "multi");
-      else ui.start.hidden = false;
+      if (mode === "multi") showResult("Connection lost", "The reconnect grace period expired. You can leave safely.", "multi"); else ui.start.hidden = false;
     }
   });
   return next;
@@ -328,9 +356,12 @@ async function host() {
     disposeSession();
     roomCode = randomCode();
     $("#roomCode").textContent = roomCode;
+    inviteUrl = `${location.origin}${location.pathname}?room=${roomCode}`;
+    renderQr(inviteUrl);
     setStatus("creating", "Loading the multiplayer transport…");
     session = await createOnlineSession("host");
     await session.createSession({ peerId: `nexus-knockout-${roomCode.toLowerCase()}` });
+    session.setProfile({ name: $("#playerName").value.trim() || "Player", robot: $("#robotChoice").value });
   } catch (error) { setStatus("failed", error.message); }
 }
 
@@ -342,7 +373,14 @@ async function join() {
     setStatus("connecting", "Loading the multiplayer transport…");
     session = await createOnlineSession("client");
     await session.joinSession({ sessionId: `nexus-knockout-${value}` });
+    roomCode = value.toUpperCase(); inviteUrl = `${location.origin}${location.pathname}?room=${roomCode}`; renderQr(inviteUrl);
+    session.setProfile({ name: $("#playerName").value.trim() || "Player", robot: $("#robotChoice").value });
   } catch (error) { setStatus("failed", error.message); }
+}
+
+function renderQr(value) {
+  const target = $("#qrCode"); target.replaceChildren();
+  if (typeof window.QRCode === "function" && value) new window.QRCode(target, { text: value, width: 58, height: 58, correctLevel: window.QRCode.CorrectLevel.M });
 }
 
 function resolveCampaign() {
@@ -382,7 +420,7 @@ function updateOnline(delta) {
   consumeEvents(state);
   if (state.phase === "ended" && ui.result.hidden) {
     const own = sessionRole === "host" ? 0 : 1;
-    showResult(state.winner === own ? "Match won" : "Match lost", "Host-confirmed best-of-three result.", "multi");
+    showResult(state.winner === own ? "Match won" : "Match lost", "Host-confirmed result. Both players can vote to rematch without leaving this room.", "multi");
   }
 }
 
@@ -409,7 +447,11 @@ function renderState() {
       if (samples[index].tick >= target) { left = samples[index - 1]; right = samples[index]; break; }
     }
     const alpha = Math.max(0, Math.min(1, (target - left.tick) / Math.max(1, right.tick - left.tick)));
-    state.fighters[0].x = left.state.fighters[0].x + (right.state.fighters[0].x - left.state.fighters[0].x) * alpha;
+    const remote = 0;
+    state.fighters[remote].x = left.state.fighters[remote].x + (right.state.fighters[remote].x - left.state.fighters[remote].x) * alpha;
+    state.fighters[remote].punchTicks = alpha < 0.5 ? left.state.fighters[remote].punchTicks : right.state.fighters[remote].punchTicks;
+    state.fighters[remote].hitTicks = alpha < 0.5 ? left.state.fighters[remote].hitTicks : right.state.fighters[remote].hitTicks;
+    state.fighters[remote].dead = alpha < 0.5 ? left.state.fighters[remote].dead : right.state.fighters[remote].dead;
   }
   if (sessionRole === "client" && frame.reconciliation?.sequence !== lastCorrectionSequence) {
     lastCorrectionSequence = frame.reconciliation?.sequence ?? lastCorrectionSequence;
@@ -550,18 +592,50 @@ $("#copyBtn").onclick = async () => {
     ui.net.textContent = "Room code copied.";
   } catch { ui.net.textContent = "Copy was blocked. Select the room code and copy it manually."; }
 };
+$("#shareBtn").onclick = async () => {
+  if (!inviteUrl) { ui.net.textContent = "Create or join a room first."; return; }
+  try {
+    if (navigator.share) await navigator.share({ title: "Knockout Circuit invite", url: inviteUrl });
+    else { await navigator.clipboard.writeText(inviteUrl); ui.net.textContent = "Invite link copied."; }
+  } catch { ui.net.textContent = "Sharing was cancelled or blocked."; }
+};
+$("#readyBtn").onclick = () => { const status = session?.getStatus(); if (status?.phase === "lobby") session.setReady(!status.ready[status.localPlayer]); };
+$("#reconnectBtn").onclick = () => void session?.reconnect().catch(async (error) => {
+  const status = session?.getStatus();
+  if (status?.role === "client" && roomCode) {
+    try { await session.migrateHost(`nexus-knockout-${roomCode.toLowerCase()}`); setStatus("waiting", "Host left. You now own this room; waiting for their resume."); return; }
+    catch {}
+  }
+  setStatus("failed", error.message);
+});
+$("#forfeitBtn").onclick = () => session?.forfeit();
+$("#leaveBtn").onclick = showMenu;
+function sendChat() {
+  const text = $("#chatInput").value.trim(); if (!text || !session) return;
+  const name = session.getStatus().profiles[session.getStatus().localPlayer].name;
+  session.sendAppMessage({ type: "chat", name, text }); announce(`${name}: ${text}`); $("#chatInput").value = "";
+}
+$("#chatBtn").onclick = sendChat;
+$("#chatInput").addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); sendChat(); } });
+document.querySelectorAll("[data-emote]").forEach((button) => { button.onclick = () => { session?.sendAppMessage({ type: "emote", value: button.dataset.emote }); announce(button.dataset.emote); }; });
 $("#backBtn").onclick = showMenu;
 $("#resultMenuBtn").onclick = showMenu;
 $("#resultBtn").onclick = () => {
   if (resultMode === "campaign") startNewCampaign();
-  else { disposeSession(); mode = "lobby"; ui.result.hidden = true; ui.start.hidden = false; ui.actions.hidden = true; ui.lobby.hidden = false; ui.hud.hidden = true; setStatus("idle", "Create or join a fresh room."); }
+  else if (session) { session.requestRematch(true); $("#resultActionCopy").textContent = "Rematch requested · waiting for rival"; }
+  else { mode = "lobby"; ui.result.hidden = true; ui.start.hidden = false; ui.actions.hidden = true; ui.lobby.hidden = false; ui.hud.hidden = true; setStatus("idle", "Create or join a room."); }
 };
 $("#hostTab").onclick = () => { $("#hostPane").hidden = false; $("#joinPane").hidden = true; $("#hostTab").classList.add("selected"); $("#joinTab").classList.remove("selected"); $("#youRole").textContent = "You · Gold robot"; $("#rivalRole").textContent = "Rival · Orange robot"; };
 $("#joinTab").onclick = () => { $("#hostPane").hidden = true; $("#joinPane").hidden = false; $("#joinTab").classList.add("selected"); $("#hostTab").classList.remove("selected"); $("#youRole").textContent = "You · Orange robot"; $("#rivalRole").textContent = "Rival · Gold robot"; };
 
 refreshCampaignAction();
+const invitedRoom = new URLSearchParams(location.search).get("room")?.trim().toUpperCase();
+if (/^[A-Z2-9]{6}$/.test(invitedRoom ?? "")) {
+  mode = "lobby"; ui.actions.hidden = true; ui.lobby.hidden = false; $("#joinCode").value = invitedRoom;
+  $("#joinTab").click(); setStatus("idle", "Invite loaded. Choose your name and join.");
+}
 window.KnockoutCircuit = {
-  version: "0.3.0",
+  version: "0.4.0",
   bosses: KNOCKOUT_BOSSES,
   createKnockoutSimulationAdapter,
   getState: () => structuredClone(mode === "multi" && session ? session.getRenderState().state : campaign),
@@ -570,7 +644,10 @@ window.KnockoutCircuit = {
   setInput,
   startCampaign: continueCampaign,
   startNewCampaign,
-  chooseUpgrade
+  chooseUpgrade,
+  setReady: (value) => session?.setReady(value),
+  requestRematch: () => session?.requestRematch(),
+  forfeit: () => session?.forfeit()
 };
 window.dispatchEvent(new CustomEvent("knockout-circuit-ready"));
 requestAnimationFrame(loop);

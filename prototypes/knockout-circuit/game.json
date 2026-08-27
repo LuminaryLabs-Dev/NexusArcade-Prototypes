@@ -4,9 +4,9 @@
   "description": "Piston-punch five named robot bosses, stack circuit upgrades, or play a predicted host-authoritative peer-to-peer match.",
   "genre": "Arcade Fighter",
   "status": "prototype",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "featured": true,
   "accent": "gold",
   "sortOrder": 1,
-  "controls": ["A / D", "Arrow keys", "Space", "Touch", "Saved circuit", "PeerJS", "60 Hz prediction"]
+  "controls": ["A / D", "Arrow keys", "Space", "Touch", "Saved circuit", "PeerJS", "60 Hz prediction", "Ready/rematch", "Reconnect"]
 }
