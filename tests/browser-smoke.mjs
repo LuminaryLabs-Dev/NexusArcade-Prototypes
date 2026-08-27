@@ -31,6 +31,22 @@ const child = spawn(chrome, [
 ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function stopChrome() {
+  if (child.exitCode === null) {
+    child.kill('SIGTERM');
+    await Promise.race([
+      new Promise((resolve) => child.once('exit', resolve)),
+      delay(3000)
+    ]);
+  }
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try { await rm(profile, { recursive: true, force: true }); return; }
+    catch (error) {
+      if (error.code !== 'ENOTEMPTY' || attempt === 4) throw error;
+      await delay(100 * (attempt + 1));
+    }
+  }
+}
 async function devtoolsEndpoint() {
   const file = path.join(profile, 'DevToolsActivePort');
   for (let attempt = 0; attempt < 100; attempt += 1) {
@@ -118,7 +134,7 @@ try {
   await scenario('The Long Haul', 'games/the-long-haul/', 'window.__longHaulBooted===true', null, "document.querySelector('#title-screen')?.classList.contains('active')", 25000);
   await scenario('Bumble Beez', 'games/bumble-beez/?autoplay=1', "document.querySelector('#status')?.textContent==='Bumble Beez ready'", null, "window.__BUMBLE_STATE__?.mode==='playing' && window.__BUMBLE_STATE__.time>=1");
 } finally {
-  socket.close(); child.kill('SIGTERM'); server.close(); await rm(profile, { recursive: true, force: true });
+  socket.close(); server.close(); await stopChrome();
 }
 
 console.log('browser smoke gate passed');
