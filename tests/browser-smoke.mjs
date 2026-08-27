@@ -33,6 +33,7 @@ const child = spawn(chrome, [
 ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+if (REVIEW_DIR) await mkdir(REVIEW_DIR, { recursive: true });
 async function stopChrome() {
   if (child.exitCode === null) {
     child.kill('SIGTERM');
