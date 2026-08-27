@@ -1,4 +1,7 @@
-const clone = structuredClone;
+// Keep the browser-native function detached from the adapter object. Calling a
+// stored Web API as `adapter.captureState()` gives it the adapter as `this`,
+// which Chromium correctly rejects as an illegal invocation.
+const clone = (value) => structuredClone(value);
 const round = (value) => Math.round(value * 1000) / 1000;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 

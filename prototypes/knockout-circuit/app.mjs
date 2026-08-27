@@ -28,6 +28,7 @@ let campaignAccumulator = 0;
 let campaignProgress = loadCampaignProgress();
 let input = { left: false, right: false, punch: false };
 let last = performance.now();
+let networkLast = performance.now();
 let display = [{ x: 300 }, { x: 660 }];
 let roomCode = "";
 let particles = [];
@@ -394,7 +395,6 @@ function updateParticles(delta) {
 }
 
 function update(delta) {
-  updateOnline(delta);
   if (mode === "campaign") updateCampaign(delta);
   updateParticles(delta);
 }
@@ -490,6 +490,16 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+// Rendering may pause in a background tab, but transport messages still arrive.
+// Pump the fixed multiplayer controller independently so a queued handshake can
+// always reach the next deterministic simulation tick.
+const networkTimer = setInterval(() => {
+  const now = performance.now();
+  const delta = Math.min(0.25, Math.max(0, (now - networkLast) / 1000));
+  networkLast = now;
+  updateOnline(delta);
+}, 1000 / 60);
+
 function setInput(name, on) {
   if (!(name in input)) return;
   if (name === "punch" && on && !input.punch && playing()) sound("swing");
@@ -514,7 +524,7 @@ addEventListener("keyup", (event) => {
   if (["Space", "KeyJ"].includes(event.code)) setInput("punch", false);
 });
 addEventListener("blur", clearInput);
-addEventListener("pagehide", disposeSession);
+addEventListener("pagehide", () => { clearInterval(networkTimer); disposeSession(); });
 addEventListener("pointerdown", unlockAudio, { capture: true });
 addEventListener("keydown", unlockAudio, { capture: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden) clearInput(); });
