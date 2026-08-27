@@ -1,0 +1,13 @@
+{
+  "title": "Bumble Beez",
+  "slug": "bumble-beez",
+  "description": "Fly a tiny bee through a scrolling pixel garden, gather five pollen, break sniper sightlines with cover, and dash home to the hive.",
+  "genre": "Arcade Stealth",
+  "status": "prototype",
+  "version": "0.2.0",
+  "featured": false,
+  "accent": "gold",
+  "sortOrder": 6,
+  "thumbnail": "cover.png",
+  "controls": ["WASD", "Arrow keys", "Space to dash", "Enter", "Escape"]
+}
