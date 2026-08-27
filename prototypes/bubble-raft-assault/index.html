@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100d0a">
+<meta name="description" content="Bubble Raft Assault — charge the gun, read the wind, and survive 100 procedurally escalating naval engagements.">
+<title>Bubble Raft Assault · Nexus Arcade</title>
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#f4ead4;
+  --muted:#aa9c88;
+  --paper:#d9c49d;
+  --brass:#d7a640;
+  --amber:#ffb42c;
+  --rust:#a43c22;
+  --blood:#751f1d;
+  --aqua:#61d4ca;
+  --deep:#090b0c;
+  --panel:rgba(20,17,14,.95);
+  --line:rgba(230,190,108,.2);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#060707;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+body{overflow-x:hidden}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:2px solid #f6cb67;outline-offset:3px}
+.app{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:
+    radial-gradient(circle at 17% 12%,rgba(106,56,29,.26),transparent 35%),
+    radial-gradient(circle at 92% 86%,rgba(20,92,91,.13),transparent 35%),
+    linear-gradient(145deg,#0b0a08,#040606 74%);
+}
+.cabinet{
+  width:min(1200px,100%);
+  overflow:hidden;
+  border:1px solid rgba(225,181,92,.25);
+  border-radius:5px;
+  background:#100e0b;
+  box-shadow:0 30px 110px #000,0 0 70px rgba(211,137,31,.06);
+}
+.topbar{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 18px;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(90deg,rgba(97,48,24,.2),transparent 38%),
+    #0c0b09;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.seal{
+  width:31px;height:31px;display:grid;place-items:center;flex:0 0 auto;
+  border:1px solid var(--brass);border-radius:50%;
+  color:var(--brass);font:700 16px/1 Georgia,serif;
+  box-shadow:inset 0 0 0 3px #17120b,0 0 16px rgba(215,166,64,.14);
+}
+.brand-copy{min-width:0}
+.brand-name{display:block;font-size:15px;font-weight:700;letter-spacing:.065em;text-transform:uppercase;white-space:nowrap}
+.brand-sub{display:block;color:#887c69;font:700 8px/1.4 ui-sans-serif,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase}
+.campaign-mark{
+  display:flex;align-items:center;gap:9px;
+  color:#b7aa94;font:800 9px/1 ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.17em;text-transform:uppercase;white-space:nowrap
+}
+.campaign-mark i{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 13px rgba(255,180,44,.75)}
+.stage{position:relative;aspect-ratio:16/9;min-height:430px;background:#101116;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{
+  position:absolute;z-index:3;inset:13px 15px auto;
+  display:grid;grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr);
+  gap:12px;pointer-events:none;
+  font-family:ui-sans-serif,system-ui,sans-serif
+}
+.vessel-hud{
+  padding:9px 11px;border:1px solid rgba(239,205,139,.2);
+  background:linear-gradient(90deg,rgba(12,14,14,.9),rgba(12,14,14,.55));
+  box-shadow:0 7px 20px rgba(0,0,0,.3)
+}
+.vessel-hud.enemy{background:linear-gradient(-90deg,rgba(12,14,14,.9),rgba(12,14,14,.55))}
+.vessel-name{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.enemy .vessel-name{flex-direction:row-reverse}
+.bar{height:7px;padding:1px;border:1px solid rgba(255,255,255,.24);background:#090908}
+.bar-fill{height:100%;background:linear-gradient(90deg,#b27827,#f0c35b);transition:width .2s}
+.enemy .bar-fill{margin-left:auto;background:linear-gradient(90deg,#bb4e2e,#731d1b)}
+.float-row{display:flex;gap:4px;margin-top:6px}
+.enemy .float-row{justify-content:flex-end}
+.float-pip{width:17px;height:5px;border-radius:50%;background:#3dbeb5;box-shadow:0 0 8px rgba(74,212,201,.25)}
+.float-pip.damaged{background:#8e7342;box-shadow:none}
+.float-pip.lost{background:#292522;box-shadow:none}
+.turn-card{
+  min-width:158px;padding:9px 12px;text-align:center;
+  border:1px solid rgba(239,205,139,.22);background:rgba(10,11,10,.82)
+}
+.turn-label{color:var(--amber);font-size:10px;font-weight:950;letter-spacing:.17em;text-transform:uppercase}
+.wind{margin-top:5px;color:#c7bba8;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.wind b{color:var(--aqua);font-size:11px}
+.announcement{
+  position:absolute;z-index:4;left:50%;top:28%;width:90%;
+  transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;opacity:0;
+  color:#f9e9c6;font-size:clamp(29px,6vw,70px);font-weight:700;
+  letter-spacing:-.045em;text-transform:uppercase;
+  text-shadow:0 3px 0 #4c2015,0 8px 34px #000
+}
+.announcement.show{animation:announce 1.45s ease both}
+@keyframes announce{
+  0%{opacity:0;transform:translate(-50%,-30%) scale(.86)}
+  18%,68%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-67%) scale(1.02)}
+}
+.combat-note{
+  position:absolute;z-index:4;left:50%;bottom:23%;
+  transform:translateX(-50%);padding:7px 12px;
+  border:1px solid rgba(232,192,111,.25);background:rgba(10,10,9,.76);
+  color:#ead8b6;font:850 9px/1 ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.14em;text-transform:uppercase;opacity:0;pointer-events:none
+}
+.combat-note.show{animation:note 1.2s ease both}
+@keyframes note{0%{opacity:0;transform:translate(-50%,8px)}15%,70%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-5px)}}
+.screen{
+  position:absolute;z-index:6;inset:0;display:grid;place-items:center;
+  padding:clamp(18px,4vw,46px);
+  background:
+    linear-gradient(90deg,rgba(7,8,8,.94),rgba(9,10,10,.42) 53%,rgba(8,8,8,.85)),
+    radial-gradient(circle at 72% 30%,rgba(157,72,28,.16),transparent 28%);
+}
+.screen[hidden]{display:none}
+.menu-card{width:min(850px,100%)}
+.eyebrow{
+  color:var(--brass);font:900 9px/1.2 ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.25em;text-transform:uppercase
+}
+.title{
+  max-width:720px;margin:10px 0 14px;
+  font-size:clamp(48px,8.6vw,102px);line-height:.78;letter-spacing:-.065em;
+  text-transform:uppercase;text-shadow:0 4px 0 #3b1c14,0 14px 40px #000
+}
+.lede{max-width:590px;margin:0 0 25px;color:#c6b9a4;font-size:clamp(14px,1.8vw,18px);line-height:1.5}
+.menu-actions{display:flex;align-items:stretch;gap:10px;max-width:630px}
+.primary,.secondary,.weapon,.angle-btn,.fire-btn,.upgrade{
+  border:1px solid rgba(237,199,123,.25);
+  background:rgba(23,19,15,.92);cursor:pointer;transition:transform .13s,border-color .13s,background .13s
+}
+.primary,.secondary{padding:15px 18px;text-align:left;min-width:210px}
+.primary{color:#160d06;border-color:#e2ad49;background:linear-gradient(135deg,#e9ba5d,#a84a27)}
+.primary:hover,.secondary:hover,.upgrade:hover,.weapon:not(:disabled):hover,.angle-btn:hover{transform:translateY(-2px);border-color:#f2ca73}
+.action-title{display:block;font:950 14px/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.02em;text-transform:uppercase}
+.action-copy{display:block;margin-top:5px;font:700 9px/1.3 ui-sans-serif,system-ui,sans-serif;letter-spacing:.07em;opacity:.72}
+.menu-tips{display:flex;flex-wrap:wrap;gap:8px 17px;margin-top:20px;color:#8f8372;font:800 9px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase}
+.panel{
+  width:min(780px,100%);max-height:94%;overflow:auto;padding:24px;
+  border:1px solid rgba(231,192,112,.27);
+  background:linear-gradient(145deg,rgba(26,21,16,.97),rgba(10,11,10,.98));
+  box-shadow:0 24px 70px #000
+}
+.panel h2{margin:7px 0 8px;font-size:clamp(31px,5vw,53px);line-height:.92;letter-spacing:-.045em;text-transform:uppercase}
+.panel>p{max-width:610px;margin:0 0 17px;color:var(--muted);font-size:14px;line-height:1.45}
+.unlock{
+  display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;
+  margin:17px 0;padding:13px;border:1px solid rgba(95,213,202,.28);background:rgba(22,71,68,.16)
+}
+.unlock-mark{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--aqua);border-radius:50%;color:var(--aqua);font:900 18px/1 ui-sans-serif,system-ui,sans-serif}
+.unlock b{display:block;color:#dff8f4;font:900 12px/1 ui-sans-serif,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em}
+.unlock span{display:block;margin-top:5px;color:#96aaa5;font:700 10px/1.3 ui-sans-serif,system-ui,sans-serif;letter-spacing:.04em}
+.upgrade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.upgrade{min-height:135px;padding:15px;text-align:left}
+.upgrade b{display:block;color:#e8c16c;font:950 13px/1 ui-sans-serif,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em}
+.upgrade span{display:block;margin:9px 0;color:#9f9585;font:700 10px/1.45 ui-sans-serif,system-ui,sans-serif}
+.upgrade-path{display:flex;gap:5px;margin-top:12px}
+.upgrade-path i{width:24px;height:4px;background:#40372c}
+.upgrade-path i.on{background:var(--amber);box-shadow:0 0 8px rgba(255,180,44,.35)}
+.upgrade-path em{margin-left:auto;color:#7ed8cf;font:900 9px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.route{display:flex;gap:6px;margin-top:18px}
+.route i{height:5px;flex:1;background:#352f29}
+.route i.done{background:var(--brass)}
+.route i.current{background:var(--rust);box-shadow:0 0 10px rgba(164,60,34,.6)}
+.result-actions{display:flex;gap:10px;margin-top:18px}
+.control-deck{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:13px;align-items:center;
+  padding:13px 16px max(13px,env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);background:#0c0b09;
+  font-family:ui-sans-serif,system-ui,sans-serif
+}
+.control-deck[hidden]{display:none}
+.aim-box{display:flex;align-items:center;gap:7px}
+.angle-btn{width:42px;height:46px;font-size:18px}
+.angle-readout{min-width:73px;text-align:center}
+.angle-readout small{display:block;color:#796f61;font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.angle-readout b{display:block;margin-top:3px;color:#e6c06e;font-size:18px}
+.weapon-rack{display:grid;grid-template-columns:repeat(5,minmax(92px,1fr));gap:6px;min-width:0}
+.weapon{min-width:0;padding:9px 8px;text-align:left}
+.weapon strong{display:block;overflow:hidden;text-overflow:ellipsis;color:#d8cab3;font-size:9px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.weapon span{display:block;margin-top:4px;color:#807667;font-size:8px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.weapon.selected{border-color:#e2b656;background:linear-gradient(160deg,rgba(117,65,26,.55),rgba(26,21,15,.95))}
+.weapon.selected strong{color:#ffe2a4}
+.weapon:disabled{cursor:not-allowed;opacity:.31}
+.fire-wrap{display:grid;grid-template-columns:72px 108px;gap:8px;align-items:stretch}
+.charge-meter{position:relative;overflow:hidden;border:1px solid rgba(232,192,111,.24);background:#15120e}
+.charge-fill{position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(#f6c85f,#a43c22);transition:height .04s}
+.charge-copy{position:relative;z-index:1;height:100%;display:grid;place-items:center;text-align:center;color:#e3d1ad;font-size:8px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}
+.charge-copy b{display:block;font-size:14px}
+.fire-btn{
+  min-height:54px;padding:8px 14px;border-color:#d79f39;
+  background:linear-gradient(145deg,#6d2d20,#281511);
+  color:#ffe1a4;user-select:none;touch-action:none
+}
+.fire-btn strong{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.fire-btn span{display:block;margin-top:4px;color:#c59e6b;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.fire-btn:active,.fire-btn.charging{transform:translateY(2px);background:linear-gradient(145deg,#b84c29,#4b1e18);box-shadow:0 0 22px rgba(204,78,34,.22)}
+.fire-btn:disabled{cursor:not-allowed;filter:grayscale(.7);opacity:.45}
+.footer-note{
+  display:flex;justify-content:space-between;gap:15px;padding:8px 17px;
+  border-top:1px solid rgba(255,255,255,.04);background:#080807;
+  color:#645e54;font:800 8px/1.2 ui-sans-serif,system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase
+}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:780px){
+  .app{padding:0}.cabinet{min-height:100vh;border:0;border-radius:0}.stage{min-height:465px;aspect-ratio:auto}
+  .topbar{padding:9px 11px}.brand-sub{display:none}.campaign-mark span{display:none}
+  .hud{inset:9px 8px auto;grid-template-columns:1fr 98px 1fr;gap:5px}
+  .vessel-hud{padding:7px}.turn-card{min-width:0;padding:7px 5px}.vessel-name{font-size:7px}.wind{font-size:7px}
+  .control-deck{grid-template-columns:auto 1fr;gap:9px;padding:10px}
+  .weapon-rack{grid-column:1/-1;grid-row:1;display:flex;overflow-x:auto;padding-bottom:3px}
+  .weapon{min-width:105px}.aim-box{grid-row:2}.fire-wrap{grid-row:2;justify-self:end;grid-template-columns:62px 103px}
+  .screen{padding:15px}.menu-actions,.result-actions{flex-direction:column;align-items:stretch}.primary,.secondary{min-width:0}
+  .title{font-size:57px}.upgrade-grid{grid-template-columns:1fr}.unlock{grid-template-columns:42px 1fr}
+  .footer-note span:last-child{display:none}
+}
+@media(max-width:460px){
+  .stage{min-height:430px}.title{font-size:49px}.lede{font-size:13px}.panel{padding:18px}
+  .hud{grid-template-columns:1fr 87px 1fr}.vessel-name span:first-child{max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .angle-btn{width:36px}.angle-readout{min-width:58px}.fire-wrap{grid-template-columns:55px 92px}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="cabinet" aria-label="Bubble Raft Assault turn-based artillery game">
+    <header class="topbar">
+      <div class="brand">
+        <span class="seal" aria-hidden="true">B</span>
+        <span class="brand-copy"><span class="brand-name">Bubble Raft Assault</span><span class="brand-sub">Nexus Arcade field prototype</span></span>
+      </div>
+      <div class="campaign-mark"><i aria-hidden="true"></i><span id="modeLabel">Awaiting orders</span></div>
+    </header>
+
+    <div class="stage" id="stage">
+      <canvas id="game" width="960" height="540" aria-label="Two armed bubble rafts facing each other across stormy water"></canvas>
+
+      <div class="hud" id="hud" hidden>
+        <section class="vessel-hud">
+          <div class="vessel-name"><span id="playerName">The Resolve</span><span id="playerHullText">100</span></div>
+          <div class="bar"><div class="bar-fill" id="playerHull"></div></div>
+          <div class="float-row" id="playerFloats" aria-label="Player flotation bubbles"></div>
+        </section>
+        <section class="turn-card">
+          <div class="turn-label" id="turnLabel">Your turn</div>
+          <div class="wind" id="windLabel">Wind <b>calm</b></div>
+        </section>
+        <section class="vessel-hud enemy">
+          <div class="vessel-name"><span id="enemyName">Tide Smuggler</span><span id="enemyHullText">80</span></div>
+          <div class="bar"><div class="bar-fill" id="enemyHull"></div></div>
+          <div class="float-row" id="enemyFloats" aria-label="Enemy flotation bubbles"></div>
+        </section>
+      </div>
+
+      <div class="announcement" id="announcement" aria-live="assertive"></div>
+      <div class="combat-note" id="combatNote" aria-live="polite"></div>
+
+      <section class="screen" id="menuScreen">
+        <div class="menu-card">
+          <div class="eyebrow">A turn-based powder duel</div>
+          <h1 class="title">Bubble Raft<br>Assault</h1>
+          <p class="lede">Read the crosswind. Choose the right shot. Hold the powder charge and release when the gun has the range. Break a procedurally generated line of 100 armed rafts before they send yours beneath the black water.</p>
+          <div class="menu-actions">
+            <button class="primary" id="startButton"><span class="action-title">Begin the campaign</span><span class="action-copy">100 engagements · a flagship every tenth battle</span></button>
+            <button class="secondary" id="howButton"><span class="action-title">Field instructions</span><span class="action-copy">Aim, charge, hit zones, and munitions</span></button>
+          </div>
+          <div class="menu-tips"><span>Mouse or touch to aim</span><span>Hold and release Space to fire</span><span>Numbers 1–5 select shot</span></div>
+        </div>
+      </section>
+
+      <section class="screen" id="howScreen" hidden>
+        <div class="panel">
+          <div class="eyebrow">Field instructions</div>
+          <h2>Every shot is a decision.</h2>
+          <p>Move the pointer over the water or use ↑ / ↓ to set elevation. Wind changes every turn. Hold Fire or Space to build powder pressure, then release at the charge you want.</p>
+          <div class="unlock"><div class="unlock-mark">◎</div><div><b>Break hull or flotation</b><span>Hull hits reduce integrity. Destroy every luminous float and the raft sinks immediately. High shots can foul the rigging and weaken enemy accuracy.</span></div></div>
+          <div class="unlock"><div class="unlock-mark">1–5</div><div><b>Match the munition to the target</b><span>Round shot is reliable. Chain tears floats and rigging. Grape spreads at close range. Shells explode. Hot shot keeps burning after impact.</span></div></div>
+          <button class="primary" data-menu-back><span class="action-title">Return to orders</span></button>
+        </div>
+      </section>
+
+      <section class="screen" id="armoryScreen" hidden>
+        <div class="panel">
+          <div class="eyebrow" id="armoryEyebrow">Engagement secured</div>
+          <h2>Captured ordnance.</h2>
+          <p>Secure the captured stores and choose one permanent improvement before the next enemy closes in.</p>
+          <div class="unlock" id="unlockCard"></div>
+          <div class="upgrade-grid" id="upgradeGrid"></div>
+          <div class="route" id="campaignRoute" aria-label="Campaign progress"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="resultScreen" hidden>
+        <div class="panel">
+          <div class="eyebrow" id="resultEyebrow">Campaign report</div>
+          <h2 id="resultTitle">Raft lost.</h2>
+          <p id="resultCopy">The enemy held the water.</p>
+          <div class="result-actions">
+            <button class="primary" id="againButton"><span class="action-title" id="againTitle">Retry engagement</span><span class="action-copy" id="againCopy">Keep your current ordnance and upgrades</span></button>
+            <button class="secondary" data-menu-back><span class="action-title">Main menu</span><span class="action-copy">Abandon this campaign run</span></button>
+          </div>
+          <div class="route" id="resultRoute" aria-label="Final campaign progress"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="control-deck" id="controlDeck" hidden aria-label="Artillery controls">
+      <div class="aim-box">
+        <button class="angle-btn" id="angleDown" aria-label="Lower cannon angle">−</button>
+        <div class="angle-readout"><small>Elevation</small><b id="angleValue">34°</b></div>
+        <button class="angle-btn" id="angleUp" aria-label="Raise cannon angle">+</button>
+      </div>
+      <div class="weapon-rack" id="weaponRack" aria-label="Munition rack"></div>
+      <div class="fire-wrap">
+        <div class="charge-meter" aria-label="Powder charge"><div class="charge-fill" id="chargeFill"></div><div class="charge-copy"><span>Charge<b id="chargeValue">28</b></span></div></div>
+        <button class="fire-btn" id="fireButton"><strong>Hold fire</strong><span>Release to shoot</span></button>
+      </div>
+    </section>
+    <footer class="footer-note"><span>↑ ↓ aim · hold/release Space · 1–5 munitions</span><span>Shots arc with the marked wind</span></footer>
+  </section>
+</main>
+
+<script>
+(()=>{
+'use strict';
+
+const $=selector=>document.querySelector(selector);
+const canvas=$('#game');
+const ctx=canvas.getContext('2d');
+const W=960;
+const H=540;
+const WATER=405;
+const GRAVITY=420;
+const TAU=Math.PI*2;
+const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const random=(min,max)=>min+Math.random()*(max-min);
+
+const WEAPONS=[
+  {id:'round',name:'Round shot',short:'Round',role:'Reliable hull damage',ammo:Infinity,damage:28,bubble:17,rig:.55,speed:1,radius:8,color:'#262626'},
+  {id:'chain',name:'Chain shot',short:'Chain',role:'Floats + rigging',ammo:2,damage:19,bubble:36,rig:1.15,speed:.92,radius:13,color:'#68635a'},
+  {id:'grape',name:'Grapeshot',short:'Grape',role:'Close spread',ammo:2,damage:9,bubble:7,rig:.46,speed:.96,radius:4,color:'#393631',pellets:6},
+  {id:'shell',name:'Bomb shell',short:'Shell',role:'Heavy blast',ammo:2,damage:39,bubble:22,rig:.6,speed:.84,radius:10,color:'#201a18',blast:72},
+  {id:'hot',name:'Hot shot',short:'Hot',role:'Burns for 3 turns',ammo:1,damage:24,bubble:15,rig:.5,speed:1.04,radius:8,color:'#ff7a24',burn:3}
+];
+
+const ENCOUNTER_COUNT=100;
+let ENCOUNTERS=[];
+
+const UPGRADES=[
+  {key:'powder',name:'Pressed powder',copy:'+3% damage from every munition.'},
+  {key:'hull',name:'Oak bands',copy:'+7 maximum hull and +1 float integrity.'},
+  {key:'sight',name:'Gunnery drill',copy:'Longer guide, steadier charge, and more specialist ammunition over time.'}
+];
+
+const NAME_PREFIXES=['Salt','Black','Iron','Red','Crown','Storm','Ash','Night','Broken','Grey','Raven','Viper','Gallows','Ember','North','Drowned'];
+const NAME_CORES=['Warden','Marauder','Jackal','Sentinel','Revenant','Harrier','Adjudicator','Privateer','Dragoon','Watchman','Vanguard','Reaper'];
+const HULL_TYPES=['Skiff','Cutter','Gun Barge','Sloop','Brig','Bombard','Corvette','Dreadnought'];
+const PALETTES=[
+  ['#6c4128','#a7875e','#d0a457'],['#5f4932','#aaa28d','#bc9c62'],['#613125','#8e4537','#d4914e'],
+  ['#391f1e','#772a2b','#d25b38'],['#282c2d','#342f32','#d6a545'],['#25383b','#436168','#a8beb4'],
+  ['#40362a','#6d604d','#c3a56a'],['#292635','#4e435f','#b68b61']
+];
+
+function seededRandom(seed){
+  let value=seed>>>0;
+  return()=>{
+    value+=0x6D2B79F5;
+    let result=value;
+    result=Math.imul(result^result>>>15,result|1);
+    result^=result+Math.imul(result^result>>>7,result|61);
+    return((result^result>>>14)>>>0)/4294967296;
+  };
+}
+
+function campaignSeed(){
+  try{
+    const values=new Uint32Array(1);
+    crypto.getRandomValues(values);
+    return values[0]||0xBABB1E;
+  }catch{
+    return(Math.random()*0xffffffff)>>>0;
+  }
+}
+
+function generateCampaign(seed){
+  return Array.from({length:ENCOUNTER_COUNT},(_,index)=>generateEncounter(seed,index));
+}
+
+function generateEncounter(seed,index){
+  const rng=seededRandom((seed^Math.imul(index+1,0x9E3779B1))>>>0);
+  const level=index+1;
+  const chapter=Math.floor(index/10);
+  const flagship=level%10===0;
+  const palette=PALETTES[Math.floor(rng()*PALETTES.length)];
+  const hullType=HULL_TYPES[Math.min(HULL_TYPES.length-1,Math.floor(index/14)+Math.floor(rng()*2))];
+  const prefix=flagship?['Admiral’s','Governor’s','Crown'][chapter%3]:NAME_PREFIXES[Math.floor(rng()*NAME_PREFIXES.length)];
+  const core=NAME_CORES[Math.floor(rng()*NAME_CORES.length)];
+  const available=Math.min(WEAPONS.length,1+Math.floor(index/2));
+  const specialist=WEAPONS[Math.floor(rng()*available)].id;
+  const secondary=WEAPONS[Math.floor(rng()*available)].id;
+  const pattern=flagship
+    ?[WEAPONS[Math.min(4,Math.floor(index/20)+1)].id,specialist,'round',secondary]
+    :[specialist,'round',secondary];
+  const bubbles=index<2?2:index<17?3:4;
+  const hull=Math.round(72+index*2.75+chapter*7+rng()*16+(flagship?38+chapter*3:0));
+  const spread=Math.max(.65,4.65-index*.035-(flagship?.35:0));
+  const damage=Math.min(1.42,.69+index*.0065+(flagship?.09:0));
+  const bubbleHp=Math.round(23+chapter*1.7+(flagship?4:0));
+  const rank=flagship?`Flagship ${chapter+1}`:`Patrol ${String(level).padStart(3,'0')}`;
+  const subtitle=flagship
+    ?`${rank} · reinforced floats · disciplined mixed fire`
+    :`${rank} · ${hullType.toLowerCase()} · ${weaponById(specialist).role.toLowerCase()}`;
+  return{
+    level,chapter,flagship,name:`${prefix} ${core} ${hullType}`,subtitle,hull,bubbles,bubbleHp,
+    color:palette[0],sail:palette[1],trim:palette[2],spread,damage,pattern
+  };
+}
+
+const ui={
+  hud:$('#hud'),controlDeck:$('#controlDeck'),menu:$('#menuScreen'),how:$('#howScreen'),armory:$('#armoryScreen'),result:$('#resultScreen'),
+  mode:$('#modeLabel'),announcement:$('#announcement'),note:$('#combatNote'),turn:$('#turnLabel'),wind:$('#windLabel'),
+  playerName:$('#playerName'),enemyName:$('#enemyName'),playerHull:$('#playerHull'),enemyHull:$('#enemyHull'),
+  playerHullText:$('#playerHullText'),enemyHullText:$('#enemyHullText'),playerFloats:$('#playerFloats'),enemyFloats:$('#enemyFloats'),
+  angle:$('#angleValue'),charge:$('#chargeValue'),chargeFill:$('#chargeFill'),fire:$('#fireButton'),weapons:$('#weaponRack')
+};
+
+const screens=[ui.menu,ui.how,ui.armory,ui.result];
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const state={
+  mode:'menu',phase:'idle',stage:0,turn:'player',angle:34,charge:.28,chargeDir:1,selected:'round',
+  wind:0,player:null,enemy:null,ammo:{},upgrades:{powder:0,hull:0,sight:0},
+  projectiles:[],particles:[],floatTexts:[],enemyPlan:null,enemyShot:0,timer:0,time:0,shake:0,flash:0,lastShotAngle:{player:34,enemy:34},won:false,
+  seed:0
+};
+
+let last=performance.now();
+let audio=null;
+
+function showScreen(target){
+  screens.forEach(screen=>screen.hidden=screen!==target);
+}
+
+function announce(message){
+  ui.announcement.textContent=message;
+  ui.announcement.classList.remove('show');
+  void ui.announcement.offsetWidth;
+  ui.announcement.classList.add('show');
+}
+
+function note(message){
+  ui.note.textContent=message;
+  ui.note.classList.remove('show');
+  void ui.note.offsetWidth;
+  ui.note.classList.add('show');
+}
+
+function ensureAudio(){
+  try{
+    audio||=new (window.AudioContext||window.webkitAudioContext)();
+    if(audio.state==='suspended')audio.resume();
+  }catch{}
+}
+
+function tone(frequency,duration=.12,type='sine',gain=.045,endFrequency=frequency*.6){
+  if(!audio)return;
+  const oscillator=audio.createOscillator();
+  const volume=audio.createGain();
+  const now=audio.currentTime;
+  oscillator.type=type;
+  oscillator.frequency.setValueAtTime(frequency,now);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(24,endFrequency),now+duration);
+  volume.gain.setValueAtTime(gain,now);
+  volume.gain.exponentialRampToValueAtTime(.001,now+duration);
+  oscillator.connect(volume);
+  volume.connect(audio.destination);
+  oscillator.start(now);
+  oscillator.stop(now+duration);
+}
+
+function noise(duration=.28,gain=.1){
+  if(!audio)return;
+  const length=Math.max(1,Math.floor(audio.sampleRate*duration));
+  const buffer=audio.createBuffer(1,length,audio.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2);
+  const source=audio.createBufferSource();
+  const volume=audio.createGain();
+  const filter=audio.createBiquadFilter();
+  filter.type='lowpass';
+  filter.frequency.value=850;
+  volume.gain.value=gain;
+  source.buffer=buffer;
+  source.connect(filter);
+  filter.connect(volume);
+  volume.connect(audio.destination);
+  source.start();
+}
+
+function sound(type){
+  if(!audio)return;
+  if(type==='charge')tone(115,.09,'sawtooth',.025,155);
+  if(type==='fire'){noise(.34,.14);tone(72,.34,'sine',.12,29)}
+  if(type==='hit'){noise(.15,.075);tone(132,.13,'square',.04,54)}
+  if(type==='pop')tone(310,.17,'sine',.055,74);
+  if(type==='splash'){noise(.22,.055);tone(170,.16,'sine',.025,72)}
+  if(type==='unlock'){tone(280,.13,'triangle',.045,410);setTimeout(()=>tone(420,.22,'triangle',.04,620),95)}
+}
+
+function bubbleOffsets(count){
+  if(count===2)return[-34,34];
+  if(count===3)return[-48,0,48];
+  return[-58,-20,20,58];
+}
+
+function makeBoat(owner,config={}){
+  const isPlayer=owner==='player';
+  const maxHull=isPlayer?100+state.upgrades.hull*7:config.hull;
+  const bubbleMax=isPlayer?25+state.upgrades.hull:config.bubbleHp;
+  return{
+    owner,dir:isPlayer?1:-1,x:isPlayer?151:809,baseY:392,
+    name:isPlayer?'The Resolve':config.name,
+    maxHull,hull:maxHull,color:isPlayer?'#523723':config.color,trim:isPlayer?'#d0a14a':config.trim,
+    sail:isPlayer?'#87775e':config.sail,subtitle:config.subtitle||'',
+    bubbles:bubbleOffsets(isPlayer?3:config.bubbles).map(offset=>({offset,hp:bubbleMax,max:bubbleMax,pop:0})),
+    rigging:0,burn:0,hit:0,sink:0,shotPulse:0
+  };
+}
+
+function setPreview(){
+  if(!ENCOUNTERS.length)ENCOUNTERS=generateCampaign(0xBABB1E);
+  state.player=makeBoat('player');
+  state.enemy=makeBoat('enemy',ENCOUNTERS[0]);
+  state.player.hull=88;
+  state.enemy.hull=64;
+  state.angle=34;
+  state.lastShotAngle={player:34,enemy:31};
+}
+
+function resetAmmo(){
+  state.ammo={};
+  const unlockedThrough=Math.min(state.stage,WEAPONS.length-1);
+  const specialistBonus=Math.min(4,Math.floor(state.upgrades.sight/5));
+  WEAPONS.forEach((weapon,index)=>{
+    if(index<=unlockedThrough)state.ammo[weapon.id]=Number.isFinite(weapon.ammo)?weapon.ammo+specialistBonus:weapon.ammo;
+  });
+}
+
+function startCampaign(){
+  ensureAudio();
+  state.mode='campaign';
+  state.stage=0;
+  state.upgrades={powder:0,hull:0,sight:0};
+  state.selected='round';
+  state.enemyShot=0;
+  state.seed=campaignSeed();
+  ENCOUNTERS=generateCampaign(state.seed);
+  beginEncounter();
+}
+
+function beginEncounter(){
+  const encounter=ENCOUNTERS[state.stage];
+  state.player=makeBoat('player');
+  state.enemy=makeBoat('enemy',encounter);
+  state.projectiles=[];
+  state.particles=[];
+  state.floatTexts=[];
+  state.turn='player';
+  state.phase='intro';
+  state.timer=1.45;
+  state.enemyPlan=null;
+  state.enemyShot=0;
+  state.wind=randomWind();
+  state.charge=.28;
+  state.chargeDir=1;
+  state.angle=clamp(state.angle,20,68);
+  state.won=false;
+  resetAmmo();
+  if(!(state.selected in state.ammo)||state.ammo[state.selected]===0)state.selected='round';
+  showScreen(null);
+  ui.hud.hidden=false;
+  ui.controlDeck.hidden=true;
+  ui.mode.textContent=`Engagement ${state.stage+1} of ${ENCOUNTERS.length}`;
+  renderWeapons();
+  updateHud();
+  announce(`Engagement ${state.stage+1}`);
+  note(encounter.subtitle);
+}
+
+function beginPlayerTurn(){
+  state.turn='player';
+  if(applyBurn(state.player))return settleAfterEffect();
+  state.phase='aim';
+  state.wind=randomWind();
+  state.charge=.28;
+  state.chargeDir=1;
+  if(state.ammo[state.selected]===0)state.selected='round';
+  ui.controlDeck.hidden=false;
+  ui.fire.classList.remove('charging');
+  renderWeapons();
+  updateHud();
+  note('Your gun · choose elevation and charge');
+}
+
+function beginEnemyTurn(){
+  state.turn='enemy';
+  ui.controlDeck.hidden=true;
+  if(applyBurn(state.enemy))return settleAfterEffect();
+  state.wind=randomWind();
+  state.phase='enemyThink';
+  state.timer=.82;
+  state.enemyPlan=planEnemyShot();
+  updateHud();
+  note(`${state.enemy.name} is laying the gun`);
+}
+
+function settleAfterEffect(){
+  state.phase='settle';
+  state.timer=.9;
+}
+
+function randomWind(){
+  const value=Math.round(random(-11,11));
+  return Math.abs(value)<2?0:value;
+}
+
+function applyBurn(boat){
+  if(boat.burn<=0)return false;
+  boat.burn--;
+  const damage=7;
+  boat.hull=Math.max(0,boat.hull-damage);
+  boat.hit=.35;
+  burst(boat.x,boat.baseY-54,'#ff6828',12,'fire');
+  floatText(boat.x,boat.baseY-110,`BURN −${damage}`,'#ff9b4e');
+  note(`${boat.name} is still burning`);
+  sound('hit');
+  return isDefeated(boat);
+}
+
+function startCharge(){
+  if(state.mode!=='campaign'||state.phase!=='aim'||state.turn!=='player')return;
+  ensureAudio();
+  state.phase='charging';
+  state.charge=Math.max(.18,state.charge);
+  state.chargeDir=1;
+  ui.fire.classList.add('charging');
+  sound('charge');
+}
+
+function releaseCharge(){
+  if(state.phase!=='charging'||state.turn!=='player')return;
+  ui.fire.classList.remove('charging');
+  firePlayer();
+}
+
+function firePlayer(){
+  const weapon=weaponById(state.selected);
+  if(!weapon||state.ammo[weapon.id]===0){
+    state.selected='round';
+    renderWeapons();
+    return;
+  }
+  if(Number.isFinite(state.ammo[weapon.id]))state.ammo[weapon.id]--;
+  fireShot('player',weapon,state.angle,state.charge);
+  state.lastShotAngle.player=state.angle;
+  renderWeapons();
+}
+
+function fireShot(owner,weapon,angle,charge){
+  const boat=owner==='player'?state.player:state.enemy;
+  const muzzle=getMuzzle(boat,angle);
+  const count=weapon.pellets||1;
+  for(let i=0;i<count;i++){
+    const spread=count===1?0:lerp(-4.8,4.8,i/(count-1))+random(-.65,.65);
+    const pelletCharge=charge*(count===1?1:random(.93,1.035));
+    const radians=(angle+spread)*Math.PI/180;
+    const speed=(330+pelletCharge*300)*weapon.speed;
+    state.projectiles.push({
+      owner,weapon:weapon.id,x:muzzle.x,y:muzzle.y,lastX:muzzle.x,lastY:muzzle.y,
+      vx:Math.cos(radians)*speed*boat.dir,vy:-Math.sin(radians)*speed,
+      radius:weapon.radius,life:0,spin:random(0,TAU),smoke:0,dead:false
+    });
+  }
+  boat.shotPulse=.18;
+  state.phase='flight';
+  state.timer=0;
+  state.shake=reducedMotion?0:10;
+  state.flash=.1;
+  muzzleBurst(muzzle.x,muzzle.y,boat.dir);
+  sound('fire');
+}
+
+function weaponById(id){
+  return WEAPONS.find(weapon=>weapon.id===id);
+}
+
+function selectWeapon(id){
+  const index=WEAPONS.findIndex(weapon=>weapon.id===id);
+  if(state.phase!=='aim'||index<0||index>state.stage||state.ammo[id]===0)return;
+  state.selected=id;
+  renderWeapons();
+}
+
+function renderWeapons(){
+  ui.weapons.replaceChildren();
+  WEAPONS.forEach((weapon,index)=>{
+    const unlocked=index<=state.stage;
+    const ammo=state.ammo[weapon.id];
+    const button=document.createElement('button');
+    button.className=`weapon ${state.selected===weapon.id?'selected':''}`;
+    button.disabled=!unlocked||ammo===0||!['aim','charging'].includes(state.phase);
+    button.setAttribute('aria-label',unlocked?`${weapon.name}: ${weapon.role}`:`Locked munition ${index+1}`);
+    const ammoLabel=!unlocked?'Locked':Number.isFinite(ammo)?`${ammo} shot${ammo===1?'':'s'}`:'Unlimited';
+    button.innerHTML=`<strong>${index+1} · ${unlocked?weapon.short:'Sealed'}</strong><span>${ammoLabel}</span>`;
+    button.onclick=()=>selectWeapon(weapon.id);
+    ui.weapons.append(button);
+  });
+}
+
+function changeAngle(amount){
+  if(!['aim','charging'].includes(state.phase)||state.turn!=='player')return;
+  state.angle=clamp(state.angle+amount,18,72);
+  updateHud();
+}
+
+function aimFromPointer(event){
+  if(!['aim','charging'].includes(state.phase)||state.turn!=='player')return;
+  const rect=canvas.getBoundingClientRect();
+  const x=(event.clientX-rect.left)*W/rect.width;
+  const y=(event.clientY-rect.top)*H/rect.height;
+  const muzzle=getMuzzle(state.player,state.angle);
+  if(x<=muzzle.x+16)return;
+  state.angle=clamp(Math.atan2(muzzle.y-y,x-muzzle.x)*180/Math.PI,18,72);
+  updateHud();
+}
+
+function getBoatY(boat){
+  const live=boat.bubbles.filter(bubble=>bubble.hp>0).length;
+  const bob=Math.sin(state.time*1.9+(boat.owner==='player'?0:1.8))*3;
+  return boat.baseY+bob+boat.sink+(boat.bubbles.length-live)*2.4;
+}
+
+function getTilt(boat){
+  let left=0;
+  let right=0;
+  boat.bubbles.forEach(bubble=>{
+    const strength=clamp(bubble.hp/bubble.max,0,1);
+    if(bubble.offset<0)left+=strength;
+    else right+=strength;
+  });
+  return clamp((left-right)*.045,-.1,.1)*(boat.owner==='player'?1:-1);
+}
+
+function getMuzzle(boat,angle){
+  const y=getBoatY(boat);
+  const radians=angle*Math.PI/180;
+  const pivotX=boat.x+boat.dir*41;
+  const pivotY=y-64;
+  return{x:pivotX+Math.cos(radians)*39*boat.dir,y:pivotY-Math.sin(radians)*39};
+}
+
+function bubbleCenter(boat,bubble){
+  return{x:boat.x+bubble.offset,y:getBoatY(boat)+14};
+}
+
+function planEnemyShot(){
+  const encounter=ENCOUNTERS[state.stage];
+  const weaponId=encounter.pattern[state.enemyShot%encounter.pattern.length];
+  state.enemyShot++;
+  const weapon=weaponById(weaponId);
+  let target={x:state.player.x,y:getBoatY(state.player)-35};
+  if(weapon.id==='chain'){
+    const live=state.player.bubbles.filter(bubble=>bubble.hp>0);
+    const bubble=live[Math.floor(Math.random()*live.length)]||state.player.bubbles[1];
+    target=bubbleCenter(state.player,bubble);
+  }else if(weapon.id==='grape'){
+    target={x:state.player.x+22,y:getBoatY(state.player)-48};
+  }else if(weapon.id==='hot'){
+    target={x:state.player.x,y:getBoatY(state.player)-58};
+  }
+  let best={score:Infinity,angle:32,charge:.7};
+  for(let angle=18;angle<=70;angle+=2){
+    for(let charge=.24;charge<=1.001;charge+=.04){
+      const score=trajectoryScore(state.enemy,weapon,angle,charge,target);
+      if(score<best.score)best={score,angle,charge};
+    }
+  }
+  const error=encounter.spread+state.enemy.rigging*.7;
+  best.angle=clamp(best.angle+random(-error,error),18,72);
+  best.charge=clamp(best.charge+random(-error*.008,error*.008),.2,1);
+  best.weapon=weapon;
+  return best;
+}
+
+function trajectoryScore(boat,weapon,angle,charge,target){
+  const muzzle=getMuzzle(boat,angle);
+  const radians=angle*Math.PI/180;
+  const speed=(330+charge*300)*weapon.speed;
+  let x=muzzle.x;
+  let y=muzzle.y;
+  let vx=Math.cos(radians)*speed*boat.dir;
+  let vy=-Math.sin(radians)*speed;
+  let best=Infinity;
+  for(let t=0;t<4;t+=.035){
+    vx+=state.wind*1.22*.035;
+    vy+=GRAVITY*.035;
+    x+=vx*.035;
+    y+=vy*.035;
+    const dx=x-target.x;
+    const dy=y-target.y;
+    best=Math.min(best,dx*dx+dy*dy);
+    if(y>WATER+35||x<-40||x>W+40)break;
+  }
+  return best;
+}
+
+function updateProjectiles(dt){
+  const targetFor=owner=>owner==='player'?state.enemy:state.player;
+  for(const projectile of state.projectiles){
+    if(projectile.dead)continue;
+    projectile.lastX=projectile.x;
+    projectile.lastY=projectile.y;
+    projectile.life+=dt;
+    projectile.vx+=state.wind*1.22*dt;
+    projectile.vy+=GRAVITY*dt;
+    projectile.x+=projectile.vx*dt;
+    projectile.y+=projectile.vy*dt;
+    projectile.spin+=dt*8;
+    projectile.smoke-=dt;
+    if(projectile.smoke<=0){
+      projectile.smoke=.045;
+      const weapon=weaponById(projectile.weapon);
+      state.particles.push({x:projectile.x,y:projectile.y,vx:random(-8,8),vy:random(-7,3),life:.32,max:.32,size:random(2,5),color:weapon.id==='hot'?'#df6d31':'#77746b',kind:'smoke'});
+    }
+    const target=targetFor(projectile.owner);
+    const zone=hitZone(projectile,target);
+    if(zone){
+      projectile.dead=true;
+      impact(projectile,target,zone);
+      continue;
+    }
+    if(projectile.y>=WATER+waveAt(projectile.x)*.45){
+      projectile.dead=true;
+      if(projectile.weapon==='shell'){
+        const distance=Math.abs(projectile.x-target.x);
+        if(distance<82){
+          const damage=Math.round((1-distance/82)*13);
+          if(damage>0){
+            target.hull=Math.max(0,target.hull-damage);
+            floatText(target.x,getBoatY(target)-108,`BLAST −${damage}`,'#efb35b');
+            target.hit=.25;
+          }
+        }
+        explosion(projectile.x,WATER-2,'#d66e36',18);
+      }
+      splash(projectile.x,WATER);
+      sound('splash');
+      continue;
+    }
+    if(projectile.life>7||projectile.x<-70||projectile.x>W+70||projectile.y>H+60)projectile.dead=true;
+  }
+  state.projectiles=state.projectiles.filter(projectile=>!projectile.dead);
+  if(state.projectiles.length===0&&state.phase==='flight'){
+    state.phase='settle';
+    state.timer=.88;
+  }
+}
+
+function hitZone(projectile,boat){
+  for(let index=0;index<boat.bubbles.length;index++){
+    const bubble=boat.bubbles[index];
+    if(bubble.hp<=0)continue;
+    const center=bubbleCenter(boat,bubble);
+    const dx=projectile.x-center.x;
+    const dy=projectile.y-center.y;
+    if(dx*dx+dy*dy<Math.pow(23+projectile.radius,2))return{type:'bubble',index};
+  }
+  const y=getBoatY(boat);
+  const mastX=boat.x-boat.dir*8;
+  if(Math.abs(projectile.x-mastX)<48+projectile.radius&&projectile.y>y-171&&projectile.y<y-75)return{type:'rigging'};
+  if(Math.abs(projectile.x-boat.x)<79+projectile.radius&&projectile.y>y-81&&projectile.y<y+5)return{type:'hull'};
+  return null;
+}
+
+function impact(projectile,target,zone){
+  const weapon=weaponById(projectile.weapon);
+  const ownerBoost=projectile.owner==='player'?1+state.upgrades.powder*.03:ENCOUNTERS[state.stage].damage;
+  let label='';
+  let shownDamage=0;
+  if(zone.type==='bubble'){
+    const bubble=target.bubbles[zone.index];
+    const before=bubble.hp;
+    bubble.hp=Math.max(0,bubble.hp-weapon.bubble*ownerBoost);
+    shownDamage=Math.round(before-bubble.hp);
+    bubble.pop=.3;
+    label=bubble.hp<=0?'FLOAT LOST':'FLOAT HIT';
+    if(bubble.hp<=0){
+      explosion(bubbleCenter(target,bubble).x,bubbleCenter(target,bubble).y,'#57d5ca',18);
+      sound('pop');
+    }else sound('hit');
+    if(weapon.id==='shell')target.hull=Math.max(0,target.hull-7*ownerBoost);
+  }else if(zone.type==='rigging'){
+    const damage=weapon.damage*weapon.rig*ownerBoost;
+    target.hull=Math.max(0,target.hull-damage);
+    target.rigging=Math.min(4,target.rigging+(weapon.id==='chain'?2:1));
+    shownDamage=Math.round(damage);
+    label=weapon.id==='chain'?'RIGGING TORN':'RIGGING HIT';
+    sound('hit');
+  }else{
+    const damage=weapon.damage*ownerBoost;
+    target.hull=Math.max(0,target.hull-damage);
+    shownDamage=Math.round(damage);
+    label='HULL HIT';
+    sound('hit');
+  }
+  if(weapon.burn){
+    target.burn=Math.max(target.burn,weapon.burn);
+    label='SET ABLAZE';
+  }
+  if(weapon.blast){
+    explosion(projectile.x,projectile.y,'#dd7838',24);
+    target.bubbles.forEach(bubble=>{
+      if(bubble.hp<=0)return;
+      const center=bubbleCenter(target,bubble);
+      const distance=Math.hypot(projectile.x-center.x,projectile.y-center.y);
+      if(distance<weapon.blast){
+        bubble.hp=Math.max(0,bubble.hp-(1-distance/weapon.blast)*8*ownerBoost);
+      }
+    });
+  }else{
+    burst(projectile.x,projectile.y,weapon.id==='hot'?'#ff7e2d':'#e6bb66',13,weapon.id==='hot'?'fire':'spark');
+  }
+  target.hit=.32;
+  state.shake=reducedMotion?0:Math.min(14,state.shake+7);
+  floatText(projectile.x,projectile.y-22,`${label} −${shownDamage}`,zone.type==='bubble'?'#8be8df':'#f4c56c');
+  note(`${label} · ${shownDamage} damage`);
+}
+
+function isDefeated(boat){
+  return boat.hull<=0||boat.bubbles.every(bubble=>bubble.hp<=0);
+}
+
+function resolveTurn(){
+  const playerLost=isDefeated(state.player);
+  const enemyLost=isDefeated(state.enemy);
+  if(enemyLost){
+    state.enemy.sink=8;
+    return encounterWon();
+  }
+  if(playerLost){
+    state.player.sink=8;
+    return campaignLost();
+  }
+  if(state.turn==='player')beginEnemyTurn();
+  else beginPlayerTurn();
+}
+
+function encounterWon(){
+  state.phase='over';
+  ui.controlDeck.hidden=true;
+  if(state.stage===ENCOUNTERS.length-1){
+    state.won=true;
+    showResult(true);
+    announce('The sound is yours');
+    return;
+  }
+  showArmory();
+}
+
+function campaignLost(){
+  state.phase='over';
+  state.won=false;
+  ui.controlDeck.hidden=true;
+  showResult(false);
+  announce('Raft lost');
+}
+
+function showArmory(){
+  const unlocked=state.stage<WEAPONS.length-1?WEAPONS[state.stage+1]:null;
+  $('#armoryEyebrow').textContent=`${state.enemy.name} defeated`;
+  if(unlocked){
+    $('#unlockCard').innerHTML=`<div class="unlock-mark">${state.stage+2}</div><div><b>${unlocked.name} unlocked</b><span>${unlocked.role}. ${Number.isFinite(unlocked.ammo)?`${unlocked.ammo} rounds are issued per engagement.`:'Unlimited issue.'}</span></div>`;
+  }else if((state.stage+1)%10===0){
+    $('#unlockCard').innerHTML=`<div class="unlock-mark">★</div><div><b>Flagship stores seized</b><span>Chapter ${Math.floor((state.stage+1)/10)} is secure. All specialist ammunition will be replenished before engagement ${state.stage+2}.</span></div>`;
+  }else{
+    $('#unlockCard').innerHTML=`<div class="unlock-mark">${state.stage+1}</div><div><b>Captured powder and timber</b><span>The full munition rack will be replenished before engagement ${state.stage+2}. Choose where the stores strengthen the Resolve.</span></div>`;
+  }
+  const grid=$('#upgradeGrid');
+  grid.replaceChildren();
+  UPGRADES.forEach(upgrade=>{
+    const level=state.upgrades[upgrade.key];
+    const button=document.createElement('button');
+    button.className='upgrade';
+    button.innerHTML=`<b>${upgrade.name}</b><span>${upgrade.copy}</span><div class="upgrade-path"><i class="on"></i><em>Rank ${level}</em></div>`;
+    button.onclick=()=>{
+      ensureAudio();
+      state.upgrades[upgrade.key]++;
+      state.stage++;
+      if(unlocked)state.selected=unlocked.id;
+      sound('unlock');
+      beginEncounter();
+    };
+    grid.append(button);
+  });
+  renderRoute($('#campaignRoute'),state.stage+1);
+  showScreen(ui.armory);
+  sound('unlock');
+}
+
+function showResult(won){
+  $('#resultEyebrow').textContent=won?'Final campaign report':`Defeated in engagement ${state.stage+1}`;
+  $('#resultTitle').textContent=won?'The sound is secured.':'The raft goes under.';
+  $('#resultCopy').textContent=won
+    ?'One hundred enemy batteries are broken. Every captured munition and every hard-won improvement carried the Resolve through the blockade.'
+    :`${state.enemy.name} held the water. Retry with the same unlocked rack and upgrades, or return to orders for a fresh run.`;
+  $('#againTitle').textContent=won?'Sail the campaign again':'Retry engagement';
+  $('#againCopy').textContent=won?'Begin again with round shot only':'Keep current munitions and upgrades';
+  renderRoute($('#resultRoute'),won?ENCOUNTERS.length:state.stage);
+  showScreen(ui.result);
+}
+
+function renderRoute(container,current){
+  container.replaceChildren();
+  container.setAttribute('aria-label',`${Math.min(current,ENCOUNTER_COUNT)} of ${ENCOUNTER_COUNT} engagements complete`);
+  for(let index=0;index<10;index++){
+    const node=document.createElement('i');
+    const completedThrough=(index+1)*10;
+    const chapterStart=index*10;
+    node.className=current>=completedThrough?'done':current>=chapterStart&&current<completedThrough?'current':'';
+    container.append(node);
+  }
+}
+
+function returnToMenu(){
+  state.mode='menu';
+  state.phase='idle';
+  state.projectiles=[];
+  state.particles=[];
+  state.floatTexts=[];
+  ui.hud.hidden=true;
+  ui.controlDeck.hidden=true;
+  ui.mode.textContent='Awaiting orders';
+  showScreen(ui.menu);
+  setPreview();
+}
+
+function roman(value){
+  return['I','II','III','IV','V'][value-1]||String(value);
+}
+
+function updateHud(){
+  if(!state.player||!state.enemy)return;
+  const playerRatio=clamp(state.player.hull/state.player.maxHull,0,1);
+  const enemyRatio=clamp(state.enemy.hull/state.enemy.maxHull,0,1);
+  ui.playerName.textContent=state.player.name;
+  ui.enemyName.textContent=state.enemy.name;
+  ui.playerHull.style.width=`${playerRatio*100}%`;
+  ui.enemyHull.style.width=`${enemyRatio*100}%`;
+  ui.playerHullText.textContent=Math.ceil(Math.max(0,state.player.hull));
+  ui.enemyHullText.textContent=Math.ceil(Math.max(0,state.enemy.hull));
+  renderFloatPips(ui.playerFloats,state.player);
+  renderFloatPips(ui.enemyFloats,state.enemy);
+  const direction=state.wind===0?'calm':`${state.wind>0?'→':'←'} ${Math.abs(state.wind)} kn`;
+  ui.wind.innerHTML=`Wind <b>${direction}</b>`;
+  const turnText={
+    intro:`Engagement ${state.stage+1}`,
+    aim:'Your turn',charging:'Charging',flight:'Shot away',settle:'Assessing',
+    enemyThink:'Enemy turn',enemyCharge:'Enemy charging',over:'Engagement over'
+  }[state.phase]||'Stand by';
+  ui.turn.textContent=turnText;
+  ui.angle.textContent=`${Math.round(state.angle)}°`;
+  const chargePercent=Math.round(state.charge*100);
+  ui.charge.textContent=chargePercent;
+  ui.chargeFill.style.height=`${chargePercent}%`;
+  ui.fire.disabled=!['aim','charging'].includes(state.phase)||state.turn!=='player';
+}
+
+function renderFloatPips(container,boat){
+  container.replaceChildren();
+  boat.bubbles.forEach(bubble=>{
+    const pip=document.createElement('i');
+    const ratio=bubble.hp/bubble.max;
+    pip.className=`float-pip ${ratio<=0?'lost':ratio<.55?'damaged':''}`;
+    container.append(pip);
+  });
+}
+
+function update(dt){
+  state.time+=dt;
+  state.flash=Math.max(0,state.flash-dt);
+  state.shake*=Math.pow(.018,dt);
+  for(const boat of [state.player,state.enemy]){
+    if(!boat)continue;
+    boat.hit=Math.max(0,boat.hit-dt);
+    boat.shotPulse=Math.max(0,boat.shotPulse-dt);
+    boat.bubbles.forEach(bubble=>bubble.pop=Math.max(0,bubble.pop-dt));
+    if(isDefeated(boat))boat.sink=Math.min(80,boat.sink+dt*8);
+  }
+
+  if(state.phase==='intro'){
+    state.timer-=dt;
+    if(state.timer<=0)beginPlayerTurn();
+  }else if(state.phase==='charging'){
+    const speed=Math.max(.36,.72-state.upgrades.sight*.09);
+    state.charge+=state.chargeDir*speed*dt;
+    if(state.charge>=1){state.charge=1;state.chargeDir=-1;tone(190,.05,'square',.018,150)}
+    if(state.charge<=.18){state.charge=.18;state.chargeDir=1}
+  }else if(state.phase==='enemyThink'){
+    state.timer-=dt;
+    if(state.timer<=0){
+      state.phase='enemyCharge';
+      state.timer=1.05;
+      sound('charge');
+    }
+  }else if(state.phase==='enemyCharge'){
+    state.timer-=dt;
+    if(state.timer<=0&&state.enemyPlan){
+      const plan=state.enemyPlan;
+      state.lastShotAngle.enemy=plan.angle;
+      fireShot('enemy',plan.weapon,plan.angle,plan.charge);
+    }
+  }else if(state.phase==='flight'){
+    updateProjectiles(dt);
+  }else if(state.phase==='settle'){
+    state.timer-=dt;
+    if(state.timer<=0)resolveTurn();
+  }
+
+  updateParticles(dt);
+  updateHud();
+}
+
+function updateParticles(dt){
+  state.particles.forEach(particle=>{
+    particle.life-=dt;
+    particle.x+=particle.vx*dt;
+    particle.y+=particle.vy*dt;
+    if(particle.kind==='spark'||particle.kind==='debris')particle.vy+=330*dt;
+    if(particle.kind==='splash')particle.vy+=250*dt;
+    particle.vx*=Math.pow(.2,dt);
+  });
+  state.particles=state.particles.filter(particle=>particle.life>0);
+  state.floatTexts.forEach(text=>{
+    text.life-=dt;
+    text.y-=24*dt;
+  });
+  state.floatTexts=state.floatTexts.filter(text=>text.life>0);
+}
+
+function burst(x,y,color,count=12,kind='spark'){
+  for(let i=0;i<count;i++){
+    state.particles.push({
+      x,y,vx:random(-180,180),vy:random(-170,45),life:random(.35,.7),max:.7,size:random(2,5),color,kind
+    });
+  }
+}
+
+function explosion(x,y,color,count=20){
+  burst(x,y,color,count,'fire');
+  for(let i=0;i<8;i++)state.particles.push({x,y,vx:random(-80,80),vy:random(-90,20),life:random(.6,1.15),max:1.15,size:random(7,14),color:'#34302b',kind:'smoke'});
+}
+
+function muzzleBurst(x,y,dir){
+  for(let i=0;i<13;i++)state.particles.push({x,y,vx:dir*random(40,190),vy:random(-70,45),life:random(.18,.5),max:.5,size:random(4,10),color:i<4?'#f3b04d':'#5e574c',kind:i<4?'fire':'smoke'});
+}
+
+function splash(x,y){
+  for(let i=0;i<15;i++)state.particles.push({x,y,vx:random(-100,100),vy:random(-210,-55),life:random(.38,.72),max:.72,size:random(2,5),color:'#79c9c6',kind:'splash'});
+}
+
+function floatText(x,y,text,color){
+  state.floatTexts.push({x,y,text,color,life:1.05,max:1.05});
+}
+
+function waveAt(x){
+  return Math.sin(x*.026+state.time*2.1)*5+Math.sin(x*.011-state.time*1.4)*4;
+}
+
+function draw(){
+  ctx.save();
+  if(state.shake>1)ctx.translate(random(-state.shake,state.shake)*.45,random(-state.shake,state.shake)*.35);
+  drawWorld();
+  if(state.player)drawBoat(state.player);
+  if(state.enemy)drawBoat(state.enemy);
+  if(['aim','charging'].includes(state.phase)&&state.turn==='player')drawTrajectory();
+  state.projectiles.forEach(drawProjectile);
+  drawParticles();
+  if(state.flash>0){
+    ctx.globalAlpha=state.flash*1.8;
+    ctx.fillStyle='#ffe6aa';
+    ctx.fillRect(0,0,W,H);
+  }
+  ctx.restore();
+}
+
+function drawWorld(){
+  const stageTint=state.mode==='campaign'?state.stage:0;
+  const sky=ctx.createLinearGradient(0,0,0,WATER);
+  sky.addColorStop(0,stageTint>2?'#151820':'#20252a');
+  sky.addColorStop(.52,stageTint>2?'#343130':'#4a4945');
+  sky.addColorStop(1,stageTint>2?'#8d4c35':'#9b6847');
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,WATER+8);
+
+  ctx.save();
+  ctx.globalAlpha=.13;
+  const glow=ctx.createRadialGradient(685,115,10,685,115,165);
+  glow.addColorStop(0,'#ffcf73');
+  glow.addColorStop(1,'rgba(255,156,72,0)');
+  ctx.fillStyle=glow;
+  ctx.fillRect(505,-45,360,330);
+  ctx.restore();
+
+  drawCloud(140,93,1.1);
+  drawCloud(455,70,.8);
+  drawCloud(760,112,1.35);
+
+  ctx.fillStyle='#25282a';
+  ctx.beginPath();
+  ctx.moveTo(0,330);ctx.lineTo(0,274);ctx.lineTo(70,262);ctx.lineTo(108,287);ctx.lineTo(180,276);ctx.lineTo(228,305);ctx.lineTo(290,294);ctx.lineTo(335,330);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#1c2021';
+  ctx.beginPath();
+  ctx.moveTo(650,330);ctx.lineTo(650,295);ctx.lineTo(688,295);ctx.lineTo(688,249);ctx.lineTo(703,249);ctx.lineTo(703,219);ctx.lineTo(718,219);ctx.lineTo(718,251);ctx.lineTo(756,251);ctx.lineTo(756,289);ctx.lineTo(814,276);ctx.lineTo(870,291);ctx.lineTo(960,268);ctx.lineTo(960,330);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(9,13,14,.7)';
+  for(const x of [670,733,786,842,903])ctx.fillRect(x,286,22,12);
+
+  ctx.strokeStyle='rgba(215,223,219,.16)';
+  ctx.lineWidth=1;
+  const rainCount=reducedMotion?18:42;
+  for(let i=0;i<rainCount;i++){
+    const x=(i*83+state.time*125)%1040-40;
+    const y=(i*47+state.time*80)%360;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y+22);ctx.stroke();
+  }
+
+  const water=ctx.createLinearGradient(0,WATER,0,H);
+  water.addColorStop(0,'#315a5d');
+  water.addColorStop(.35,'#153a40');
+  water.addColorStop(1,'#071c24');
+  ctx.fillStyle=water;
+  ctx.fillRect(0,WATER-5,W,H-WATER+5);
+
+  for(let band=0;band<4;band++){
+    ctx.beginPath();
+    const base=WATER+band*29;
+    ctx.moveTo(0,H);
+    ctx.lineTo(0,base+waveAt(band*43)*.4);
+    for(let x=0;x<=W;x+=16){
+      const y=base+Math.sin(x*.018+state.time*(1.2+band*.23)+band)*4+Math.sin(x*.041-state.time*.8)*2;
+      ctx.lineTo(x,y);
+    }
+    ctx.lineTo(W,H);ctx.closePath();
+    ctx.fillStyle=['rgba(87,155,157,.3)','rgba(33,105,112,.32)','rgba(16,74,85,.42)','rgba(8,45,59,.62)'][band];
+    ctx.fill();
+  }
+
+  ctx.strokeStyle='rgba(151,219,211,.46)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let x=0;x<=W;x+=11){
+    const y=WATER-1+waveAt(x)*.55;
+    if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+function drawCloud(x,y,scale){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+  ctx.fillStyle='rgba(15,17,19,.48)';
+  ctx.beginPath();
+  ctx.ellipse(0,0,90,22,0,0,TAU);
+  ctx.ellipse(-45,-14,49,28,0,0,TAU);
+  ctx.ellipse(22,-18,63,34,0,0,TAU);
+  ctx.ellipse(66,-6,45,24,0,0,TAU);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBoat(boat){
+  const y=getBoatY(boat);
+  const tilt=getTilt(boat)+(boat.hit>0?Math.sin(state.time*38)*.018:0);
+  ctx.save();
+  ctx.translate(boat.x,y);
+  ctx.rotate(tilt);
+  if(boat.owner==='enemy')ctx.scale(-1,1);
+
+  boat.bubbles.forEach(bubble=>{
+    if(bubble.hp<=0)return;
+    const ratio=clamp(bubble.hp/bubble.max,0,1);
+    const pulse=1+Math.sin(state.time*2.7+bubble.offset)*.035;
+    const gradient=ctx.createRadialGradient(bubble.offset-7,7,2,bubble.offset,14,27);
+    gradient.addColorStop(0,'rgba(220,255,246,.88)');
+    gradient.addColorStop(.25,`rgba(91,220,207,${.74*ratio+.12})`);
+    gradient.addColorStop(1,'rgba(18,95,101,.35)');
+    ctx.fillStyle=gradient;
+    ctx.strokeStyle=bubble.pop>0?'#effff8':'rgba(149,235,224,.72)';
+    ctx.lineWidth=bubble.pop>0?4:2;
+    ctx.beginPath();ctx.arc(bubble.offset,14,23*pulse,0,TAU);ctx.fill();ctx.stroke();
+    ctx.globalAlpha=.55;ctx.fillStyle='#eafff9';ctx.beginPath();ctx.arc(bubble.offset-7,7,4,0,TAU);ctx.fill();ctx.globalAlpha=1;
+  });
+
+  ctx.fillStyle='rgba(0,0,0,.35)';
+  ctx.beginPath();ctx.ellipse(0,27,88,13,0,0,TAU);ctx.fill();
+
+  ctx.fillStyle=boat.color;
+  ctx.strokeStyle='#241913';
+  ctx.lineWidth=4;
+  ctx.beginPath();
+  ctx.moveTo(-82,-54);ctx.lineTo(75,-54);ctx.lineTo(57,-7);ctx.lineTo(-60,-7);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.2)';
+  for(let x=-53;x<53;x+=24)ctx.fillRect(x,-48,4,34);
+  ctx.fillStyle=boat.trim;
+  ctx.fillRect(-76,-59,145,5);
+  ctx.fillRect(-57,-14,108,4);
+
+  ctx.strokeStyle='#211814';
+  ctx.lineWidth=6;
+  ctx.beginPath();ctx.moveTo(-8,-58);ctx.lineTo(-8,-169);ctx.stroke();
+  ctx.fillStyle=boat.sail;
+  ctx.strokeStyle='rgba(30,19,16,.9)';
+  ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-3,-157);ctx.lineTo(56,-132);ctx.lineTo(5,-84);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.globalAlpha=.25;
+  ctx.strokeStyle='#e2d1ae';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(3,-146);ctx.lineTo(42,-130);ctx.lineTo(8,-98);ctx.stroke();
+  ctx.globalAlpha=1;
+  if(boat.rigging>0){
+    ctx.strokeStyle='#211a16';ctx.lineWidth=2;
+    for(let i=0;i<boat.rigging;i++){ctx.beginPath();ctx.moveTo(5+i*8,-148+i*7);ctx.lineTo(43-i*5,-119+i*3);ctx.stroke()}
+  }
+
+  ctx.fillStyle='#171412';
+  ctx.beginPath();ctx.arc(-31,-68,9,0,TAU);ctx.fill();
+  ctx.fillRect(-38,-60,14,25);
+  ctx.fillStyle=boat.trim;
+  ctx.fillRect(-37,-54,12,3);
+
+  const angle=boat.owner==='player'
+    ?(['aim','charging'].includes(state.phase)?state.angle:state.lastShotAngle.player)
+    :(state.phase==='enemyCharge'&&state.enemyPlan?state.enemyPlan.angle:state.lastShotAngle.enemy);
+  drawCannon(boat,angle);
+
+  if(boat.burn>0){
+    for(let i=0;i<3;i++){
+      ctx.fillStyle=i===0?'#ffcf4f':i===1?'#e65c27':'rgba(64,57,50,.65)';
+      ctx.beginPath();
+      ctx.ellipse(20+i*5,-68-i*10,7+i*2,15+i*4,Math.sin(state.time*6+i)*.18,0,TAU);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawCannon(boat,angle){
+  const radians=angle*Math.PI/180;
+  const recoil=boat.shotPulse>0?boat.shotPulse*55:0;
+  const pivotX=41;
+  const pivotY=-64;
+  ctx.save();
+  ctx.translate(pivotX,pivotY);
+  ctx.rotate(-radians);
+  ctx.translate(-recoil,0);
+  ctx.fillStyle='#17191a';
+  ctx.strokeStyle='#c49745';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.roundRect(-10,-7,52,14,5);
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle='#090a0a';
+  ctx.fillRect(34,-9,11,18);
+  ctx.restore();
+  ctx.fillStyle='#a67736';
+  ctx.beginPath();ctx.arc(pivotX,pivotY+11,10,0,TAU);ctx.fill();
+  ctx.fillStyle='#3a281b';ctx.fillRect(pivotX-16,pivotY+12,32,5);
+}
+
+function drawTrajectory(){
+  const weapon=weaponById(state.selected)||WEAPONS[0];
+  const muzzle=getMuzzle(state.player,state.angle);
+  const radians=state.angle*Math.PI/180;
+  const speed=(330+state.charge*300)*weapon.speed;
+  let x=muzzle.x;
+  let y=muzzle.y;
+  let vx=Math.cos(radians)*speed;
+  let vy=-Math.sin(radians)*speed;
+  const steps=11+Math.min(state.upgrades.sight,8)*2;
+  ctx.save();
+  for(let i=0;i<steps;i++){
+    for(let sub=0;sub<3;sub++){
+      const dt=.035;
+      vx+=state.wind*1.22*dt;
+      vy+=GRAVITY*dt;
+      x+=vx*dt;
+      y+=vy*dt;
+    }
+    if(y>WATER||x>W)break;
+    ctx.globalAlpha=.64-i/steps*.46;
+    ctx.fillStyle=i%3===0?'#f2c463':'#ddcfab';
+    ctx.beginPath();ctx.arc(x,y,i%3===0?2.5:1.6,0,TAU);ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawProjectile(projectile){
+  const weapon=weaponById(projectile.weapon);
+  ctx.save();
+  ctx.translate(projectile.x,projectile.y);
+  ctx.rotate(projectile.spin);
+  if(weapon.id==='chain'){
+    ctx.strokeStyle='#272727';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(10,0);ctx.stroke();
+    ctx.fillStyle='#69645c';
+    ctx.beginPath();ctx.arc(-12,0,6,0,TAU);ctx.arc(12,0,6,0,TAU);ctx.fill();
+  }else{
+    ctx.shadowBlur=weapon.id==='hot'?18:weapon.id==='shell'?8:0;
+    ctx.shadowColor=weapon.id==='hot'?'#ff6e26':'#e7a84c';
+    ctx.fillStyle=weapon.color;
+    ctx.beginPath();ctx.arc(0,0,weapon.radius,0,TAU);ctx.fill();
+    ctx.strokeStyle=weapon.id==='hot'?'#ffd069':'#b88d4d';ctx.lineWidth=2;ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawParticles(){
+  for(const particle of state.particles){
+    const alpha=clamp(particle.life/particle.max,0,1);
+    ctx.globalAlpha=particle.kind==='smoke'?alpha*.5:alpha;
+    ctx.fillStyle=particle.color;
+    if(particle.kind==='smoke'){
+      ctx.beginPath();ctx.arc(particle.x,particle.y,particle.size*(1+(1-alpha)*1.8),0,TAU);ctx.fill();
+    }else{
+      ctx.fillRect(particle.x-particle.size/2,particle.y-particle.size/2,particle.size,particle.size);
+    }
+  }
+  ctx.globalAlpha=1;
+  ctx.textAlign='center';
+  ctx.font='900 11px ui-sans-serif, system-ui, sans-serif';
+  for(const text of state.floatTexts){
+    ctx.globalAlpha=clamp(text.life/text.max,0,1);
+    ctx.fillStyle='rgba(0,0,0,.72)';
+    ctx.fillText(text.text,text.x+1,text.y+2);
+    ctx.fillStyle=text.color;
+    ctx.fillText(text.text,text.x,text.y);
+  }
+  ctx.globalAlpha=1;
+  ctx.textAlign='start';
+}
+
+function loop(now){
+  const dt=Math.min(.034,(now-last)/1000);
+  last=now;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+$('#startButton').onclick=startCampaign;
+$('#howButton').onclick=()=>showScreen(ui.how);
+document.querySelectorAll('[data-menu-back]').forEach(button=>button.onclick=returnToMenu);
+$('#againButton').onclick=()=>state.won?startCampaign():beginEncounter();
+$('#angleDown').onclick=()=>changeAngle(-1);
+$('#angleUp').onclick=()=>changeAngle(1);
+canvas.addEventListener('pointermove',aimFromPointer);
+canvas.addEventListener('pointerdown',event=>{aimFromPointer(event);event.preventDefault()});
+
+ui.fire.addEventListener('pointerdown',event=>{
+  event.preventDefault();
+  ui.fire.setPointerCapture?.(event.pointerId);
+  startCharge();
+});
+ui.fire.addEventListener('pointerup',event=>{event.preventDefault();releaseCharge()});
+ui.fire.addEventListener('pointercancel',releaseCharge);
+
+addEventListener('keydown',event=>{
+  if(['ArrowUp','KeyW'].includes(event.code)){event.preventDefault();changeAngle(1)}
+  if(['ArrowDown','KeyS'].includes(event.code)){event.preventDefault();changeAngle(-1)}
+  if(event.code==='Space'&&!event.repeat){event.preventDefault();startCharge()}
+  const number=Number(event.key);
+  if(number>=1&&number<=5)selectWeapon(WEAPONS[number-1].id);
+});
+addEventListener('keyup',event=>{
+  if(event.code==='Space'){event.preventDefault();releaseCharge()}
+});
+addEventListener('blur',()=>{
+  if(state.phase==='charging')releaseCharge();
+});
+
+window.BubbleRaftAssault={
+  version:'0.1.0',state,weapons:WEAPONS,startCampaign,beginEncounter,generateCampaign,
+  getEncounters:()=>ENCOUNTERS,
+  selectWeapon,changeAngle,debugStep:update,
+  fire:()=>{if(state.phase==='aim'){state.charge=.7;firePlayer()}}
+};
+
+setPreview();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
