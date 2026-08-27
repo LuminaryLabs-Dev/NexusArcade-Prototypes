@@ -101,7 +101,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   border:1px solid rgba(239,205,139,.22);background:rgba(10,11,10,.82)
 }
 .turn-label{color:var(--amber);font-size:10px;font-weight:950;letter-spacing:.17em;text-transform:uppercase}
-.wind{margin-top:5px;color:#c7bba8;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.wind{margin-top:5px;color:#c7bba8;font-size:9px;font-weight:800;line-height:1.45;letter-spacing:.12em;text-transform:uppercase}
 .wind b{color:var(--aqua);font-size:11px}
 .announcement{
   position:absolute;z-index:4;left:50%;top:28%;width:90%;
@@ -255,7 +255,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
     </header>
 
     <div class="stage" id="stage">
-      <canvas id="game" width="960" height="540" aria-label="Two armed bubble rafts facing each other across stormy water"></canvas>
+      <canvas id="game" width="1280" height="720" aria-label="Two distant armed bubble rafts facing each other through fog, birds, and rock hazards"></canvas>
 
       <div class="hud" id="hud" hidden>
         <section class="vessel-hud">
@@ -281,7 +281,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
         <div class="menu-card">
           <div class="eyebrow">A turn-based powder duel</div>
           <h1 class="title">Bubble Raft<br>Assault</h1>
-          <p class="lede">Read the crosswind. Choose the right shot. Hold the powder charge and release when the gun has the range. Break a procedurally generated line of 100 armed rafts before they send yours beneath the black water.</p>
+          <p class="lede">Read the crosswind through shifting fog. Choose the right shot, then hold the powder charge and trust your range across a wide, uncertain channel. Break a procedurally generated line of 100 armed rafts before they send yours beneath the black water.</p>
           <div class="menu-actions">
             <button class="primary" id="startButton"><span class="action-title">Begin the campaign</span><span class="action-copy">100 engagements · a flagship every tenth battle</span></button>
             <button class="secondary" id="howButton"><span class="action-title">Field instructions</span><span class="action-copy">Aim, charge, hit zones, and munitions</span></button>
@@ -294,7 +294,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
         <div class="panel">
           <div class="eyebrow">Field instructions</div>
           <h2>Every shot is a decision.</h2>
-          <p>Move the pointer over the water or use ↑ / ↓ to set elevation. Wind changes every turn. Hold Fire or Space to build powder pressure, then release at the charge you want.</p>
+          <p>Move the pointer over the water or use ↑ / ↓ to set elevation. Wind changes every turn, while fog conceals the middle and far water. Hold Fire or Space to build powder pressure, then release at the charge you want.</p>
+          <div class="unlock"><div class="unlock-mark">≈</div><div><b>Range through uncertain water</b><span>The ranging trail dissolves before impact. Fog density changes every engagement. Later routes add rock needles that stop shot or dense bird flocks that cross the sightline.</span></div></div>
           <div class="unlock"><div class="unlock-mark">◎</div><div><b>Break hull or flotation</b><span>Hull hits reduce integrity. Destroy every luminous float and the raft sinks immediately. High shots can foul the rigging and weaken enemy accuracy.</span></div></div>
           <div class="unlock"><div class="unlock-mark">1–5</div><div><b>Match the munition to the target</b><span>Round shot is reliable. Chain tears floats and rigging. Grape spreads at close range. Shells explode. Hot shot keeps burning after impact.</span></div></div>
           <button class="primary" data-menu-back><span class="action-title">Return to orders</span></button>
@@ -349,10 +350,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 const $=selector=>document.querySelector(selector);
 const canvas=$('#game');
 const ctx=canvas.getContext('2d');
-const W=960;
-const H=540;
-const WATER=405;
+const W=1280;
+const H=720;
+const WATER=548;
 const GRAVITY=420;
+const PLAYER_X=126;
+const SHOT_BASE=420;
+const SHOT_CHARGE=380;
 const TAU=Math.PI*2;
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -429,14 +433,56 @@ function generateEncounter(seed,index){
   const spread=Math.max(.65,4.65-index*.035-(flagship?.35:0));
   const damage=Math.min(1.42,.69+index*.0065+(flagship?.09:0));
   const bubbleHp=Math.round(23+chapter*1.7+(flagship?4:0));
+  const range=Math.round(958+rng()*58+chapter*5);
+  const fog=clamp(.06+rng()*.43+chapter*.022+(flagship?.06:0),.05,.73);
+  const fogDrift=rng();
+  const rockChance=index<24?0:Math.min(.62,.18+(index-24)*.0062);
+  const birdChance=index<8?0:Math.min(.4,.2+index*.0022);
+  const hazardRoll=rng();
+  const hazard=hazardRoll<rockChance?'rocks':hazardRoll<rockChance+birdChance?'birds':'open';
+  const rockCount=hazard==='rocks'?1+(index>=54&&rng()<.48?1:0):0;
+  const rocks=Array.from({length:rockCount},(_,rockIndex)=>{
+    const lane=(rockIndex+1)/(rockCount+1);
+    return{
+      x:Math.round(PLAYER_X+range*(.23+lane*.54)+randomSigned(rng)*26),
+      width:Math.round(94+rng()*64+chapter*1.8),
+      height:Math.round(112+rng()*82+chapter*2.8),
+      crag:rng()*TAU
+    };
+  });
+  const flockCount=hazard==='birds'?1+(index>=46&&rng()<.52?1:0):0;
+  const flocks=Array.from({length:flockCount},()=>({
+    y:Math.round(275+rng()*155),
+    speed:Math.round(22+rng()*24+chapter),
+    phase:rng(),
+    direction:rng()<.5?-1:1,
+    count:12+Math.floor(rng()*9)+Math.floor(chapter/3),
+    spread:110+Math.round(rng()*75)
+  }));
   const rank=flagship?`Flagship ${chapter+1}`:`Patrol ${String(level).padStart(3,'0')}`;
-  const subtitle=flagship
+  const fogName=fogLabel(fog).toLowerCase();
+  const obstruction=hazard==='rocks'?'rock needles':hazard==='birds'?'bird passage':'open water';
+  const subtitleBase=flagship
     ?`${rank} · reinforced floats · disciplined mixed fire`
     :`${rank} · ${hullType.toLowerCase()} · ${weaponById(specialist).role.toLowerCase()}`;
+  const subtitle=`${subtitleBase} · ${fogName} fog · ${obstruction}`;
   return{
     level,chapter,flagship,name:`${prefix} ${core} ${hullType}`,subtitle,hull,bubbles,bubbleHp,
-    color:palette[0],sail:palette[1],trim:palette[2],spread,damage,pattern
+    color:palette[0],sail:palette[1],trim:palette[2],spread,damage,pattern,
+    range,fog,fogDrift,hazard,rocks,flocks
   };
+}
+
+function randomSigned(rng){
+  return rng()*2-1;
+}
+
+function fogLabel(value){
+  if(value<.16)return'Clear';
+  if(value<.3)return'Thin';
+  if(value<.48)return'Patchy';
+  if(value<.63)return'Heavy';
+  return'Blinding';
 }
 
 const ui={
@@ -452,7 +498,7 @@ const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state={
   mode:'menu',phase:'idle',stage:0,turn:'player',angle:34,charge:.28,chargeDir:1,selected:'round',
   wind:0,player:null,enemy:null,ammo:{},upgrades:{powder:0,hull:0,sight:0},
-  projectiles:[],particles:[],floatTexts:[],enemyPlan:null,enemyShot:0,timer:0,time:0,shake:0,flash:0,lastShotAngle:{player:34,enemy:34},won:false,
+  projectiles:[],particles:[],floatTexts:[],enemyPlan:null,enemyShot:0,timer:0,time:0,encounterTime:0,shake:0,flash:0,lastShotAngle:{player:34,enemy:34},won:false,
   seed:0
 };
 
@@ -540,7 +586,7 @@ function makeBoat(owner,config={}){
   const maxHull=isPlayer?100+state.upgrades.hull*7:config.hull;
   const bubbleMax=isPlayer?25+state.upgrades.hull:config.bubbleHp;
   return{
-    owner,dir:isPlayer?1:-1,x:isPlayer?151:809,baseY:392,
+    owner,dir:isPlayer?1:-1,x:isPlayer?PLAYER_X:PLAYER_X+config.range,baseY:WATER-13,
     name:isPlayer?'The Resolve':config.name,
     maxHull,hull:maxHull,color:isPlayer?'#523723':config.color,trim:isPlayer?'#d0a14a':config.trim,
     sail:isPlayer?'#87775e':config.sail,subtitle:config.subtitle||'',
@@ -575,6 +621,7 @@ function startCampaign(){
   state.upgrades={powder:0,hull:0,sight:0};
   state.selected='round';
   state.enemyShot=0;
+  state.encounterTime=0;
   state.seed=campaignSeed();
   ENCOUNTERS=generateCampaign(state.seed);
   beginEncounter();
@@ -592,6 +639,7 @@ function beginEncounter(){
   state.timer=1.45;
   state.enemyPlan=null;
   state.enemyShot=0;
+  state.encounterTime=0;
   state.wind=randomWind();
   state.charge=.28;
   state.chargeDir=1;
@@ -696,7 +744,7 @@ function fireShot(owner,weapon,angle,charge){
     const spread=count===1?0:lerp(-4.8,4.8,i/(count-1))+random(-.65,.65);
     const pelletCharge=charge*(count===1?1:random(.93,1.035));
     const radians=(angle+spread)*Math.PI/180;
-    const speed=(330+pelletCharge*300)*weapon.speed;
+    const speed=shotSpeed(weapon,pelletCharge);
     state.projectiles.push({
       owner,weapon:weapon.id,x:muzzle.x,y:muzzle.y,lastX:muzzle.x,lastY:muzzle.y,
       vx:Math.cos(radians)*speed*boat.dir,vy:-Math.sin(radians)*speed,
@@ -710,6 +758,10 @@ function fireShot(owner,weapon,angle,charge){
   state.flash=.1;
   muzzleBurst(muzzle.x,muzzle.y,boat.dir);
   sound('fire');
+}
+
+function shotSpeed(weapon,charge){
+  return(SHOT_BASE+charge*SHOT_CHARGE)*weapon.speed;
 }
 
 function weaponById(id){
@@ -817,7 +869,7 @@ function planEnemyShot(){
 function trajectoryScore(boat,weapon,angle,charge,target){
   const muzzle=getMuzzle(boat,angle);
   const radians=angle*Math.PI/180;
-  const speed=(330+charge*300)*weapon.speed;
+  const speed=shotSpeed(weapon,charge);
   let x=muzzle.x;
   let y=muzzle.y;
   let vx=Math.cos(radians)*speed*boat.dir;
@@ -831,6 +883,7 @@ function trajectoryScore(boat,weapon,angle,charge,target){
     const dx=x-target.x;
     const dy=y-target.y;
     best=Math.min(best,dx*dx+dy*dy);
+    if(rockCollisionAt(x,y,weapon.radius))return 1e12+best;
     if(y>WATER+35||x<-40||x>W+40)break;
   }
   return best;
@@ -861,6 +914,12 @@ function updateProjectiles(dt){
       impact(projectile,target,zone);
       continue;
     }
+    const rock=rockCollisionAt(projectile.x,projectile.y,projectile.radius);
+    if(rock){
+      projectile.dead=true;
+      rockImpact(projectile,rock);
+      continue;
+    }
     if(projectile.y>=WATER+waveAt(projectile.x)*.45){
       projectile.dead=true;
       if(projectile.weapon==='shell'){
@@ -886,6 +945,40 @@ function updateProjectiles(dt){
     state.phase='settle';
     state.timer=.88;
   }
+}
+
+function currentEncounter(){
+  return ENCOUNTERS[state.stage]||ENCOUNTERS[0]||null;
+}
+
+function rockSurfaceY(rock,x){
+  const half=rock.width*.5;
+  const normalized=Math.abs(x-rock.x)/half;
+  if(normalized>1)return null;
+  const crown=Math.pow(1-normalized,.58);
+  const fracture=Math.sin((x-rock.x)/rock.width*14+rock.crag)*rock.height*.035*crown;
+  return WATER-rock.height*crown+fracture;
+}
+
+function rockCollisionAt(x,y,radius=0){
+  const encounter=currentEncounter();
+  if(!encounter?.rocks?.length)return null;
+  for(const rock of encounter.rocks){
+    if(Math.abs(x-rock.x)>rock.width*.5+radius)continue;
+    const sampleX=clamp(x,rock.x-rock.width*.5,rock.x+rock.width*.5);
+    const surface=rockSurfaceY(rock,sampleX);
+    if(surface!==null&&y+radius>=surface&&y-radius<WATER+12)return rock;
+  }
+  return null;
+}
+
+function rockImpact(projectile){
+  burst(projectile.x,projectile.y,'#8f8574',16,'debris');
+  state.particles.push({x:projectile.x,y:projectile.y,vx:random(-22,22),vy:random(-28,4),life:.8,max:.8,size:14,color:'#403d38',kind:'smoke'});
+  floatText(projectile.x,projectile.y-18,'ROCK STRIKE','#d8c5a0');
+  note('Shot broken on the rock needles');
+  state.shake=reducedMotion?0:Math.max(state.shake,6);
+  sound('hit');
 }
 
 function hitZone(projectile,boat){
@@ -1083,7 +1176,9 @@ function updateHud(){
   renderFloatPips(ui.playerFloats,state.player);
   renderFloatPips(ui.enemyFloats,state.enemy);
   const direction=state.wind===0?'calm':`${state.wind>0?'→':'←'} ${Math.abs(state.wind)} kn`;
-  ui.wind.innerHTML=`Wind <b>${direction}</b>`;
+  const encounter=currentEncounter();
+  const visibility=encounter?fogLabel(encounter.fog):'Clear';
+  ui.wind.innerHTML=`Wind <b>${direction}</b><br>Fog <b>${visibility}</b>`;
   const turnText={
     intro:`Engagement ${state.stage+1}`,
     aim:'Your turn',charging:'Charging',flight:'Shot away',settle:'Assessing',
@@ -1109,6 +1204,7 @@ function renderFloatPips(container,boat){
 
 function update(dt){
   state.time+=dt;
+  if(state.mode==='campaign')state.encounterTime+=dt;
   state.flash=Math.max(0,state.flash-dt);
   state.shake*=Math.pow(.018,dt);
   for(const boat of [state.player,state.enemy]){
@@ -1202,11 +1298,14 @@ function draw(){
   ctx.save();
   if(state.shake>1)ctx.translate(random(-state.shake,state.shake)*.45,random(-state.shake,state.shake)*.35);
   drawWorld();
+  drawRockHazards();
   if(state.player)drawBoat(state.player);
   if(state.enemy)drawBoat(state.enemy);
   if(['aim','charging'].includes(state.phase)&&state.turn==='player')drawTrajectory();
   state.projectiles.forEach(drawProjectile);
   drawParticles();
+  drawBirdFlocks();
+  drawFogVeil();
   if(state.flash>0){
     ctx.globalAlpha=state.flash*1.8;
     ctx.fillStyle='#ffe6aa';
@@ -1226,32 +1325,35 @@ function drawWorld(){
 
   ctx.save();
   ctx.globalAlpha=.13;
-  const glow=ctx.createRadialGradient(685,115,10,685,115,165);
+  const glowX=W*.72;
+  const glow=ctx.createRadialGradient(glowX,145,10,glowX,145,205);
   glow.addColorStop(0,'#ffcf73');
   glow.addColorStop(1,'rgba(255,156,72,0)');
   ctx.fillStyle=glow;
-  ctx.fillRect(505,-45,360,330);
+  ctx.fillRect(glowX-220,-45,440,390);
   ctx.restore();
 
   drawCloud(140,93,1.1);
   drawCloud(455,70,.8);
   drawCloud(760,112,1.35);
+  drawCloud(1090,82,.95);
 
   ctx.fillStyle='#25282a';
   ctx.beginPath();
-  ctx.moveTo(0,330);ctx.lineTo(0,274);ctx.lineTo(70,262);ctx.lineTo(108,287);ctx.lineTo(180,276);ctx.lineTo(228,305);ctx.lineTo(290,294);ctx.lineTo(335,330);ctx.closePath();ctx.fill();
+  ctx.moveTo(0,450);ctx.lineTo(0,374);ctx.lineTo(84,359);ctx.lineTo(130,391);ctx.lineTo(222,372);ctx.lineTo(286,414);ctx.lineTo(365,398);ctx.lineTo(430,450);ctx.closePath();ctx.fill();
   ctx.fillStyle='#1c2021';
   ctx.beginPath();
-  ctx.moveTo(650,330);ctx.lineTo(650,295);ctx.lineTo(688,295);ctx.lineTo(688,249);ctx.lineTo(703,249);ctx.lineTo(703,219);ctx.lineTo(718,219);ctx.lineTo(718,251);ctx.lineTo(756,251);ctx.lineTo(756,289);ctx.lineTo(814,276);ctx.lineTo(870,291);ctx.lineTo(960,268);ctx.lineTo(960,330);ctx.closePath();ctx.fill();
+  const coast=W-410;
+  ctx.moveTo(coast,450);ctx.lineTo(coast,403);ctx.lineTo(coast+48,403);ctx.lineTo(coast+48,343);ctx.lineTo(coast+67,343);ctx.lineTo(coast+67,303);ctx.lineTo(coast+86,303);ctx.lineTo(coast+86,346);ctx.lineTo(coast+136,346);ctx.lineTo(coast+136,395);ctx.lineTo(coast+210,376);ctx.lineTo(coast+280,396);ctx.lineTo(W,365);ctx.lineTo(W,450);ctx.closePath();ctx.fill();
   ctx.fillStyle='rgba(9,13,14,.7)';
-  for(const x of [670,733,786,842,903])ctx.fillRect(x,286,22,12);
+  for(let x=coast+22;x<W-18;x+=73)ctx.fillRect(x,392,25,13);
 
   ctx.strokeStyle='rgba(215,223,219,.16)';
   ctx.lineWidth=1;
   const rainCount=reducedMotion?18:42;
   for(let i=0;i<rainCount;i++){
-    const x=(i*83+state.time*125)%1040-40;
-    const y=(i*47+state.time*80)%360;
+    const x=(i*109+state.time*125)%(W+80)-40;
+    const y=(i*61+state.time*80)%(WATER-45);
     ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y+22);ctx.stroke();
   }
 
@@ -1284,6 +1386,109 @@ function drawWorld(){
     if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
   }
   ctx.stroke();
+}
+
+function drawRockHazards(){
+  const encounter=currentEncounter();
+  if(!encounter?.rocks?.length)return;
+  for(const rock of encounter.rocks){
+    const left=rock.x-rock.width*.5;
+    const right=rock.x+rock.width*.5;
+    const gradient=ctx.createLinearGradient(left,0,right,0);
+    gradient.addColorStop(0,'#1c2324');
+    gradient.addColorStop(.46,'#59605d');
+    gradient.addColorStop(1,'#151a1b');
+    ctx.fillStyle=gradient;
+    ctx.strokeStyle='rgba(183,187,174,.3)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(left,WATER+22);
+    for(let x=left;x<=right;x+=4)ctx.lineTo(x,rockSurfaceY(rock,x));
+    ctx.lineTo(right,WATER+22);
+    ctx.closePath();ctx.fill();ctx.stroke();
+
+    ctx.save();
+    ctx.globalAlpha=.35;
+    ctx.strokeStyle='#a5aaa2';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let x=left+rock.width*.24;x<=rock.x+2;x+=4){
+      const y=rockSurfaceY(rock,x)-2;
+      if(x===left+rock.width*.24)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle='rgba(126,164,151,.42)';
+    ctx.beginPath();ctx.ellipse(rock.x,WATER+3,rock.width*.62,9,0,0,TAU);ctx.fill();
+  }
+}
+
+function flockLeader(flock){
+  const travel=W+360;
+  const offset=(state.encounterTime*flock.speed+flock.phase*travel)%travel;
+  return flock.direction>0?-180+offset:W+180-offset;
+}
+
+function drawBirdFlocks(){
+  const encounter=currentEncounter();
+  if(!encounter?.flocks?.length)return;
+  ctx.save();
+  ctx.strokeStyle='rgba(13,15,15,.88)';
+  ctx.lineCap='round';
+  for(const flock of encounter.flocks){
+    const leader=flockLeader(flock);
+    for(let i=0;i<flock.count;i++){
+      const row=Math.floor(Math.sqrt(i));
+      const side=i%2===0?-1:1;
+      const stride=(i+1)/(flock.count+1);
+      const x=leader-flock.direction*(stride*flock.spread+row*7);
+      const y=flock.y+side*row*9+Math.sin(state.encounterTime*3+i*1.7)*5;
+      const scale=.62+(i%5)*.08;
+      const flap=Math.sin(state.encounterTime*7+i*1.3)*5;
+      ctx.lineWidth=2.2*scale;
+      ctx.beginPath();
+      ctx.moveTo(x-9*scale,y+flap*.25);
+      ctx.quadraticCurveTo(x-4*scale,y-5*scale-flap,x,y);
+      ctx.quadraticCurveTo(x+4*scale,y-5*scale+flap,x+9*scale,y+flap*.25);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function drawFogVeil(){
+  const encounter=currentEncounter();
+  const intensity=encounter?.fog||0;
+  if(intensity<=0)return;
+  ctx.save();
+  const veil=ctx.createLinearGradient(0,0,W,0);
+  veil.addColorStop(0,'rgba(201,207,198,0)');
+  veil.addColorStop(.16,'rgba(201,207,198,0)');
+  veil.addColorStop(.35,`rgba(190,198,193,${intensity*.34})`);
+  veil.addColorStop(.67,`rgba(181,190,188,${intensity*.5})`);
+  veil.addColorStop(.9,`rgba(190,198,193,${intensity*.24})`);
+  veil.addColorStop(1,'rgba(201,207,198,0)');
+  ctx.fillStyle=veil;
+  ctx.fillRect(0,205,W,WATER-150);
+
+  for(let i=0;i<6;i++){
+    const drift=Math.sin(state.encounterTime*(.08+i*.014)+encounter.fogDrift*TAU+i)*42;
+    const x=W*(.27+i*.115)+drift;
+    const y=WATER-175+Math.sin(encounter.fogDrift*9+i*2.1)*74;
+    const radius=128+i%3*28;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.scale(2.15+i*.08,.48+(i%2)*.12);
+    const bank=ctx.createRadialGradient(0,0,5,0,0,radius);
+    bank.addColorStop(0,`rgba(218,220,211,${intensity*(.18+(i%3)*.035)})`);
+    bank.addColorStop(.62,`rgba(190,198,193,${intensity*.12})`);
+    bank.addColorStop(1,'rgba(177,188,186,0)');
+    ctx.fillStyle=bank;
+    ctx.fillRect(-radius,-radius,radius*2,radius*2);
+    ctx.restore();
+  }
+  ctx.restore();
 }
 
 function drawCloud(x,y,scale){
@@ -1403,12 +1608,14 @@ function drawTrajectory(){
   const weapon=weaponById(state.selected)||WEAPONS[0];
   const muzzle=getMuzzle(state.player,state.angle);
   const radians=state.angle*Math.PI/180;
-  const speed=(330+state.charge*300)*weapon.speed;
+  const speed=shotSpeed(weapon,state.charge);
   let x=muzzle.x;
   let y=muzzle.y;
   let vx=Math.cos(radians)*speed;
   let vy=-Math.sin(radians)*speed;
-  const steps=11+Math.min(state.upgrades.sight,8)*2;
+  const encounter=currentEncounter();
+  const fogPenalty=Math.round((encounter?.fog||0)*4);
+  const steps=Math.max(7,9+Math.min(state.upgrades.sight,11)-fogPenalty);
   ctx.save();
   for(let i=0;i<steps;i++){
     for(let sub=0;sub<3;sub++){
@@ -1419,7 +1626,7 @@ function drawTrajectory(){
       y+=vy*dt;
     }
     if(y>WATER||x>W)break;
-    ctx.globalAlpha=.64-i/steps*.46;
+    ctx.globalAlpha=(.58-i/steps*.49)*(1-(encounter?.fog||0)*.24);
     ctx.fillStyle=i%3===0?'#f2c463':'#ddcfab';
     ctx.beginPath();ctx.arc(x,y,i%3===0?2.5:1.6,0,TAU);ctx.fill();
   }
@@ -1511,8 +1718,9 @@ addEventListener('blur',()=>{
 });
 
 window.BubbleRaftAssault={
-  version:'0.1.0',state,weapons:WEAPONS,startCampaign,beginEncounter,generateCampaign,
+  version:'0.2.0',state,weapons:WEAPONS,startCampaign,beginEncounter,generateCampaign,
   getEncounters:()=>ENCOUNTERS,
+  getConditions:()=>currentEncounter(),rockCollisionAt,shotSpeed,
   selectWeapon,changeAngle,debugStep:update,
   fire:()=>{if(state.phase==='aim'){state.charge=.7;firePlayer()}}
 };

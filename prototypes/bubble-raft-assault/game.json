@@ -1,10 +1,10 @@
 {
   "title": "Bubble Raft Assault",
   "slug": "bubble-raft-assault",
-  "description": "Read the wind, charge the gun, and survive 100 procedurally escalating bubble-raft engagements in a tense powder-age artillery campaign.",
+  "description": "Range long shots through shifting fog, rock needles, and bird flocks across 100 procedurally escalating powder-age engagements.",
   "genre": "Turn-Based Artillery",
   "status": "prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "featured": true,
   "accent": "amber",
   "sortOrder": 2,
