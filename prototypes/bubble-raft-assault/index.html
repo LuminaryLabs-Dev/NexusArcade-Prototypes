@@ -285,6 +285,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
           <div class="menu-actions">
             <button class="primary" id="startButton"><span class="action-title">Begin the campaign</span><span class="action-copy">100 engagements · a flagship every tenth battle</span></button>
             <button class="secondary" id="howButton"><span class="action-title">Field instructions</span><span class="action-copy">Aim, charge, hit zones, and munitions</span></button>
+            <button class="secondary" id="newCampaignButton" hidden><span class="action-title">New campaign</span><span class="action-copy">Erase the saved checkpoint</span></button>
           </div>
           <div class="menu-tips"><span>Mouse or touch to aim</span><span>Hold and release Space to fire</span><span>Numbers 1–5 select shot</span></div>
         </div>
@@ -320,7 +321,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
           <p id="resultCopy">The enemy held the water.</p>
           <div class="result-actions">
             <button class="primary" id="againButton"><span class="action-title" id="againTitle">Retry engagement</span><span class="action-copy" id="againCopy">Keep your current ordnance and upgrades</span></button>
-            <button class="secondary" data-menu-back><span class="action-title">Main menu</span><span class="action-copy">Abandon this campaign run</span></button>
+            <button class="secondary" data-menu-back><span class="action-title">Main menu</span><span class="action-copy">Your campaign checkpoint remains saved</span></button>
           </div>
           <div class="route" id="resultRoute" aria-label="Final campaign progress"></div>
         </div>
@@ -358,6 +359,7 @@ const PLAYER_X=126;
 const SHOT_BASE=420;
 const SHOT_CHARGE=380;
 const TAU=Math.PI*2;
+const SAVE_KEY='nexus.bubble-raft-assault.campaign.v1';
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 const lerp=(a,b,t)=>a+(b-a)*t;
 const random=(min,max)=>min+Math.random()*(max-min);
@@ -499,7 +501,7 @@ const state={
   mode:'menu',phase:'idle',stage:0,turn:'player',angle:34,charge:.28,chargeDir:1,selected:'round',
   wind:0,player:null,enemy:null,ammo:{},upgrades:{powder:0,hull:0,sight:0},
   projectiles:[],particles:[],floatTexts:[],enemyPlan:null,enemyShot:0,timer:0,time:0,encounterTime:0,shake:0,flash:0,lastShotAngle:{player:34,enemy:34},won:false,
-  seed:0
+  seed:0,checkpoint:'encounter'
 };
 
 let last=performance.now();
@@ -614,8 +616,45 @@ function resetAmmo(){
   });
 }
 
+function readCampaign(){
+  try{
+    const value=JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(value?.schema!=='bubble-raft-campaign/1')return null;
+    const stage=Number(value.stage),seed=Number(value.seed);
+    if(!Number.isInteger(stage)||stage<0||stage>=ENCOUNTER_COUNT||!Number.isInteger(seed)||seed<0)return null;
+    const upgrades=Object.fromEntries(['powder','hull','sight'].map(key=>[key,clamp(Math.floor(Number(value.upgrades?.[key])||0),0,100)]));
+    const selected=WEAPONS.some(weapon=>weapon.id===value.selected)?value.selected:'round';
+    return{schema:'bubble-raft-campaign/1',stage,seed:seed>>>0,upgrades,selected,checkpoint:value.checkpoint==='armory'?'armory':'encounter'};
+  }catch{return null}
+}
+
+function refreshCampaignMenu(){
+  const saved=readCampaign(),title=$('#startButton .action-title'),copy=$('#startButton .action-copy');
+  if(saved){title.textContent='Continue the campaign';copy.textContent=saved.checkpoint==='armory'?`Engagement ${saved.stage+1} secured · choose an upgrade`:`Resume engagement ${saved.stage+1} of ${ENCOUNTER_COUNT}`;$('#newCampaignButton').hidden=false}
+  else{title.textContent='Begin the campaign';copy.textContent='100 engagements · a flagship every tenth battle';$('#newCampaignButton').hidden=true}
+}
+
+function saveCampaign(){
+  if(state.mode!=='campaign'||state.won)return;
+  const value={schema:'bubble-raft-campaign/1',stage:state.stage,seed:state.seed>>>0,upgrades:{...state.upgrades},selected:state.selected,checkpoint:state.checkpoint};
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(value))}catch{}
+  refreshCampaignMenu();
+}
+
+function clearSavedCampaign(){try{localStorage.removeItem(SAVE_KEY)}catch{}refreshCampaignMenu()}
+
+function restoreCampaign(saved){
+  ensureAudio();state.mode='campaign';state.stage=saved.stage;state.seed=saved.seed;state.upgrades={...saved.upgrades};state.selected=saved.selected;state.checkpoint=saved.checkpoint;state.enemyShot=0;state.encounterTime=0;state.won=false;ENCOUNTERS=generateCampaign(state.seed);
+  if(saved.checkpoint==='armory'){
+    state.phase='over';state.player=makeBoat('player');state.enemy=makeBoat('enemy',ENCOUNTERS[state.stage]);ui.hud.hidden=false;ui.controlDeck.hidden=true;ui.mode.textContent=`Engagement ${state.stage+1} secured`;showArmory();
+  }else beginEncounter();
+}
+
+function startOrContinueCampaign(){const saved=readCampaign();if(saved)restoreCampaign(saved);else startCampaign()}
+
 function startCampaign(){
   ensureAudio();
+  clearSavedCampaign();
   state.mode='campaign';
   state.stage=0;
   state.upgrades={powder:0,hull:0,sight:0};
@@ -623,6 +662,7 @@ function startCampaign(){
   state.enemyShot=0;
   state.encounterTime=0;
   state.seed=campaignSeed();
+  state.checkpoint='encounter';
   ENCOUNTERS=generateCampaign(state.seed);
   beginEncounter();
 }
@@ -645,6 +685,7 @@ function beginEncounter(){
   state.chargeDir=1;
   state.angle=clamp(state.angle,20,68);
   state.won=false;
+  state.checkpoint='encounter';
   resetAmmo();
   if(!(state.selected in state.ammo)||state.ammo[state.selected]===0)state.selected='round';
   showScreen(null);
@@ -655,6 +696,7 @@ function beginEncounter(){
   updateHud();
   announce(`Engagement ${state.stage+1}`);
   note(encounter.subtitle);
+  saveCampaign();
 }
 
 function beginPlayerTurn(){
@@ -1075,6 +1117,7 @@ function encounterWon(){
   ui.controlDeck.hidden=true;
   if(state.stage===ENCOUNTERS.length-1){
     state.won=true;
+    clearSavedCampaign();
     showResult(true);
     announce('The sound is yours');
     return;
@@ -1086,11 +1129,15 @@ function campaignLost(){
   state.phase='over';
   state.won=false;
   ui.controlDeck.hidden=true;
+  state.checkpoint='encounter';
+  saveCampaign();
   showResult(false);
   announce('Raft lost');
 }
 
 function showArmory(){
+  state.checkpoint='armory';
+  saveCampaign();
   const unlocked=state.stage<WEAPONS.length-1?WEAPONS[state.stage+1]:null;
   $('#armoryEyebrow').textContent=`${state.enemy.name} defeated`;
   if(unlocked){
@@ -1157,6 +1204,7 @@ function returnToMenu(){
   ui.mode.textContent='Awaiting orders';
   showScreen(ui.menu);
   setPreview();
+  refreshCampaignMenu();
 }
 
 function roman(value){
@@ -1686,7 +1734,8 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-$('#startButton').onclick=startCampaign;
+$('#startButton').onclick=startOrContinueCampaign;
+$('#newCampaignButton').onclick=startCampaign;
 $('#howButton').onclick=()=>showScreen(ui.how);
 document.querySelectorAll('[data-menu-back]').forEach(button=>button.onclick=returnToMenu);
 $('#againButton').onclick=()=>state.won?startCampaign():beginEncounter();
@@ -1718,14 +1767,18 @@ addEventListener('blur',()=>{
 });
 
 window.BubbleRaftAssault={
-  version:'0.2.0',state,weapons:WEAPONS,startCampaign,beginEncounter,generateCampaign,
+  version:'0.3.0',state,weapons:WEAPONS,startCampaign,startOrContinueCampaign,beginEncounter,generateCampaign,
   getEncounters:()=>ENCOUNTERS,
+  getSavedCampaign:readCampaign,saveCampaign,clearSavedCampaign,
   getConditions:()=>currentEncounter(),rockCollisionAt,shotSpeed,
   selectWeapon,changeAngle,debugStep:update,
   fire:()=>{if(state.phase==='aim'){state.charge=.7;firePlayer()}}
 };
 
+addEventListener('beforeunload',saveCampaign);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveCampaign()});
 setPreview();
+refreshCampaignMenu();
 requestAnimationFrame(loop);
 })();
 </script>

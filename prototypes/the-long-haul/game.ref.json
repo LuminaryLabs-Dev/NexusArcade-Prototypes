@@ -11,7 +11,8 @@
   "controls": ["WASD", "Keyboard"],
   "source": {
     "repository": "LuminaryLabs-Publish/TheLongHaul",
-    "ref": "main",
-    "deployPath": "."
+    "ref": "5473ba546175b8b3671fe4a66265d63d4b1dc4a2",
+    "deployPath": ".",
+    "publishPaths": ["index.html", "styles.css", "src"]
   }
 }

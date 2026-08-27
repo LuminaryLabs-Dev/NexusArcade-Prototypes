@@ -4,7 +4,7 @@
   "description": "A high-fidelity pixel-art action RPG spanning ten kingdoms, expanding crypts and castles, deep witchcraft progression, varied bosses, and escalating imperial pursuit.",
   "genre": "Action RPG",
   "status": "prototype",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "featured": false,
   "accent": "crimson",
   "sortOrder": 3,

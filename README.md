@@ -41,13 +41,14 @@ Example:
   "controls": ["WASD", "Mouse"],
   "source": {
     "repository": "LuminaryLabs-Dev/NexusArcade-RiftRunner",
-    "ref": "main",
-    "deployPath": "dist"
+    "ref": "0123456789abcdef0123456789abcdef01234567",
+    "deployPath": "dist",
+    "publishPaths": ["index.html", "assets"]
   }
 }
 ```
 
-`deployPath` is the public, deployable directory in the standalone repository and must contain `index.html`.
+`ref` must be a full commit SHA so an unrelated upstream push cannot change an Arcade deployment. `deployPath` is the public directory in the standalone repository and must contain `index.html`. Optional `publishPaths` is an allowlist relative to that directory; when present it must include `index.html` and prevents tests, package metadata, and other repository files from being published.
 
 ## Private repositories
 
@@ -72,9 +73,9 @@ resolve local prototypes + referenced repositories
    ↓
 validate public deployment contents
    ↓
-build catalog.json
+build catalog.json + copy games to _site
    ↓
-copy games to _site/games/<slug>/
+open every built game in headless Chrome
    ↓
 GitHub Pages
 ```
@@ -85,4 +86,4 @@ The public library is the Pages root. Each game launches at:
 .../NexusArcade-Prototypes/games/<slug>/
 ```
 
-The build fails rather than publishing a malformed prototype or a deployment directory containing secret-like files.
+The build fails rather than publishing a malformed prototype or a deployment directory containing secret-like files. CI also parses every script, runs deterministic multiplayer and save checks, verifies reference allowlists, and opens every built game in Chrome before upload.

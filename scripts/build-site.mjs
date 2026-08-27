@@ -1,4 +1,4 @@
-import { cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -13,7 +13,7 @@ const REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const SECRET_RE = /^(?:\.env(?:\..+)?|\.npmrc|\.pypirc|credentials(?:\..+)?|.*\.(?:pem|key|p12|pfx))$/i;
 
 const fail = (message) => { throw new Error(`[prototype-build] ${message}`); };
-const exists = async (p) => { try { await readFile(p); return true; } catch { return false; } };
+const exists = async (p) => { try { await access(p); return true; } catch { return false; } };
 const text = (value, field, slug) => {
   if (typeof value !== 'string' || !value.trim()) fail(`${slug}: "${field}" must be a non-empty string`);
   return value.trim();
@@ -24,6 +24,11 @@ const stringArray = (value, field, slug) => {
   return value.map((v) => v.trim());
 };
 const optionalString = (value) => typeof value === 'string' && value.trim() ? value.trim() : '';
+const safeRelative = (value, field, slug) => {
+  const rel = text(value, field, slug);
+  if (path.isAbsolute(rel) || rel.split(/[\\/]+/).includes('..')) fail(`${slug}: "${field}" must stay inside the deployable directory`);
+  return rel;
+};
 const sortOrder = (value, slug) => {
   if (value === undefined) return 9999;
   if (typeof value !== 'number' || !Number.isFinite(value)) fail(`${slug}: "sortOrder" must be a finite number`);
@@ -88,7 +93,9 @@ async function assembleParts(sourceDir, outDir, slug) {
     if (path.isAbsolute(part) || part.split(/[\\/]+/).includes('..')) fail(`${slug}: multipart path must stay inside the prototype folder`);
     const full = path.join(sourceDir, part);
     if (!(await exists(full))) fail(`${slug}: missing multipart file "${part}"`);
-    html += await readFile(full, 'utf8');
+    // Multipart files are storage chunks, not line-oriented templates. Editors add a
+    // terminal newline to each chunk, which would otherwise split HTML tags and JS tokens.
+    html += (await readFile(full, 'utf8')).replace(/\r?\n$/, '');
   }
   await writeFile(path.join(outDir, 'index.html'), html);
 }
@@ -113,9 +120,11 @@ async function referencedSource(reference, slug) {
   if (!source || typeof source !== 'object') fail(`${slug}: game.ref.json requires a source object`);
   const repository = text(source.repository, 'source.repository', slug);
   if (!REPO_RE.test(repository)) fail(`${slug}: source.repository must be "owner/repo"`);
-  const ref = optionalString(source.ref) || 'main';
-  const deployPath = text(source.deployPath, 'source.deployPath', slug);
-  if (path.isAbsolute(deployPath) || deployPath.split(/[\\/]+/).includes('..')) fail(`${slug}: source.deployPath must stay inside the referenced repository`);
+  const ref = text(source.ref, 'source.ref', slug);
+  if (!/^[a-f0-9]{40}$/i.test(ref)) fail(`${slug}: source.ref must be an immutable 40-character commit SHA`);
+  const deployPath = safeRelative(source.deployPath, 'source.deployPath', slug);
+  const publishPaths = stringArray(source.publishPaths, 'source.publishPaths', slug).map((entry) => safeRelative(entry, 'source.publishPaths[]', slug));
+  if (publishPaths.length && !publishPaths.includes('index.html')) fail(`${slug}: source.publishPaths must include index.html`);
 
   const tempDir = await mkdtemp(path.join(os.tmpdir(), `nexusarcade-${slug}-`));
   const archive = path.join(tempDir, 'repo.tar.gz');
@@ -134,7 +143,21 @@ async function referencedSource(reference, slug) {
   const deployDir = path.resolve(extracted, deployPath);
   if (deployDir !== root && !deployDir.startsWith(`${root}${path.sep}`)) fail(`${slug}: source.deployPath escaped the referenced repository`);
   if (!(await exists(path.join(deployDir, 'index.html')))) fail(`${slug}: ${repository}@${ref}/${deployPath} is missing index.html`);
-  return { tempDir, deployDir, repository, ref };
+  return { tempDir, deployDir, repository, ref, publishPaths };
+}
+async function copyPublished(sourceDir, outDir, publishPaths, slug) {
+  if (!publishPaths.length) {
+    await cp(sourceDir, outDir, { recursive: true });
+    return;
+  }
+  await mkdir(outDir, { recursive: true });
+  for (const rel of publishPaths) {
+    const source = path.join(sourceDir, rel);
+    if (!(await exists(source))) fail(`${slug}: source.publishPaths entry "${rel}" does not exist`);
+    const destination = path.join(outDir, rel);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await cp(source, destination, { recursive: true });
+  }
 }
 async function referencePrototype(sourceDir, slug) {
   const reference = await json(path.join(sourceDir, 'game.ref.json'), 'game.ref.json', slug);
@@ -143,7 +166,7 @@ async function referencePrototype(sourceDir, slug) {
   try {
     await thumbnail(game, reference, fetched.deployDir, slug);
     await noSecrets(fetched.deployDir, slug);
-    await cp(fetched.deployDir, path.join(GAMES_OUT, slug), { recursive: true });
+    await copyPublished(fetched.deployDir, path.join(GAMES_OUT, slug), fetched.publishPaths, slug);
   } finally { await rm(fetched.tempDir, { recursive: true, force: true }); }
   game.sourceRepository = fetched.repository;
   game.sourceRef = fetched.ref;

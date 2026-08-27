@@ -16,7 +16,7 @@ e>
   <div id="screen"><div class="panel" id="panel"></div></div>
   <div id="settings"><button class="toggle" id="mute">M // SOUND ON</button><button class="toggle" id="effects">V // FULL FX</button><button class="toggle" id="fullscreen">F // FULLSCREEN</button></div>
 
-  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}</script>
+  <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
   <script type="module">
     import * as THREE from 'three';
     import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';

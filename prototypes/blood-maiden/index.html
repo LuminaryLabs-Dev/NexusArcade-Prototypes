@@ -117,7 +117,7 @@
     #touch{display:none;position:absolute;inset:0;pointer-events:none}
     #stick{position:absolute;left:24px;bottom:24px;width:104px;height:104px;border:1px solid #9d7a6880;border-radius:50%;background:#120b1160;pointer-events:auto;touch-action:none}
     #knob{position:absolute;width:42px;height:42px;left:30px;top:30px;border:1px solid #d4b49e99;border-radius:50%;background:#6b273877}
-    .touchAbilities{position:absolute;right:20px;bottom:22px;display:grid;grid-template-columns:repeat(2,56px);gap:10px;pointer-events:auto}
+    .touchAbilities{position:absolute;right:20px;bottom:22px;display:grid;grid-template-columns:repeat(3,56px);gap:10px;pointer-events:auto}
     .touchAbilities button{width:56px;height:56px;border-radius:50%;border:1px solid #be7e71aa;background:#3f1422bb;color:#f2dbc8;font-size:20px;touch-action:none}
     @media (pointer:coarse){#touch{display:block}#tutorial{display:none}#soundBtn{bottom:140px}.bottomHud{bottom:8px;transform:translateX(-50%) scale(.78);transform-origin:bottom center}#prompt{bottom:85px}}
     @media (max-width:700px){#objective{max-width:150px;font-size:9px}#minimap{width:94px;height:62px}.controls{grid-template-columns:repeat(2,1fr)}.menuPanel{padding:24px 18px}.archetypes,#skillTree,#kingdomList,#bossRewardChoices{grid-template-columns:1fr}.archetype{min-height:72px}.treeNode{min-height:64px}.choice{min-height:88px}.orb{width:66px;height:66px}.centerHud{min-width:250px}.ability{width:42px}.topline{top:7px}}
@@ -165,6 +165,7 @@
           <button class="archetype" data-archetype="grave" type="button"><strong>Grave Oracle</strong><em>Souls · Familiars</em><small>Harvest the dead for will and gather a procession of bone-bound companions.</small></button>
         </div>
         <button class="primary" id="startBtn" type="button">Begin the pilgrimage</button>
+        <button class="primary" id="newGameBtn" type="button" hidden style="margin-top:10px;background:#21141a">Begin a new pilgrimage</button>
         <div class="controls">
           <div class="control"><b>WASD</b>move freely</div>
           <div class="control"><b>Mouse</b>aim & cast</div>
@@ -223,28 +224,38 @@
       </div>
     </div>
 
+    <div id="ending" class="overlay" hidden>
+      <div class="menuPanel">
+        <div class="eyebrow">Ten crowns lie broken</div>
+        <h2>The Blood Reign</h2>
+        <p>The Hollow Emperor is fallen. Every Crown Road answers to the Blood Maiden, and the pilgrimage is complete.</p>
+        <button class="primary" id="continueEnding" type="button">Walk the conquered world</button>
+        <button class="primary" id="newEnding" type="button" style="margin-top:10px;background:#21141a">Begin another pilgrimage</button>
+      </div>
+    </div>
+
     <div id="touch">
       <div id="stick"><div id="knob"></div></div>
-      <div class="touchAbilities"><button data-touch="bolt" aria-label="Cast blood bolt">✦</button><button data-touch="dash" aria-label="Raven step">◆</button><button data-touch="nova" aria-label="Cast blood ring">◉</button><button data-touch="interact" aria-label="Interact">E</button></div>
+      <div class="touchAbilities"><button data-touch="bolt" aria-label="Cast blood bolt">✦</button><button data-touch="dash" aria-label="Raven step">◆</button><button data-touch="nova" aria-label="Cast blood ring">◉</button><button data-touch="potion" aria-label="Drink elixir">✚</button><button data-touch="interact" aria-label="Interact">E</button></div>
     </div>
   </div>
 
   <script>
   (()=>{
     'use strict';
-    const W=768,H=432,T=32,TAU=Math.PI*2,BASE_WORLD_W=3072,BASE_WORLD_H=2304;
+    const W=768,H=432,T=32,TAU=Math.PI*2,BASE_WORLD_W=3072,BASE_WORLD_H=2304,SAVE_KEY='nexus.blood-maiden.pilgrimage.v1';
     const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d',{alpha:false});
     const mini=document.querySelector('#minimap'),mctx=mini.getContext('2d');
     ctx.imageSmoothingEnabled=false;mctx.imageSmoothingEnabled=false;
     const $=s=>document.querySelector(s);
-    const ui={title:$('#title'),levelup:$('#levelup'),death:$('#death'),pause:$('#pause'),conquest:$('#conquest'),bossReward:$('#bossReward'),bossRewardName:$('#bossRewardName'),bossRewardChoices:$('#bossRewardChoices'),skillTree:$('#skillTree'),treeTitle:$('#treeTitle'),skillPoints:$('#skillPoints'),chosenRites:$('#chosenRites'),kingdomList:$('#kingdomList'),prompt:$('#prompt'),objective:$('#objectiveText'),region:$('#region'),heatLabel:$('#heatLabel'),heatFill:$('#heatFill'),bossHud:$('#bossHud'),bossName:$('#bossName'),bossFill:$('#bossFill'),gold:$('#gold'),potions:$('#potions'),crypts:$('#crypts'),crowns:$('#crowns'),hpFill:$('#hpFill'),manaFill:$('#manaFill'),hpText:$('#hpText'),manaText:$('#manaText'),xpFill:$('#xpFill'),level:$('#level'),archetypeName:$('#archetypeName'),tutorial:$('#tutorial'),toast:$('#toastStack'),sound:$('#soundBtn'),cdBolt:$('#cdBolt'),cdDash:$('#cdDash'),cdNova:$('#cdNova'),cdPotion:$('#cdPotion')};
+    const ui={title:$('#title'),levelup:$('#levelup'),death:$('#death'),pause:$('#pause'),ending:$('#ending'),conquest:$('#conquest'),bossReward:$('#bossReward'),bossRewardName:$('#bossRewardName'),bossRewardChoices:$('#bossRewardChoices'),skillTree:$('#skillTree'),treeTitle:$('#treeTitle'),skillPoints:$('#skillPoints'),chosenRites:$('#chosenRites'),kingdomList:$('#kingdomList'),prompt:$('#prompt'),objective:$('#objectiveText'),region:$('#region'),heatLabel:$('#heatLabel'),heatFill:$('#heatFill'),bossHud:$('#bossHud'),bossName:$('#bossName'),bossFill:$('#bossFill'),gold:$('#gold'),potions:$('#potions'),crypts:$('#crypts'),crowns:$('#crowns'),hpFill:$('#hpFill'),manaFill:$('#manaFill'),hpText:$('#hpText'),manaText:$('#manaText'),xpFill:$('#xpFill'),level:$('#level'),archetypeName:$('#archetypeName'),tutorial:$('#tutorial'),toast:$('#toastStack'),sound:$('#soundBtn'),cdBolt:$('#cdBolt'),cdDash:$('#cdDash'),cdNova:$('#cdNova'),cdPotion:$('#cdPotion')};
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
     const lerp=(a,b,t)=>a+(b-a)*t;
     const len=(x,y)=>Math.hypot(x,y);
     const d2=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
     const hash=(x,y=0)=>{let n=(x*374761393+y*668265263)^0x5bf03635;n=(n^(n>>>13))*1274126177;return ((n^(n>>>16))>>>0)/4294967295};
     const pick=a=>a[(Math.random()*a.length)|0];
-    const game={state:'title',mode:'overworld',time:0,last:0,hitStop:0,shake:0,purgeFlash:0,keys:Object.create(null),mouse:{x:W*.72,y:H*.46,down:false},touch:{x:0,y:0},camera:{x:0,y:0},enemies:[],shots:[],particles:[],pickups:[],texts:[],familiars:[],objects:[],villages:[],dungeons:[],dungeonGrid:[],roomMap:[],currentLayout:null,layouts:{},dungeonSeeded:{},kingdomSeeded:{},realmWorlds:{},baseWorld:null,cleared:{},conquered:{},returnPos:null,returnScene:'overworld',heat:0,pillaged:0,huntTimer:18,crypts:0,crowns:0,prompt:null,bossReward:null,muted:false,audio:null,audioMaster:null,sfxBus:null,musicBus:null,music:null,frame:0,selectedArchetype:'crimson',archetypeApplied:false};
+    const game={state:'title',mode:'overworld',time:0,last:0,hitStop:0,shake:0,purgeFlash:0,keys:Object.create(null),mouse:{x:W*.72,y:H*.46,down:false},touch:{x:0,y:0},camera:{x:0,y:0},enemies:[],shots:[],particles:[],pickups:[],texts:[],familiars:[],objects:[],villages:[],dungeons:[],dungeonGrid:[],roomMap:[],currentLayout:null,layouts:{},dungeonSeeded:{},kingdomSeeded:{},realmWorlds:{},baseWorld:null,savedPillaged:{},cleared:{},conquered:{},returnPos:null,returnScene:'overworld',heat:0,pillaged:0,huntTimer:18,crypts:0,crowns:0,prompt:null,bossReward:null,muted:false,audio:null,audioMaster:null,sfxBus:null,musicBus:null,music:null,frame:0,selectedArchetype:'crimson',archetypeApplied:false};
     const player={x:350,y:1165,r:9,speed:112,hp:100,maxHp:100,mana:100,maxMana:100,level:1,xp:0,xpNext:70,gold:0,potions:3,damage:18,boltRate:.34,boltCd:0,dashCd:0,dashMax:2.7,novaCd:0,novaMax:5.5,potionCd:0,invuln:0,slowTimer:0,walk:0,facing:1,echo:0,splash:0,boltPierce:0,critChance:.09,critDamage:1.8,lifeOnHit:0,ringScale:1,ringDamage:1,ringCost:30,ringSlow:0,ringHeal:2,execute:0,imperialBane:0,dashDamage:0,dashHeal:0,evadeChance:0,manaOnKill:0,summonChance:0,maxFamiliars:0,familiarPower:.35,skillPoints:0,bossBoons:{bolt:0,dash:0,nova:0},unlocked:new Set(),dead:false};
     // Erik Satie's compositions are public domain. The complete embedded score data is
     // sourced from Mutopia Project: Gymnopédies are public domain; Gnossienne
@@ -348,6 +359,7 @@
       for(const v of game.villages) if(Math.abs(x-v.x)<180&&Math.abs(y-v.y)<135) return 'field';
       return 'grass';
     }
+    function applySavedPillaged(worldId,villages){const ids=new Set(game.savedPillaged[worldId]||[]);for(const village of villages)village.pillaged=ids.has(String(village.id))}
     function buildWorld(){
       game.villages=villageData.map((v,i)=>({...v,id:i,pillaged:false,buildings:[]}));
       game.dungeons=dungeonData.map(d=>({...d}));
@@ -376,7 +388,7 @@
       const count=190+index*24,safe=[{x:180,y:pathY(180)},{x:k.width-180,y:pathY(k.width-180)},...villages,...dungeons];for(let i=0;i<count;i++){const seed=i+index*997,x=65+hash(seed,17)*(k.width-130),y=65+hash(seed,53)*(k.height-130);if(Math.abs(y-pathY(x))<118||safe.some(p=>Math.hypot(x-p.x,y-p.y)<180))continue;const h=hash(seed,81),graveTheme=['bone','gloam','deep'].includes(k.theme),type=graveTheme&&h<.18?'grave':h>.78?'rock':h>.18?'tree':'shrub';objects.push({type,x,y,r:type==='tree'?13+hash(seed,8)*7:type==='rock'?7+hash(seed,9)*7:8,variant:(hash(seed,2)*4)|0,theme:k.theme})}
       for(let i=0;i<24+index*4;i++){const seed=i+index*701;let x=360+hash(seed,32)*(k.width-620),y=120+hash(seed,44)*(k.height-240);if(Math.abs(y-pathY(x))<80)y+=i%2?135:-135;spawnEnemy(k.roster[i%k.roster.length],x,y,'realm:'+k.id,k.difficulty)}
       for(let row=0;row<2;row++)for(let col=0;col<4;col++)spawnEnemy(k.roster[(row+1)%k.roster.length],k.width-430-col*42,pathY(k.width-430)+((row?1:-1)*(52+col*7)),'realm:'+k.id,k.difficulty*1.08)
-      const world={objects,villages,dungeons};game.realmWorlds[k.id]=world;return world
+      const world={objects,villages,dungeons};applySavedPillaged(k.id,villages);game.realmWorlds[k.id]=world;return world
     }
     function activateWorld(mode){game.mode=mode;const data=mode==='overworld'?game.baseWorld:buildRealm(kingdomData.find(k=>k.id===mode.slice(6)));game.objects=data.objects;game.villages=data.villages;game.dungeons=data.dungeons}
     function buildDungeon(){
@@ -536,7 +548,7 @@
       for(const [index,choice] of choices.entries()){const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="num">0${index+1} · PERMANENT</span><strong>${choice.name}</strong><small>${choice.desc}</small><em>${choice.current().toFixed(2)}s now · ${player.bossBoons[choice.id]} chosen</em>`;b.onclick=()=>claimBossBoon(choice);ui.bossRewardChoices.appendChild(b)}ui.bossReward.hidden=false
     }
     function claimBossBoon(choice){
-      if(game.state!=='bossReward')return;choice.apply();player.bossBoons[choice.id]++;ui.bossReward.hidden=true;game.bossReward=null;game.state='playing';player.hp=Math.min(player.maxHp,player.hp+player.maxHp*.25);player.mana=player.maxMana;toast(`${choice.name.toUpperCase()} · ${player.bossBoons[choice.id]} PERMANENT BLESSING${player.bossBoons[choice.id]===1?'':'S'}`,'#f2c46f');sfx('level');updateHud()
+      if(game.state!=='bossReward')return;choice.apply();player.bossBoons[choice.id]++;ui.bossReward.hidden=true;game.bossReward=null;game.state='playing';player.hp=Math.min(player.maxHp,player.hp+player.maxHp*.25);player.mana=player.maxMana;toast(`${choice.name.toUpperCase()} · ${player.bossBoons[choice.id]} PERMANENT BLESSING${player.bossBoons[choice.id]===1?'':'S'}`,'#f2c46f');sfx('level');updateHud();saveProgress();if(game.crowns>=kingdomData.length)showEnding()
     }
     function killEnemy(e){
       e.dead=true;burst(e.x,e.y-4,e.type==='skeleton'||e.type==='bonearcher'||e.type==='bellwight'?'#d6d0b6':'#7f1029',18,88,.7);const xp=e.elite?180:e.maxHp>130?38:e.maxHp>95?31:e.maxHp>70?25:e.maxHp>50?20:14;gainXp(Math.ceil(xp*e.scale),!e.elite);
@@ -550,7 +562,7 @@
       if(e.type==='sovereign'){
         const id=game.mode.slice(9);game.conquered[id]=true;game.crowns=Object.keys(game.conquered).length;const kingdom=kingdomData.find(k=>k.id===id);toast(`${kingdom.name.toUpperCase()} CONQUERED`,'#f2c46f');game.objective=game.crowns>=10?'The Hollow Emperor has fallen. Return through the gate.':'Return through the throne gate. The next Crown Road has opened.';burst(e.x,e.y,'#e9bd65',60,150,1.4);sfx('level');
       }
-      if(e.elite){evaporateDungeon(e.scene,e);offerBossBoon(e)}
+      if(e.elite){saveProgress();evaporateDungeon(e.scene,e);offerBossBoon(e)}
     }
     function bindFamiliar(x,y){
       if(game.familiars.length>=player.maxFamiliars)return;game.familiars.push({x,y,angle:Math.random()*TAU,shotCd:.3+Math.random(),index:game.familiars.length});toast('A BONE FAMILIAR ANSWERS','#c8b9e8')
@@ -560,14 +572,14 @@
       if(source){let dx=player.x-source.x,dy=player.y-source.y,l=Math.hypot(dx,dy)||1;moveEntity(player,dx/l*12,dy/l*12)}
       if(player.hp<=0){player.hp=0;player.dead=true;game.state='dead';setTimeout(()=>{ui.death.hidden=false},450)}
     }
-    function gainXp(n,autoOpen=true){player.xp+=n;while(player.xp>=player.xpNext){player.xp-=player.xpNext;player.level++;player.skillPoints++;player.xpNext=Math.round(player.xpNext*1.115+12);toast('LEVEL GAINED · ONE RITE POINT','#e7c47c');if(autoOpen)openTree();sfx('level');break}}
+    function gainXp(n,autoOpen=true){player.xp+=n;while(player.xp>=player.xpNext){player.xp-=player.xpNext;player.level++;player.skillPoints++;player.xpNext=Math.round(player.xpNext*1.115+12);toast('LEVEL GAINED · ONE RITE POINT','#e7c47c');if(autoOpen)openTree();sfx('level');saveProgress();break}}
     function renderTree(){
       const archetype=archetypes[game.selectedArchetype],nodes=skillTrees[game.selectedArchetype];ui.treeTitle.textContent=archetype.name+' Rites';ui.skillPoints.textContent=player.skillPoints;ui.chosenRites.textContent=player.unlocked.size;ui.skillTree.textContent='';
       for(const branch of ['Blood Bolt','Raven Step','Blood Ring']){const branchNodes=nodes.filter(x=>x.branch===branch),spent=branchNodes.filter(n=>player.unlocked.has(n.id)).length,col=document.createElement('section');col.className='treeBranch';const h=document.createElement('h3');h.textContent=`${branch} · ${spent} / 24`;col.appendChild(h);for(const n of branchNodes){const unlocked=player.unlocked.has(n.id),available=!unlocked&&(!n.req||player.unlocked.has(n.req));const b=document.createElement('button');b.type='button';b.className='treeNode '+(n.keystone?'keystone ':'')+(unlocked?'unlocked':available?'available':'locked');b.disabled=unlocked||!available;b.innerHTML=`<span class="tier">${n.keystone?'KEYSTONE':'RANK'} ${n.tier}</span><strong>${unlocked?'◆ ':''}${n.name}</strong><small>${n.desc}</small>`;b.onclick=()=>unlockNode(n);col.appendChild(b)}ui.skillTree.appendChild(col)}
     }
     function openTree(){if(game.state!=='playing')return;game.state='tree';renderTree();ui.levelup.hidden=false}
     function closeTree(){if(game.state!=='tree')return;ui.levelup.hidden=true;game.state='playing'}
-    function unlockNode(n){if(player.skillPoints<1||player.unlocked.has(n.id)||(n.req&&!player.unlocked.has(n.req)))return;player.skillPoints--;player.unlocked.add(n.id);n.apply();player.hp=Math.min(player.maxHp,player.hp+player.maxHp*.2);player.mana=player.maxMana;toast(n.name.toUpperCase()+' AWAKENED','#e7c47c');renderTree();updateHud();sfx('level')}
+    function unlockNode(n){if(player.skillPoints<1||player.unlocked.has(n.id)||(n.req&&!player.unlocked.has(n.req)))return;player.skillPoints--;player.unlocked.add(n.id);n.apply();player.hp=Math.min(player.maxHp,player.hp+player.maxHp*.2);player.mana=player.maxMana;toast(n.name.toUpperCase()+' AWAKENED','#e7c47c');renderTree();updateHud();sfx('level');saveProgress()}
     function spawnHunterSquad(){
       if(!isOpenWorld()||game.heat<12)return;const count=1+Math.floor(game.heat/24),a=Math.random()*TAU,rad=340,bounds=worldSize();let sx=player.x+Math.cos(a)*rad,sy=player.y+Math.sin(a)*rad;
       sx=clamp(sx,60,bounds.w-60);sy=clamp(sy,60,bounds.h-60);if(!canStand(sx,sy,12)){sx=player.x-Math.cos(a)*rad;sy=player.y-Math.sin(a)*rad}
@@ -597,11 +609,11 @@
     function pillage(v){
       if(v.pillaged)return;v.pillaged=true;game.pillaged++;const haul=55+((Math.random()*65)|0)+game.pillaged*12;player.gold+=haul;game.heat=clamp(game.heat+27,0,100);player.potions=Math.min(9,player.potions+1);toast(`${v.name.toUpperCase()} PILLAGED · +${haul} COIN`,'#f3c170');sfx('pillage');
       for(let i=0;i<30;i++)game.particles.push({x:v.x+(Math.random()-.5)*100,y:v.y+(Math.random()-.5)*70,vx:(Math.random()-.5)*18,vy:-10-Math.random()*35,life:.7+Math.random(),max:1.7,size:1+Math.random()*3,color:i%3?'#5c4a42':'#d36a42',scene:game.mode,grav:-5});
-      game.huntTimer=Math.min(game.huntTimer,5.5);game.objective='Imperial riders are coming. Move—or stand your ground.';
+      game.huntTimer=Math.min(game.huntTimer,5.5);game.objective='Imperial riders are coming. Move—or stand your ground.';saveProgress();
     }
     function interact(){
       if(game.state!=='playing')return;const p=game.prompt;if(!p)return;
-      if(p.kind==='village')pillage(p.data);else if(p.kind==='dungeon')enterDungeon(p.data);else if(p.kind==='crown'||p.kind==='nextcrown')openConquest();else if(p.kind==='palace')enterPalace(p.data);else if(p.kind==='sealedPalace')toast(`BREAK ${2-realmCryptCount(p.data.id)} MORE LOCAL CRYPT SEAL${realmCryptCount(p.data.id)===1?'':'S'}`,'#c8b9a2');else if(p.kind==='returnMarch'){activateWorld('overworld');player.x=2870;player.y=roadY(2870);ui.region.textContent='The Gloam March';game.objective='The ten Crown Roads wait beyond the eastern gate.';game.shots=[]}else if(p.kind==='exit')leaveDungeon();else if(p.kind==='camp'){player.hp=player.maxHp;player.mana=player.maxMana;game.heat=Math.max(Math.min(100,game.pillaged*13),game.heat-18);toast('THE RED CAMP RESTORES YOU','#a9d9a2')}
+      if(p.kind==='village')pillage(p.data);else if(p.kind==='dungeon')enterDungeon(p.data);else if(p.kind==='crown'||p.kind==='nextcrown')openConquest();else if(p.kind==='palace')enterPalace(p.data);else if(p.kind==='sealedPalace')toast(`BREAK ${2-realmCryptCount(p.data.id)} MORE LOCAL CRYPT SEAL${realmCryptCount(p.data.id)===1?'':'S'}`,'#c8b9a2');else if(p.kind==='returnMarch'){activateWorld('overworld');player.x=2870;player.y=roadY(2870);ui.region.textContent='The Gloam March';game.objective='The ten Crown Roads wait beyond the eastern gate.';game.shots=[]}else if(p.kind==='exit')leaveDungeon();else if(p.kind==='camp'){player.hp=player.maxHp;player.mana=player.maxMana;game.heat=Math.max(Math.min(100,game.pillaged*13),game.heat-18);toast('THE RED CAMP RESTORES YOU','#a9d9a2');saveProgress()}
     }
     function updatePrompt(){
       let best=null,bd=90;if(isOpenWorld()){
@@ -777,14 +789,34 @@
       if(isOpenWorld()){drawTerrain();drawWorldObjects()}else{drawDungeon();drawDungeonObjects()}
       for(const s of game.shots)if(!s.dead&&s.scene===game.mode)drawShot(s);drawEffects();ctx.restore();drawLighting();drawWeather();if(game.purgeFlash){ctx.fillStyle=`rgba(219,200,224,${game.purgeFlash*.28})`;ctx.fillRect(0,0,W,H)}drawMinimap();
     }
+    const persistentPlayerKeys=['speed','maxHp','maxMana','level','xp','xpNext','gold','potions','damage','boltRate','dashMax','novaMax','echo','splash','boltPierce','critChance','critDamage','lifeOnHit','ringScale','ringDamage','ringCost','ringSlow','ringHeal','execute','imperialBane','dashDamage','dashHeal','evadeChance','manaOnKill','summonChance','maxFamiliars','familiarPower','skillPoints'];
+    function safeNumber(value,fallback){const n=Number(value);return Number.isFinite(n)&&n>=0&&n<=1e9?n:fallback}
+    function collectPillaged(){const result={...game.savedPillaged};if(game.baseWorld)result.overworld=game.baseWorld.villages.filter(v=>v.pillaged).map(v=>String(v.id));for(const [id,world] of Object.entries(game.realmWorlds))result[id]=world.villages.filter(v=>v.pillaged).map(v=>String(v.id));return result}
+    function saveProgress(){
+      if(!game.archetypeApplied)return;const stats={};for(const key of persistentPlayerKeys)stats[key]=player[key];
+      const payload={schema:'blood-maiden-pilgrimage/1',selectedArchetype:game.selectedArchetype,archetypeApplied:true,cleared:{...game.cleared},conquered:{...game.conquered},heat:game.heat,pillaged:game.pillaged,crypts:game.crypts,crowns:game.crowns,objective:game.objective||'',pillagedWorlds:collectPillaged(),player:stats,bossBoons:{...player.bossBoons},unlocked:[...player.unlocked],completed:game.crowns>=kingdomData.length};
+      try{localStorage.setItem(SAVE_KEY,JSON.stringify(payload))}catch{}
+    }
+    function readProgress(){try{const value=JSON.parse(localStorage.getItem(SAVE_KEY));return value?.schema==='blood-maiden-pilgrimage/1'?value:null}catch{return null}}
+    function restoreProgress(){
+      const saved=readProgress();if(!saved)return false;const archetype=Object.hasOwn(archetypes,saved.selectedArchetype)?saved.selectedArchetype:'crimson';game.selectedArchetype=archetype;game.archetypeApplied=true;
+      const allowedCleared=new Set([...dungeonData.map(d=>d.id),...kingdomData.flatMap(k=>[`${k.id}-crypt-1`,`${k.id}-crypt-2`])]);game.cleared=Object.fromEntries(Object.entries(saved.cleared||{}).filter(([id,value])=>value&&allowedCleared.has(id)));
+      const allowedKingdoms=new Set(kingdomData.map(k=>k.id));game.conquered=Object.fromEntries(Object.entries(saved.conquered||{}).filter(([id,value])=>value&&allowedKingdoms.has(id)));
+      game.crypts=dungeonData.reduce((count,d)=>count+(game.cleared[d.id]?1:0),0);game.crowns=Object.keys(game.conquered).length;game.heat=clamp(safeNumber(saved.heat,0),0,100);game.pillaged=Math.floor(safeNumber(saved.pillaged,0));game.savedPillaged=saved.pillagedWorlds&&typeof saved.pillagedWorlds==='object'?saved.pillagedWorlds:{};game.objective=typeof saved.objective==='string'?saved.objective:'';
+      for(const key of persistentPlayerKeys)player[key]=safeNumber(saved.player?.[key],player[key]);player.maxHp=Math.max(1,player.maxHp);player.maxMana=Math.max(1,player.maxMana);player.level=Math.max(1,Math.floor(player.level));player.potions=Math.min(9,Math.floor(player.potions));player.skillPoints=Math.floor(player.skillPoints);player.hp=player.maxHp;player.mana=player.maxMana;player.bossBoons={bolt:Math.floor(safeNumber(saved.bossBoons?.bolt,0)),dash:Math.floor(safeNumber(saved.bossBoons?.dash,0)),nova:Math.floor(safeNumber(saved.bossBoons?.nova,0))};
+      const allowedRites=new Set(skillTrees[archetype].map(node=>node.id));player.unlocked=new Set(Array.isArray(saved.unlocked)?saved.unlocked.filter(id=>allowedRites.has(id)):[]);applySavedPillaged('overworld',game.baseWorld.villages);player.x=350;player.y=1165;game.mode='overworld';game.objects=game.baseWorld.objects;game.villages=game.baseWorld.villages;game.dungeons=game.baseWorld.dungeons;
+      document.querySelectorAll('[data-archetype]').forEach(button=>{button.classList.toggle('selected',button.dataset.archetype===archetype);button.disabled=true});$('#startBtn').textContent=saved.completed?'View the completed pilgrimage':'Continue the pilgrimage';$('#newGameBtn').hidden=false;ui.archetypeName.textContent=archetypes[archetype].name.toUpperCase();return true
+    }
+    function clearProgressAndReload(){try{localStorage.removeItem(SAVE_KEY)}catch{}location.reload()}
+    function showEnding(){game.state='ending';saveProgress();ui.ending.hidden=false;updateHud()}
     function updateHud(){
       const hp=clamp(player.hp/player.maxHp,0,1),mp=clamp(player.mana/player.maxMana,0,1),realm=currentKingdom()||(game.mode.startsWith('dungeon:')?kingdomData.find(k=>game.mode.startsWith(`dungeon:${k.id}-crypt-`)):null);ui.hpFill.style.height=(hp*100)+'%';ui.manaFill.style.height=(mp*100)+'%';ui.hpText.textContent=`${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;ui.manaText.textContent=`${Math.ceil(player.mana)} / ${Math.ceil(player.maxMana)}`;ui.gold.textContent=player.gold;ui.potions.textContent=player.potions;ui.crypts.textContent=`${realm?realmCryptCount(realm.id):game.crypts} / 2`;ui.crowns.textContent=`${game.crowns} / 10`;ui.level.textContent=player.level;ui.archetypeName.textContent=archetypes[game.selectedArchetype].name.toUpperCase();ui.xpFill.style.width=(player.xp/player.xpNext*100)+'%';ui.heatFill.style.width=game.heat+'%';ui.heatLabel.textContent=heatNames[Math.min(5,Math.floor(game.heat/20))];ui.objective.textContent=game.objective||'Find Blackbriar Crypt beyond the old road.';
       ui.cdBolt.style.height=(player.boltCd/player.boltRate*100)+'%';ui.cdDash.style.height=(player.dashCd/player.dashMax*100)+'%';ui.cdNova.style.height=(player.novaCd/player.novaMax*100)+'%';ui.cdPotion.style.height=(player.potionCd/1.2*100)+'%';
       const boss=game.enemies.find(e=>e.elite&&!e.dead&&activeScene(e));ui.bossHud.style.display=boss?'block':'none';if(boss){const move=boss.bossAction?.action?.label||(boss.charge?'blood charge':boss.attackState==='windup'?`${boss.meleeSpec?.weapon||'weapon'} swing`:'');ui.bossName.textContent=(boss.bossName?.toUpperCase()||(game.mode.includes('redvault')?'THE VEILED MARSHAL':'THE ASH INQUISITOR'))+(move?` · ${move.toUpperCase()}`:'');ui.bossFill.style.width=clamp(boss.hp/boss.maxHp*100,0,100)+'%'}
     }
     function loop(ts){const raw=Math.min(.05,(ts-game.last)/1000||0);game.last=ts;if(game.hitStop>0)game.hitStop-=raw;else update(raw);updateMusic();render();requestAnimationFrame(loop)}
-    function begin(){initAudio();if(!game.archetypeApplied){archetypes[game.selectedArchetype].apply();game.archetypeApplied=true}game.state='playing';ui.title.hidden=true;game.objective='Find Blackbriar Crypt beyond the old road.';toast(`${archetypes[game.selectedArchetype].name.toUpperCase()} · THE GLOAM MARCH`);updateHud()}
-    function rise(){player.dead=false;player.hp=player.maxHp;player.mana=player.maxMana;player.gold=Math.floor(player.gold*.8);game.heat=Math.max(Math.min(100,game.pillaged*13),game.heat-22);activateWorld('overworld');player.x=350;player.y=1165;game.shots=[];game.state='playing';ui.death.hidden=true;ui.region.textContent='The Gloam March';toast('THE BLOOD REMEMBERS')}
+    function begin(){initAudio();if(!game.archetypeApplied){archetypes[game.selectedArchetype].apply();game.archetypeApplied=true}ui.title.hidden=true;if(game.crowns>=kingdomData.length){showEnding();return}game.state='playing';game.objective=game.objective||'Find Blackbriar Crypt beyond the old road.';toast(`${archetypes[game.selectedArchetype].name.toUpperCase()} · THE GLOAM MARCH`);updateHud();saveProgress()}
+    function rise(){player.dead=false;player.hp=player.maxHp;player.mana=player.maxMana;player.gold=Math.floor(player.gold*.8);game.heat=Math.max(Math.min(100,game.pillaged*13),game.heat-22);activateWorld('overworld');player.x=350;player.y=1165;game.shots=[];game.state='playing';ui.death.hidden=true;ui.region.textContent='The Gloam March';toast('THE BLOOD REMEMBERS');saveProgress()}
     function togglePause(){if(game.state==='playing'){game.state='paused';ui.pause.hidden=false}else if(game.state==='paused'){game.state='playing';ui.pause.hidden=true}}
     function keyDown(e){
       if(['KeyW','KeyA','KeyS','KeyD','Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();game.keys[e.code]=true;
@@ -795,11 +827,11 @@
     window.addEventListener('keydown',keyDown,{passive:false});window.addEventListener('keyup',e=>game.keys[e.code]=false);window.addEventListener('blur',()=>{game.mouse.down=false;if(game.state==='playing')togglePause()});
     canvas.addEventListener('pointermove',pointerPos);canvas.addEventListener('pointerdown',e=>{pointerPos(e);if(e.pointerType==='mouse'&&e.button===0){game.mouse.down=true;castBolt(worldAim())}else if(e.pointerType==='touch'&&e.clientX>innerWidth*.48)castBolt(worldAim())});window.addEventListener('pointerup',()=>game.mouse.down=false);canvas.addEventListener('contextmenu',e=>{e.preventDefault();dash()});
     document.querySelectorAll('[data-archetype]').forEach(b=>b.onclick=()=>{game.selectedArchetype=b.dataset.archetype;document.querySelectorAll('[data-archetype]').forEach(o=>o.classList.toggle('selected',o===b));ui.archetypeName.textContent=archetypes[game.selectedArchetype].name.toUpperCase()});
-    $('#startBtn').onclick=begin;$('#riseBtn').onclick=rise;$('#resumeBtn').onclick=togglePause;$('#treeBtn').onclick=openTree;$('#closeTree').onclick=closeTree;$('#closeConquest').onclick=closeConquest;ui.sound.onclick=()=>setMuted(!game.muted);
+    $('#startBtn').onclick=begin;$('#newGameBtn').onclick=clearProgressAndReload;$('#riseBtn').onclick=rise;$('#resumeBtn').onclick=togglePause;$('#continueEnding').onclick=()=>{ui.ending.hidden=true;game.state='playing'};$('#newEnding').onclick=clearProgressAndReload;$('#treeBtn').onclick=openTree;$('#closeTree').onclick=closeTree;$('#closeConquest').onclick=closeConquest;ui.sound.onclick=()=>setMuted(!game.muted);
     const stick=$('#stick'),knob=$('#knob');let stickId=null;function stickMove(e){const r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),m=Math.min(34,l),nx=l?x/l:0,ny=l?y/l:0;game.touch.x=nx*Math.min(1,l/24);game.touch.y=ny*Math.min(1,l/24);knob.style.transform=`translate(${nx*m}px,${ny*m}px)`}
     stick.addEventListener('pointerdown',e=>{stickId=e.pointerId;stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(e.pointerId===stickId)stickMove(e)});const endStick=e=>{if(e.pointerId===stickId){stickId=null;game.touch.x=game.touch.y=0;knob.style.transform=''}};stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);
-    document.querySelectorAll('[data-touch]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.touch;if(a==='bolt')castBolt();else if(a==='dash')dash();else if(a==='nova')bloodRing();else interact()}));
-    buildWorld();game.objective='Find Blackbriar Crypt beyond the old road.';game.camera.x=player.x-W/2;game.camera.y=player.y-H/2;updateHud();requestAnimationFrame(loop);setTimeout(()=>ui.tutorial.style.opacity='0',12000);
+    document.querySelectorAll('[data-touch]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.touch;if(a==='bolt')castBolt();else if(a==='dash')dash();else if(a==='nova')bloodRing();else if(a==='potion')drink();else interact()}));
+    buildWorld();restoreProgress();game.objective=game.objective||'Find Blackbriar Crypt beyond the old road.';game.camera.x=player.x-W/2;game.camera.y=player.y-H/2;updateHud();window.addEventListener('beforeunload',saveProgress);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveProgress()});window.BloodMaiden={version:'1.1.0',saveProgress,restoreProgress,clearProgress:clearProgressAndReload,getProgress:()=>readProgress()};requestAnimationFrame(loop);setTimeout(()=>ui.tutorial.style.opacity='0',12000);
   })();
   </script>
 </body>
