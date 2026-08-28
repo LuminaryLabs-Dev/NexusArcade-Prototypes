@@ -325,7 +325,8 @@ async function multiplayerScenario() {
 }
 
 try {
-  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===3", null, "document.querySelectorAll('.card').length===7");
+  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===8");
+  await scenario('Chroma Break', 'games/chroma-break/', 'window.__CHROMA_BREAK__', '__CHROMA_BREAK__.start();__CHROMA_BREAK__.aim(640,120);__CHROMA_BREAK__.fire();__CHROMA_BREAK__.step(.25)', "__CHROMA_BREAK__.snapshot().mode==='running' && __CHROMA_BREAK__.snapshot().shots===1");
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await multiplayerScenario();
   if (REVIEW_DIR) await reviewKnockout();

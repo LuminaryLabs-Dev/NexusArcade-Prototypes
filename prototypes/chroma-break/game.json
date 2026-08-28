@@ -1,0 +1,12 @@
+{
+  "title": "Chroma Break",
+  "slug": "chroma-break",
+  "description": "Bank chroma payloads through a hostile neon grid, trigger cascading color breaches, and catch falling data before the firewall collapses.",
+  "genre": "Arcade Puzzle",
+  "status": "prototype",
+  "version": "0.1.0",
+  "featured": true,
+  "accent": "magenta",
+  "sortOrder": 3,
+  "controls": ["Mouse / Touch", "A / D", "Q / E aim", "Space fire", "Shift overdrive"]
+}
