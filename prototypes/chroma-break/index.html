@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05030b">
-<meta name="description" content="Chroma Break — a neon ricochet and color-chain arcade game from Nexus Arcade.">
+<meta name="description" content="Chroma Break — a neon ricochet and color-chain arcade game.">
 <title>Chroma Break · Nexus Arcade</title>
 <style>
 :root{
@@ -24,7 +24,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-f
 body{overflow:hidden;background:radial-gradient(circle at 50% -10%,#241347 0,transparent 46%),#05030b}
 button{font:inherit}
 button:focus-visible,canvas:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
-.app{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));gap:9px}
+.app{height:100dvh;display:grid;grid-template-rows:minmax(0,1fr);padding:0;gap:0}
 .topbar,.footer{width:min(1280px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .topbar{min-height:38px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
@@ -35,14 +35,14 @@ button:focus-visible,canvas:focus-visible{outline:2px solid var(--cyan);outline-
 .sector{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .sector:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:blink 1.8s steps(2,end) infinite}
 @keyframes blink{50%{opacity:.35}}
-.cabinet{position:relative;width:min(1280px,100%);height:100%;max-height:calc(100vw * .5625);min-height:0;margin:auto;overflow:hidden;border:1px solid rgba(115,223,255,.25);border-radius:14px;background:#070510;box-shadow:0 26px 90px rgba(0,0,0,.58),0 0 50px rgba(123,56,255,.08)}
+.cabinet{position:relative;width:100%;height:100%;min-height:0;margin:auto;overflow:hidden;background:#070510}
 .cabinet:before{content:"";position:absolute;z-index:8;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),inset 0 0 45px rgba(0,0,0,.55)}
 canvas{display:block;width:100%;height:100%;background:#05030b;touch-action:none;cursor:crosshair}
 .scanlines{position:absolute;z-index:5;inset:0;pointer-events:none;opacity:.18;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(155,224,255,.07) 4px)}
 .vignette{position:absolute;z-index:4;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.57) 100%)}
 .hud{position:absolute;z-index:6;inset:14px 16px auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:12px;pointer-events:none}
-.hud-block{display:flex;align-items:center;gap:14px;padding:9px 11px;border:1px solid rgba(100,225,255,.16);border-radius:8px;background:linear-gradient(90deg,rgba(7,10,24,.9),rgba(7,10,24,.42));backdrop-filter:blur(8px)}
-.hud-block.right{justify-self:end;background:linear-gradient(-90deg,rgba(7,10,24,.9),rgba(7,10,24,.42))}
+.hud-block{display:flex;align-items:center;gap:14px;padding:9px 11px;border:0;border-radius:0;background:rgba(7,10,24,.42)}
+.hud-block.right{justify-self:end;background:rgba(7,10,24,.42)}
 .metric{min-width:72px}
 .metric small{display:block;color:#76849f;font-size:7px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
 .metric b{display:block;margin-top:3px;font-size:16px;line-height:1;font-weight:900;letter-spacing:.025em;font-variant-numeric:tabular-nums}
@@ -86,7 +86,7 @@ canvas{display:block;width:100%;height:100%;background:#05030b;touch-action:none
 .toast{position:absolute;z-index:8;left:50%;top:25%;transform:translate(-50%,-12px);padding:8px 13px;border:1px solid rgba(116,239,255,.25);border-radius:6px;background:rgba(7,5,18,.84);color:#e9fbff;font-size:8px;font-weight:950;letter-spacing:.18em;text-transform:uppercase;opacity:0;pointer-events:none}
 .toast.show{animation:toast 1.25s ease both}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,8px) scale(.96)}15%,72%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-9px) scale(1.02)}}
-.footer{min-height:24px;color:#66738c;font-size:7px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+.footer{display:none;min-height:24px;color:#66738c;font-size:7px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
 .footer .keys{display:flex;gap:14px}.footer b{color:#b7c5d8}
 @media(max-width:760px){.app{gap:5px;padding:6px}.topbar{min-height:30px}.brand span,.sector,.footer{display:none}.cabinet{max-height:none;aspect-ratio:16/9;height:auto;align-self:center}.hud{inset:7px 8px auto;gap:5px}.hud-block{gap:8px;padding:6px}.hud-block.right{display:none}.metric{min-width:50px}.metric small,.breach small{font-size:5px}.metric b{font-size:11px}.breach{min-width:95px;padding:6px}.breach b{font-size:7px}.controls{right:7px;bottom:7px}.icon-button{height:28px;min-width:31px;padding:0 7px;font-size:6px}.menu{transform:scale(.92)}.lede{margin-bottom:13px}.tips{display:none}.primary,.secondary{min-width:150px;padding:10px 12px}}
 @media(max-height:560px){.topbar,.footer{display:none}.app{grid-template-rows:minmax(0,1fr);padding:4px}.cabinet{max-height:100%;height:100%;width:auto;max-width:100%;aspect-ratio:16/9}.menu{transform:scale(.82)}.title{margin:7px 0}.tips{display:none}}
@@ -95,19 +95,19 @@ canvas{display:block;width:100%;height:100%;background:#05030b;touch-action:none
 </head>
 <body>
 <div class="app">
-  <header class="topbar">
+  <header class="topbar" hidden>
     <div class="brand"><i class="brand-mark" aria-hidden="true"></i><strong>Chroma Break</strong><span>Nexus Arcade // Luminary Labs</span></div>
     <div class="sector">Grid link stable</div>
   </header>
   <main class="cabinet" id="cabinet">
-    <canvas id="game" width="1280" height="720" tabindex="0" aria-label="Chroma Break game arena. Aim a colored payload into matching bubbles and keep the grid above the breach line."></canvas>
+  <canvas id="game" width="1280" height="720" tabindex="0" aria-label="Chroma Break game arena. Aim colored bubbles into matching groups and keep the stack above the line."></canvas>
     <div class="vignette" aria-hidden="true"></div><div class="scanlines" aria-hidden="true"></div>
     <div class="hud" aria-live="polite">
       <div class="hud-block">
         <div class="metric"><small>Score</small><b id="score">000000</b></div>
         <div class="metric"><small>Chain</small><b id="chain" class="hot">×1</b></div>
       </div>
-      <div class="breach"><small>Firewall descent</small><b id="drop-readout">5 misses</b></div>
+      <div class="breach"><small>Score decay</small><b id="drop-readout">−250 / sec</b></div>
       <div class="hud-block right">
         <div class="metric"><small>Sector</small><b id="sector">01</b></div>
         <div class="reactor" id="reactor"><div class="reactor-row"><span>Overdrive</span><span id="reactor-value">0%</span></div><div class="reactor-track"><div class="reactor-fill" id="reactor-fill"></div></div></div>
@@ -115,26 +115,26 @@ canvas{display:block;width:100%;height:100%;background:#05030b;touch-action:none
     </div>
     <section class="overlay" id="intro">
       <div class="menu">
-        <div class="eyebrow">Nexus breach protocol 04</div>
+        <div class="eyebrow">Arcade run // one screen</div>
         <h1 class="title">Chroma<span>Break</span></h1>
-        <p class="lede">Bank volatile color payloads through the neon firewall. Connect three, collapse unsupported clusters, and catch the falling data before the grid reaches your core.</p>
+        <p class="lede">Match three or more bubbles, bank shots off the walls, and keep the stack above the line. Your score starts full; every miss and every second costs.</p>
         <div class="actions">
-          <button class="primary" id="start" type="button"><strong>Jack in</strong><span>Begin a new breach run</span></button>
-          <button class="secondary" id="how" type="button"><strong>Combat readout</strong><span>Aim · bank · match · catch</span></button>
+          <button class="primary" id="start" type="button"><strong>Play</strong><span>Start the run</span></button>
+          <button class="secondary" id="how" type="button"><strong>How to play</strong><span>Aim · bank · match</span></button>
         </div>
         <div class="tips"><span><b>Mouse / Touch</b> move + aim</span><span><b>Space</b> fire</span><span><b>A / D</b> move</span><span><b>Q / E</b> aim</span><span><b>Shift</b> overdrive</span></div>
       </div>
     </section>
     <section class="overlay" id="pause" hidden>
-      <div class="pause-card"><div class="eyebrow">Signal suspended</div><h2>Paused</h2><p>The firewall is frozen. Resume when your shot is lined up.</p><button class="primary" id="resume" type="button"><strong>Resume link</strong><span>Return to the breach</span></button></div>
+      <div class="pause-card"><div class="eyebrow">Game paused</div><h2>Paused</h2><p>The board is waiting for your next shot.</p><button class="primary" id="resume" type="button"><strong>Resume</strong><span>Back to the board</span></button></div>
     </section>
     <section class="overlay" id="result" hidden>
-      <div class="result-card"><div class="eyebrow">Connection terminated</div><h2>Core breached</h2><p>The chroma stack crossed the firewall. Recompile and push deeper.</p><div class="result-stats"><div><small>Score</small><b id="final-score">0</b></div><div><small>Best chain</small><b id="final-chain">×1</b></div><div><small>Sector</small><b id="final-sector">01</b></div></div><button class="primary" id="restart" type="button"><strong>Recompile</strong><span>Start a fresh run</span></button></div>
+      <div class="result-card"><div class="eyebrow">Run over</div><h2>Stacked</h2><p>The bubbles reached the line. Try again and protect more of your starting score.</p><div class="result-stats"><div><small>Score left</small><b id="final-score">0</b></div><div><small>Best chain</small><b id="final-chain">×1</b></div><div><small>Sector</small><b id="final-sector">01</b></div></div><button class="primary" id="restart" type="button"><strong>Play again</strong><span>Start a fresh run</span></button></div>
     </section>
     <div class="controls"><button class="icon-button" id="mute" type="button" aria-label="Mute sound">Sound</button><button class="icon-button" id="pause-button" type="button" aria-label="Pause game">Pause</button></div>
     <div class="toast" id="toast" role="status"></div>
   </main>
-  <footer class="footer"><span>Chroma Break // Prototype 0.1.0</span><div class="keys"><span><b>Bank</b> shots off sidewalls</span><span><b>Match</b> 3+ payloads</span><span><b>Catch</b> falling data</span></div></footer>
+  <footer class="footer"><span>Chroma Break</span><div class="keys"><span><b>Bank</b> shots off sidewalls</span><span><b>Match</b> 3+ bubbles</span></div></footer>
 </div>
 <script>
 (()=>{
@@ -143,7 +143,8 @@ const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d',{alpha:f
 const $=selector=>document.querySelector(selector);
 const ui={score:$('#score'),chain:$('#chain'),drop:$('#drop-readout'),sector:$('#sector'),reactor:$('#reactor'),reactorValue:$('#reactor-value'),reactorFill:$('#reactor-fill'),intro:$('#intro'),pause:$('#pause'),result:$('#result'),toast:$('#toast'),finalScore:$('#final-score'),finalChain:$('#final-chain'),finalSector:$('#final-sector'),mute:$('#mute'),pauseButton:$('#pause-button')};
 const W=1280,H=720,TAU=Math.PI*2;
-const GRID={left:312,top:93,radius:22.5,pitchX:47,pitchY:40.7,cols:14,dangerY:548};
+const MAX_SCORE=1000000,TIME_PENALTY=250,MISS_PENALTY=1500,FALLER_PENALTY=1200;
+const GRID={left:102,top:82,radius:23.5,pitchX:50,pitchY:41,cols:22,dangerY:558};
 const WALL_LEFT=GRID.left+GRID.radius,WALL_RIGHT=GRID.left+GRID.radius+(GRID.cols-1)*GRID.pitchX;
 const COLORS=[
   {id:0,hex:'#4df7ff',dark:'#075a76',light:'#d9ffff'},
@@ -216,15 +217,15 @@ function makeInitialGrid(rows=6){
 }
 function resetGame(){
   logicState=seed||1;fxState=(seed^0x9e3779b9)>>>0;
-  Object.assign(state,{mode:'running',score:0,combo:0,bestCombo:1,sector:1,misses:0,missLimit:5,overdrive:0,charged:false,shots:0,current:0,next:1,shot:null,gridShift:0,gridParity:0,descending:false,shake:0,flash:0,elapsed:0,settle:0,lastTrail:0});
+  Object.assign(state,{mode:'running',score:MAX_SCORE,combo:0,bestCombo:1,sector:1,misses:0,missLimit:5,overdrive:0,charged:false,shots:0,current:0,next:1,shot:null,gridShift:0,gridParity:0,descending:false,shake:0,flash:0,elapsed:0,scoreClock:0,missPenalty:0,timePenalty:0,settle:0,lastTrail:0});
   state.paddle.x=state.paddle.target=640;state.aim.x=640;state.aim.y=180;particles.length=rings.length=fallers.length=0;
   makeInitialGrid();state.current=randomColor();state.next=randomColor();
   ui.intro.hidden=true;ui.pause.hidden=true;ui.result.hidden=true;canvas.focus();updateHud(true);announce('LINK ESTABLISHED');tone(220,.12,'sine',.025,2.5);
 }
 function updateHud(force=false){
-  const score=String(Math.floor(state.score)).padStart(6,'0');
+  const score=String(Math.floor(state.score)).padStart(7,'0');
   if(force||ui.score.textContent!==score)ui.score.textContent=score;
-  ui.chain.textContent=`×${Math.max(1,state.combo)}`;ui.drop.textContent=`${Math.max(0,state.missLimit-state.misses)} miss${state.missLimit-state.misses===1?'':'es'}`;ui.sector.textContent=String(state.sector).padStart(2,'0');
+  ui.chain.textContent=`×${Math.max(1,state.combo)}`;ui.drop.textContent=`−${TIME_PENALTY}/sec · ${state.misses}/${state.missLimit} miss`;ui.sector.textContent=String(state.sector).padStart(2,'0');
   const value=Math.round(state.overdrive);ui.reactorValue.textContent=state.charged?'ARMED':`${value}%`;ui.reactorFill.style.width=`${value}%`;ui.reactor.classList.toggle('ready',value>=100||state.charged);
 }
 function announce(message){ui.toast.textContent=message;ui.toast.classList.remove('show');void ui.toast.offsetWidth;ui.toast.classList.add('show')}
@@ -241,6 +242,7 @@ function trail(x,y,color,wild=false){
   addParticle('trail',x,y,wild?'#fff4a0':color,{vx:(fxRand()-.5)*24,vy:(fxRand()-.5)*24,life:.18+fxRand()*.16,size:wild?5:2.5,drag:.9});
 }
 function scoreText(x,y,text,color='#fff'){addParticle('text',x,y,color,{life:.8,vy:-54,size:13,text,drag:1})}
+function penalizeMiss(x,y,amount=MISS_PENALTY,label='MISS'){state.score=Math.max(0,state.score-amount);state.missPenalty+=amount;state.misses++;scoreText(x,y,`−${amount}`, '#ff709f');announce(label);if(state.misses>=state.missLimit)addRow();updateHud()}
 function aimVector(){
   const origin={x:state.paddle.x,y:621},dx=state.aim.x-state.paddle.x,dy=Math.min(-42,state.aim.y-origin.y),length=Math.hypot(dx,dy)||1;
   let nx=dx/length,ny=dy/length;
@@ -303,16 +305,16 @@ function resolvePlacement(cell,wild){
   if(wild){
     const origin=cellPos(cell.r,cell.c);
     cleared=[...cells.values()].filter(other=>{const p=cellPos(other.r,other.c);return Math.hypot(p.x-origin.x,p.y-origin.y)<112});
-    removeCells(cleared);state.combo=Math.max(2,state.combo+1);state.score+=cleared.length*180*state.combo;state.overdrive=0;sfx('pop',Math.min(7,cleared.length));scoreText(origin.x,origin.y,`PRISM +${cleared.length*180*state.combo}`,'#fff3a2');
+    removeCells(cleared);state.combo=Math.max(2,state.combo+1);state.overdrive=0;sfx('pop',Math.min(7,cleared.length));scoreText(origin.x,origin.y,'PRISM CLEAR','#fff3a2');
   }else{
     const group=sameGroup(cell);
     if(group.length>=3){
-      state.combo++;state.bestCombo=Math.max(state.bestCombo,state.combo);cleared=group;removeCells(group);const gain=group.length*100*state.combo;state.score+=gain;state.overdrive=clamp(state.overdrive+group.length*6+state.combo*3,0,100);const p=cellPos(cell.r,cell.c);sfx('pop',Math.min(7,group.length));scoreText(p.x,p.y,`+${gain}`,COLORS[cell.color].light);
-    }else{state.combo=0;state.misses++}
+      state.combo++;state.bestCombo=Math.max(state.bestCombo,state.combo);cleared=group;removeCells(group);state.overdrive=clamp(state.overdrive+group.length*6+state.combo*3,0,100);const p=cellPos(cell.r,cell.c);sfx('pop',Math.min(7,group.length));scoreText(p.x,p.y,`CLEAR ×${group.length}`,COLORS[cell.color].light);
+    }else{state.combo=0;const p=cellPos(cell.r,cell.c);penalizeMiss(p.x,p.y)}
   }
   if(cleared.length){
     const loose=unsupportedCells();
-    if(loose.length){removeCells(loose,true);state.score+=loose.length*220*Math.max(1,state.combo);state.overdrive=clamp(state.overdrive+loose.length*4,0,100);announce(`${loose.length} DATA SHARDS RELEASED`);sfx('drop')}
+    if(loose.length){removeCells(loose,true);state.overdrive=clamp(state.overdrive+loose.length*4,0,100);announce(`${loose.length} BUBBLES DROPPED`);sfx('drop')}
   }
   if(!cells.size){state.settle=1.15;announce('SECTOR PURGED')}
   else if(state.misses>=state.missLimit)addRow();
@@ -321,7 +323,7 @@ function resolvePlacement(cell,wild){
 function placeShot(hit=null){
   const shot=state.shot;if(!shot)return;
   const target=nearestSnap(shot.x,shot.y,hit);state.shot=null;
-  if(!target){state.misses++;addRow();return}
+  if(!target){penalizeMiss(shot.x,shot.y);return}
   const cell={r:target.r,c:target.c,color:shot.color,pulse:fxRand()*TAU,armor:0};cells.set(key(cell.r,cell.c),cell);const p=cellPos(cell.r,cell.c);burst(p.x,p.y,shot.wild?'#fff3a0':COLORS[cell.color].hex,shot.wild?28:7,shot.wild?1.8:.55);resolvePlacement(cell,shot.wild);checkDanger();
 }
 function addRow(){
@@ -340,7 +342,7 @@ function checkDanger(){
   if([...cells.values()].some(cell=>cellPos(cell.r,cell.c).y+GRID.radius>=GRID.dangerY))gameOver();
 }
 function nextSector(){
-  state.sector++;state.misses=0;state.missLimit=Math.max(3,5-Math.floor((state.sector-1)/3));state.gridShift=0;state.gridParity=0;state.descending=false;makeInitialGrid(Math.min(8,5+Math.ceil(state.sector/2)));state.current=randomColor();state.next=randomColor();state.settle=0;state.score+=1000*state.sector;announce(`SECTOR ${String(state.sector).padStart(2,'0')} OPEN`);updateHud();
+  state.sector++;state.misses=0;state.missLimit=Math.max(3,5-Math.floor((state.sector-1)/3));state.gridShift=0;state.gridParity=0;state.descending=false;makeInitialGrid(Math.min(8,5+Math.ceil(state.sector/2)));state.current=randomColor();state.next=randomColor();state.settle=0;announce(`ROUND ${String(state.sector).padStart(2,'0')}`);updateHud();
 }
 function gameOver(){
   if(state.mode==='gameover')return;state.mode='gameover';state.shot=null;sfx('gameover');state.shake=14;state.flash=.24;
@@ -354,6 +356,7 @@ function update(dt){
   state.elapsed+=dt;
   for(const drop of rain){drop.y+=drop.s*dt;if(drop.y>H+drop.l){drop.y=-drop.l;drop.x=fxRand()*W}}
   if(state.mode!=='running'){updateFx(dt);return}
+  state.scoreClock+=dt;const timeTicks=Math.floor(state.scoreClock);if(timeTicks>0){state.scoreClock-=timeTicks;const loss=timeTicks*TIME_PENALTY;state.score=Math.max(0,state.score-loss);state.timePenalty+=loss;updateHud()}
   const move=(state.keys.has('KeyD')||state.keys.has('ArrowRight')?1:0)-(state.keys.has('KeyA')||state.keys.has('ArrowLeft')?1:0);
   if(move)state.paddle.target+=move*520*dt;
   const aimMove=(state.keys.has('KeyE')?1:0)-(state.keys.has('KeyQ')?1:0);
@@ -374,10 +377,10 @@ function update(dt){
       if(hit&&hit.armor&&!shot.wild){
         hit.armor=0;const p=cellPos(hit.r,hit.c),nx=(shot.x-p.x)/(min||1),ny=(shot.y-p.y)/(min||1),dot=shot.vx*nx+shot.vy*ny;
         shot.vx-=2*dot*nx;shot.vy-=2*dot*ny;shot.x=p.x+nx*(GRID.radius+shot.radius+3);shot.y=p.y+ny*(GRID.radius+shot.radius+3);
-        state.score+=75;state.overdrive=clamp(state.overdrive+2,0,100);burst(p.x,p.y,'#d9f5ff',8,.65);scoreText(p.x,p.y-10,'ARMOR BREAK','#d9f5ff');sfx('bank');updateHud();continue;
+        state.overdrive=clamp(state.overdrive+2,0,100);burst(p.x,p.y,'#d9f5ff',8,.65);scoreText(p.x,p.y-10,'ARMOR BREAK','#d9f5ff');sfx('bank');updateHud();continue;
       }
       if(hit||shot.y-shot.radius<=GRID.top){placeShot(hit);break}
-      if(shot.y>H+40){state.shot=null;state.misses++;if(state.misses>=state.missLimit)addRow();updateHud();break}
+      if(shot.y>H+40){const x=shot.x,y=shot.y;state.shot=null;penalizeMiss(x,y);break}
     }
     if(state.shot&&state.lastTrail<=0){trail(shot.x,shot.y,COLORS[shot.color].hex,shot.wild);state.lastTrail=shot.wild?.008:.018}
   }
@@ -385,9 +388,9 @@ function update(dt){
     const f=fallers[i];f.vy+=490*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.rot+=f.spin*dt;
     const py=641,p=state.paddle;
     if(f.vy>0&&f.y+f.r>=py-11&&f.y-f.r<py+13&&Math.abs(f.x-p.x)<p.width*.56){
-      fallers.splice(i,1);state.score+=350*Math.max(1,state.combo);state.overdrive=clamp(state.overdrive+8,0,100);burst(f.x,py,COLORS[f.color].hex,17,1.1);scoreText(f.x,py-12,'DATA +350',COLORS[f.color].light);sfx('catch');updateHud();continue;
+      fallers.splice(i,1);burst(f.x,py,COLORS[f.color].hex,17,1.1);sfx('catch');continue;
     }
-    if(f.y>H+60)fallers.splice(i,1);
+    if(f.y>H+60){const x=f.x,y=f.y;fallers.splice(i,1);penalizeMiss(x,y,FALLER_PENALTY,'LOST BUBBLE')}
   }
   uiClock-=dt;if(uiClock<=0){uiClock=.12;updateHud()}
   updateFx(dt);
@@ -405,7 +408,7 @@ function drawBackground(){
   const glow=ctx.createRadialGradient(640,286,5,640,286,410);glow.addColorStop(0,'rgba(87,35,166,.17)');glow.addColorStop(.55,'rgba(27,18,72,.09)');glow.addColorStop(1,'transparent');ctx.fillStyle=glow;ctx.fillRect(170,0,940,650);ctx.restore();
   ctx.fillStyle='#070713';for(let i=0;i<18;i++){const x=i*78-25,w=42+(i%4)*11,h=68+(i*37%132);ctx.fillRect(x,H-h,w,h);ctx.fillStyle=i%3===0?'rgba(255,52,204,.13)':'rgba(73,226,255,.11)';for(let y=H-h+14;y<H-12;y+=18)ctx.fillRect(x+7+(y%3)*8,y,2,7);ctx.fillStyle='#070713'}
   ctx.strokeStyle='rgba(92,224,255,.07)';ctx.lineWidth=1;for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,80);ctx.lineTo(x,H);ctx.stroke()}for(let y=110;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-  drawSidePanel(39,106,230,445,'BREACH TELEMETRY');drawSidePanel(1011,106,230,445,'PAYLOAD QUEUE');
+  // The board owns the full width. The only persistent UI is the score and shot state.
 }
 function drawSidePanel(x,y,w,h,label){
   ctx.save();roundedRect(x,y,w,h,10);ctx.fillStyle='rgba(6,7,20,.72)';ctx.fill();ctx.strokeStyle='rgba(93,221,255,.13)';ctx.stroke();ctx.fillStyle='rgba(90,226,255,.52)';ctx.font='800 9px system-ui';ctx.letterSpacing='2px';ctx.fillText(label,x+17,y+25);ctx.strokeStyle='rgba(115,211,255,.1)';ctx.beginPath();ctx.moveTo(x+17,y+38);ctx.lineTo(x+w-17,y+38);ctx.stroke();
