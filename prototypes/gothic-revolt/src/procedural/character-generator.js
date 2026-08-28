@@ -9,14 +9,25 @@ const P = Object.freeze({
 });
 
 function shadow(c,x,y,rx){c.fillStyle=P.shadow;for(let r=-2;r<=2;r++){const n=Math.abs(r)*3;c.fillRect(x-rx+n,y+r,rx*2-n*2,1);}}
-function human(c, q, frame){shadow(c,31,70,17);const bob=frame%2;
-  polygon(c,[[34,50-bob],[41,52-bob],[39,65],[35,68],[31,65],[32,54]],'#261821',P.ink);polygon(c,[[25,49-bob],[33,51-bob],[30,65],[25,69],[21,66],[23,54]],P.cloth,P.ink);
-  polygon(c,[[21,34-bob],[40,35-bob],[42,51],[37,58],[31,54],[27,59],[20,52]],'#261821',P.ink);polygon(c,[[23,33-bob],[39,35-bob],[38,49],[31,53],[22,48]],P.cloth,P.ink);
-  polygon(c,[[27,35-bob],[37,36-bob],[35,46],[29,49],[25,44]],P.leather,'#2d211b');line(c,[38,37-bob],[44,49],4,'#261821');
-  polygon(c,[[42,43],[49,45],[51,53],[47,58],[40,54],[39,47]],P.iron,'#222a2d');cluster(c,42,47,[[0,0,6,2],[2,3,5,1]],P.ironHi);
-  line(c,[21,38-bob],[16,52],4,P.cloth);line(c,[16,51],[9,25-frame%2],2,P.leatherHi);polygon(c,[[8,27],[10,9-frame%2],[13,7-frame%2],[14,10],[11,28]],P.ironHi,'#222a2d');c.fillStyle=P.gold;c.fillRect(12,27,7,2);
-  polygon(c,[[22,22-bob],[25,15-bob],[31,12-bob],[38,15-bob],[40,22-bob],[37,30-bob],[29,32-bob],[23,28-bob]],P.skin,P.ink);polygon(c,[[23,22-bob],[25,15-bob],[31,11-bob],[38,14-bob],[39,20-bob],[35,18-bob],[31,21-bob],[27,18-bob]],'#2d211b');
-  c.fillStyle=P.skinHi;c.fillRect(25,23-bob,4,1);c.fillStyle=P.ink;c.fillRect(28,27-bob,3,1);c.fillRect(36,25-bob,2,2);cluster(c,23,42,[[0,0,3,2],[5,4,2,1],[11,0,2,2]],P.clothHi);
+function joint(c,x,y,fill,r=2){c.fillStyle=P.ink;c.fillRect(x-r-1,y-r-1,r*2+3,r*2+3);c.fillStyle=fill;c.fillRect(x-r,y-r,r*2+1,r*2+1);}
+function boot(c,x,y,flip=false,fill=P.leather){polygon(c,flip?[[x+3,y-6],[x+5,y],[x+3,y+4],[x-4,y+3],[x-3,y-1]]:[[x-3,y-6],[x-5,y],[x-3,y+4],[x+4,y+3],[x+3,y-1]],fill,P.ink);c.fillStyle=P.leatherHi;c.fillRect(x-2,y+1,4,1);}
+function sword(c,hand,tip){line(c,hand,tip,2,P.ironHi,'#222a2d');const dx=tip[0]-hand[0],dy=tip[1]-hand[1],l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l;c.fillStyle=P.gold;c.fillRect(Math.round(hand[0]+nx*3)-1,Math.round(hand[1]+ny*3)-1,3,3);line(c,[hand[0]-nx*4,hand[1]-ny*4],[hand[0]+nx*4,hand[1]+ny*4],1,P.gold,'#3a2a18');}
+function human(c,q,frame){const bob=frame%2,step=frame?2:-2;shadow(c,31,72,14);
+  // Back cloak and separated legs establish a narrow, human silhouette.
+  polygon(c,[[22,31-bob],[38,32-bob],[41,55],[35,61],[31,56],[26,62],[19,56]],'#241923',P.ink);cluster(c,23,39-bob,[[0,0,2,15],[6,2,1,16],[12,-1,2,17]],P.cloth);
+  line(c,[27,49-bob],[25+step,59],4,P.cloth,'#17161b');line(c,[25+step,59],[23+step,68],3,P.leather,'#17161b');boot(c,23+step,69,false);
+  line(c,[35,49-bob],[36-step,59],4,P.cloth,'#17161b');line(c,[36-step,59],[39-step,68],3,P.leather,'#17161b');boot(c,39-step,69,true);
+  // Tapered torso, asymmetrical shoulders, fitted armor and belt.
+  polygon(c,[[21,30-bob],[27,26-bob],[35,27-bob],[41,34-bob],[39,49-bob],[33,53-bob],[25,50-bob],[20,40-bob]],P.cloth,P.ink);
+  polygon(c,[[25,31-bob],[34,30-bob],[38,35-bob],[36,45-bob],[31,48-bob],[24,44-bob]],P.iron,'#222a2d');polygon(c,[[25,31-bob],[34,30-bob],[36,34-bob],[28,35-bob]],P.ironHi);
+  c.fillStyle=P.leather;c.fillRect(24,46-bob,14,3);c.fillStyle=P.gold;c.fillRect(31,46-bob,3,3);cluster(c,23,37-bob,[[0,0,2,6],[13,-1,2,5]],P.clothHi);
+  // Bent upper and lower arms with visible elbows and attached hands.
+  line(c,[21,33-bob],[16,43-bob],4,P.cloth);joint(c,16,43-bob,P.iron,2);line(c,[16,43-bob],[18,53-bob],3,P.iron);joint(c,18,53-bob,P.skin,1);
+  line(c,[39,34-bob],[45,40-bob],4,P.cloth);joint(c,45,40-bob,P.iron,2);line(c,[45,40-bob],[44,50-bob],3,P.iron);joint(c,44,50-bob,P.skin,1);sword(c,[44,50-bob],[50,68-bob]);
+  // Smaller hooded head with an offset three-quarter face and visible neck.
+  c.fillStyle=P.skin;c.fillRect(28,23-bob,6,7);polygon(c,[[22,17-bob],[25,10-bob],[31,7-bob],[38,11-bob],[40,18-bob],[36,27-bob],[28,29-bob],[23,24-bob]],'#29222c',P.ink);
+  polygon(c,[[25,17-bob],[27,12-bob],[32,10-bob],[37,13-bob],[37,20-bob],[34,25-bob],[28,24-bob],[25,21-bob]],P.skin,'#3f2b27');
+  c.fillStyle=P.skinHi;c.fillRect(27,15-bob,4,1);c.fillRect(35,17-bob,2,2);c.fillStyle=P.ink;c.fillRect(29,20-bob,2,1);c.fillRect(35,20-bob,2,1);c.fillStyle=P.clothHi;c.fillRect(23,15-bob,2,6);
 }
 function rotwood(c,q,frame){shadow(c,33,70,19);const sway=frame%2;
   line(c,[29,49],[23-sway,65],5,P.bark,'#202519');line(c,[37,49],[40+sway,65],4,P.bark,'#202519');for(const [x,y,d] of [[23,65,-9],[23,65,5],[40,65,-4],[40,65,10]])line(c,[x,y],[x+d,70],2,'#202519',P.ink);
@@ -39,13 +50,19 @@ function bloodfen(c,q,frame){shadow(c,32,70,23);const pulse=frame%2;
   line(c,[18,37],[8,54],7,P.blood,'#35121b');line(c,[44,33],[53,49],7,P.flesh,'#35121b');line(c,[52,49],[57,29],3,'#3b3429',P.ink);polygon(c,[[53,32],[54,15],[60,10],[62,24],[58,35]],P.bone,'#3b3429');
   polygon(c,[[19,57],[30,58],[27,69],[18,71],[14,67]],'#35121b',P.ink);polygon(c,[[36,57],[48,54],[51,66],[46,71],[37,68]],P.flesh,'#35121b');cluster(c,17,39,[[0,0,5,2],[9,-5,4,3],[15,7,5,2],[24,-2,4,3]],P.wet);
 }
-function knight(c,q,frame){shadow(c,32,70,18);const sway=frame%2;
-  polygon(c,[[22,51],[31,52],[29,67],[23,71],[18,68],[20,57]],'#222a2d',P.ink);polygon(c,[[33,51],[42,49],[45,66],[40,71],[33,68]],P.iron,'#222a2d');
-  polygon(c,[[19,30],[31,25-sway],[45,31],[44,50],[37,57],[28,55],[19,48]],P.iron,'#222a2d');polygon(c,[[22,31],[31,28-sway],[38,30],[35,48],[28,52],[22,46]],P.ironHi);
-  polygon(c,[[17,31],[20,25],[29,27],[27,35],[21,39]],P.gold,'#5b4521');polygon(c,[[41,29],[49,31],[51,39],[45,42],[39,36]],P.fungus,'#373040');
-  polygon(c,[[23,24-sway],[25,13-sway],[32,9-sway],[41,14-sway],[43,24-sway],[39,31],[29,31]],P.iron,'#222a2d');polygon(c,[[26,16-sway],[32,12-sway],[40,15-sway],[38,20-sway],[28,21-sway]],P.ironHi);c.fillStyle='#08090b';c.fillRect(27,22-sway,12,3);c.fillStyle=P.fungusHi;c.fillRect(35,22-sway,3,1);
-  polygon(c,[[47,42],[56,39],[61,46],[58,59],[50,62],[44,54]],P.bark,'#202519');cluster(c,48,44,[[0,0,5,2],[5,3,4,2],[1,8,5,2]],P.moss);line(c,[13,49],[8,24-frame%2],2,P.ironHi,'#222a2d');polygon(c,[[7,26],[7,9-frame%2],[11,7-frame%2],[12,11],[10,27]],P.iron,'#222a2d');
-  polygon(c,[[37,15],[40,9],[44,12],[46,7],[51,11],[49,17],[43,19]],P.fungus,'#373040');cluster(c,40,10,[[0,0,5,2],[7,-2,4,3]],P.fungusHi);
+function knight(c,q,frame){const bob=frame%2,step=frame?1:-1;shadow(c,32,72,17);
+  polygon(c,[[21,31-bob],[42,33-bob],[44,57],[37,63],[31,58],[24,63],[18,56]],'#1b2023',P.ink);cluster(c,22,38-bob,[[0,0,2,17],[7,2,2,17],[15,-1,2,17]],P.iron);
+  line(c,[27,50-bob],[25+step,59],5,P.iron,'#20272a');line(c,[25+step,59],[23+step,68],4,P.ironHi,'#20272a');boot(c,23+step,69,false,P.iron);
+  line(c,[36,50-bob],[37-step,59],5,P.iron,'#20272a');line(c,[37-step,59],[40-step,68],4,P.ironHi,'#20272a');boot(c,40-step,69,true,P.iron);
+  polygon(c,[[19,31-bob],[27,26-bob],[37,28-bob],[45,35-bob],[42,50-bob],[35,55-bob],[25,52-bob],[18,42-bob]],P.iron,'#20272a');
+  polygon(c,[[23,31-bob],[35,29-bob],[41,35-bob],[37,46-bob],[30,50-bob],[22,44-bob]],P.ironHi);c.fillStyle='#273033';c.fillRect(26,35-bob,13,3);c.fillRect(25,41-bob,12,3);c.fillStyle=P.gold;c.fillRect(30,47-bob,5,3);
+  polygon(c,[[17,30-bob],[20,25-bob],[28,27-bob],[27,36-bob],[21,40-bob]],P.gold,'#5b4521');cluster(c,18,29-bob,[[0,0,2,7],[4,-2,3,8]],P.goldHi);
+  line(c,[20,35-bob],[15,45-bob],5,P.iron);joint(c,15,45-bob,P.ironHi,2);line(c,[15,45-bob],[14,54-bob],3,P.ironHi);joint(c,14,54-bob,P.iron,1);sword(c,[14,54-bob],[9,69-bob]);
+  line(c,[42,35-bob],[48,42-bob],5,P.iron);joint(c,48,42-bob,P.fungus,2);line(c,[48,42-bob],[49,52-bob],4,P.bark);joint(c,49,52-bob,P.barkHi,2);
+  polygon(c,[[45,48-bob],[54,44-bob],[60,50-bob],[57,61-bob],[49,64-bob],[43,57-bob]],P.bark,'#202519');cluster(c,47,49-bob,[[0,0,5,2],[5,3,4,2],[1,8,5,2]],P.moss);
+  // Helmet and fungus remain severe, but are anchored to a smaller human skull.
+  c.fillStyle=P.iron;c.fillRect(29,23-bob,7,7);polygon(c,[[23,18-bob],[26,10-bob],[32,7-bob],[40,12-bob],[42,20-bob],[38,29-bob],[29,30-bob],[24,26-bob]],P.iron,'#20272a');polygon(c,[[27,12-bob],[33,9-bob],[39,13-bob],[38,18-bob],[28,19-bob]],P.ironHi);c.fillStyle='#07090a';c.fillRect(27,21-bob,11,3);c.fillStyle=P.fungusHi;c.fillRect(34,21-bob,3,1);
+  polygon(c,[[36,12-bob],[39,7-bob],[43,10-bob],[46,5-bob],[51,10-bob],[48,17-bob],[42,19-bob]],P.fungus,'#373040');cluster(c,39,8-bob,[[0,0,5,2],[7,-2,4,3]],P.fungusHi);
 }
 
 export async function generateCharacter(recipe, frame = 0, variant = 0) {

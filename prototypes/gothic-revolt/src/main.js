@@ -26,10 +26,14 @@ const W = canvas.width, H = canvas.height, TAU = Math.PI * 2;
 const ui = {
   menu:$('#menu'), hub:$('#hub'), result:$('#result'), pause:$('#pause'), timer:$('#timer'), wave:$('#wave'), gold:$('#goldHud'), kills:$('#killsHud'), bars:$('#bars'),
   hp:$('#healthBar'), fury:$('#furyBar'), hotbar:$('#hotbar'), toast:$('#toast'), hubGold:$('#hubGold'), trees:$('#trees'), items:$('#items'), threat:$('#threatRow'), records:$('#recordsGrid'),
-  resultTitle:$('#resultTitle'), resultCopy:$('#resultCopy'), resultGrid:$('#resultGrid'), resultEyebrow:$('#resultEyebrow'), announce:$('#announce')
+  resultTitle:$('#resultTitle'), resultCopy:$('#resultCopy'), resultGrid:$('#resultGrid'), resultEyebrow:$('#resultEyebrow'), announce:$('#announce'), top:document.querySelector('.top'),
+  mainMenu:$('#mainMenu'), playMenu:$('#playMenuPane'), settings:$('#settingsPane'), toggleSound:$('#toggleSound'), toggleMotion:$('#toggleMotion')
 };
 const screens=[ui.menu,ui.hub,ui.result,ui.pause];
 let save=loadSave(); save.maxThreat ||= save.threat || 1; save.selectedThreat ||= 1;
+const PREF_KEY='gothic-revolt-preferences-v1';
+function loadPreferences(){try{return{sound:true,reducedMotion:false,...JSON.parse(localStorage.getItem(PREF_KEY)||'{}')};}catch{return{sound:true,reducedMotion:false};}}
+let preferences=loadPreferences();
 let sprites=new Map(), last=performance.now(), animation=0, audio=null, tileAtlas=null, worldRenderer=null;
 const keys=new Set(), pointer={x:W*.7,y:H*.5,down:false}, touchMove={x:0,y:0};
 const ticker = new FixedTicker(WORLD_CONFIG.tickRate, 10);
@@ -49,6 +53,9 @@ const state={
 function roll(){return runRandom();}
 
 function screen(target){screens.forEach(s=>s.hidden=s!==target);}
+function storePreferences(){localStorage.setItem(PREF_KEY,JSON.stringify(preferences));document.body.classList.toggle('reduced-motion',preferences.reducedMotion);ui.toggleSound.textContent=`Sound: ${preferences.sound?'On':'Off'}`;ui.toggleMotion.textContent=`Motion: ${preferences.reducedMotion?'Reduced':'Full'}`;}
+function menuPane(name='main'){ui.mainMenu.hidden=name!=='main';ui.playMenu.hidden=name!=='play';ui.settings.hidden=name!=='settings';const pane=name==='play'?ui.playMenu:name==='settings'?ui.settings:ui.mainMenu;requestAnimationFrame(()=>pane.querySelector('button:not([disabled])')?.focus());}
+function showTitle(){state.mode='menu';state.paused=false;screen(ui.menu);menuPane('main');ui.top.hidden=true;ui.bars.hidden=true;ui.hotbar.hidden=true;drawAttract();}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function dist2(a,b){const x=a.x-b.x,y=a.y-b.y;return x*x+y*y;}
 function skillRank(id){return save.skills[id]||0;}
@@ -59,7 +66,7 @@ function stats(){return {
   cooldown:clamp(1-skillRank('rush')*.04-equipBonus('cooldown')*.01,.58,1)
 };}
 function say(text){ui.toast.textContent=text;ui.toast.classList.remove('show');void ui.toast.offsetWidth;ui.toast.classList.add('show');ui.announce.textContent=text;}
-function sound(kind){try{audio||=new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.connect(g);g.connect(audio.destination);o.type=kind==='gold'?'sine':kind==='hurt'?'sawtooth':'square';const f=kind==='gold'?520:kind==='hurt'?95:kind==='skill'?220:145;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(kind==='gold'?820:f*.45,t+.11);g.gain.setValueAtTime(.035,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);o.start(t);o.stop(t+.14);}catch{}}
+function sound(kind){if(!preferences.sound)return;try{audio||=new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.connect(g);g.connect(audio.destination);o.type=kind==='gold'?'sine':kind==='hurt'?'sawtooth':'square';const f=kind==='gold'?520:kind==='hurt'?95:kind==='skill'?220:145;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(kind==='gold'?820:f*.45,t+.11);g.gain.setValueAtTime(.035,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);o.start(t);o.stop(t+.14);}catch{}}
 
 function makeItem(seed, tier=1){const q=rng(seed),slot=SLOTS[Math.floor(q()*SLOTS.length)],name=ITEM_NAMES[slot][Math.floor(q()*ITEM_NAMES[slot].length)],statsList=['damage','health','speed','armor','crit','cooldown','gold'],stat=statsList[Math.floor(q()*statsList.length)],value=Math.max(1,Math.round((2+q()*5)*tier));return{id:`loot-${seed.toString(16)}`,slot,name,stat,value,tier};}
 function nodeCost(rank){return 20*(rank+1);}
@@ -71,17 +78,19 @@ function renderHub(){
   ui.threat.replaceChildren();for(let n=1;n<=save.maxThreat;n++){const b=document.createElement('button');b.className=`threat ${save.selectedThreat===n?'active':''}`;b.textContent=`Threat ${n}`;b.onclick=()=>{save.selectedThreat=n;storeSave(save);renderHub();};ui.threat.append(b);}
   ui.records.innerHTML=`<div><b>${save.expeditions}</b><span>Expeditions</span></div><div><b>${save.kills}</b><span>Total slain</span></div><div><b>${save.maxThreat}</b><span>Highest threat</span></div><div><b>${save.world.discoveredChunks.length}</b><span>Chunks discovered</span></div>`;
 }
-function showHub(){if(!worldRenderer){say('The world is still materializing');return;}state.mode='hub';state.paused=false;screen(ui.hub);ui.bars.hidden=true;ui.hotbar.hidden=true;ui.timer.textContent='5:00';ui.wave.textContent='Sanctuary';renderHub();drawAttract();}
+function showHub(){if(!worldRenderer){say('The world is still materializing');return;}state.mode='hub';state.paused=false;screen(ui.hub);ui.top.hidden=true;ui.bars.hidden=true;ui.hotbar.hidden=true;ui.timer.textContent='5:00';ui.wave.textContent='Sanctuary';renderHub();drawAttract();}
+function startNewCharacter(){clearSave();save=freshSave();save.maxThreat=1;save.selectedThreat=1;worldState=new PersistentWorldState(save,()=>storeSave(save));chunks=new ChunkManager(WORLD_CONFIG.seed,worldState);chunks.update(0,0);showHub();say('A new revolt begins');}
+function requestNewCharacter(event){const progressed=save.expeditions>0||save.gold>0||save.inventory.length>0||Object.keys(save.skills).length>0,button=event.currentTarget;if(progressed&&button.dataset.confirm!=='true'){button.dataset.confirm='true';button.textContent='Confirm New Character';say('This clears character progress');return;}startNewCharacter();}
 
 function startRun(){if(!worldRenderer){say('The world is still materializing');return;}const st=stats();ticker.reset();entities.reset();runRandom=createRandom(streamSeed(WORLD_CONFIG.seed,'expedition',save.expeditions,save.selectedThreat));Object.assign(state,{mode:'run',paused:false,timer:300,elapsed:0,tick:0,wave:1,runGold:0,runKills:0,runLoot:[],extraction:null,worldSeed:WORLD_CONFIG.seed,region:'Spirelands',town:'Revolt Sanctuary',activeBuilding:null,enemies:[],projectiles:[],effects:[],drops:[],corpses:[],decoys:[],totems:[],spawnClock:.7,bossSpawned:false,bossKilled:false,nextId:1});
   state.player={id:0,x:0,y:36,vx:0,vy:0,hp:st.maxHp,maxHp:st.maxHp,angle:0,attackCd:0,dashCd:0,dashTime:0,invuln:0,fury:0,tempestClock:0,cool:[0,0,0,0,0]};
   chunks=new ChunkManager(WORLD_CONFIG.seed,worldState);chunks.update(state.player.x,state.player.y);spatial.rebuild(chunks.colliders());flowField.rebuild(state.player.x,state.player.y,navBlocked);
-  screen(null);ui.bars.hidden=false;ui.hotbar.hidden=false;say(`Threat ${save.selectedThreat} · the Spire recalls you in five minutes`);updateHud();
+  screen(null);ui.top.hidden=false;ui.bars.hidden=false;ui.hotbar.hidden=false;say(`Threat ${save.selectedThreat} · the Spire recalls you in five minutes`);updateHud();
 }
 function extract(reason){if(state.mode!=='run'||state.extraction)return;state.extraction=reason;state.mode='result';save.gold+=state.runGold;save.kills+=state.runKills;save.expeditions++;
   for(const item of state.runLoot){if(save.inventory.length<save.inventoryCap&&!save.inventory.some(x=>x.id===item.id))save.inventory.push(item);}
   if(reason==='timer'){save.maxThreat=Math.min(5,Math.max(save.maxThreat,save.selectedThreat+1));}
-  storeSave(save);ui.bars.hidden=true;ui.hotbar.hidden=true;ui.resultTitle.textContent=reason==='death'?'Fallen, not broken':reason==='manual'?'Early extraction':'The bell has sounded';ui.resultEyebrow.textContent=reason==='timer'?'Five minutes survived':'Expedition ended';ui.resultCopy.textContent=reason==='death'?'Your recovered gold and equipment reached the sanctuary. Death cost only the time you had left.':'Everything recovered is secure. Spend your gold, change equipment, and return at a higher threat.';
+  storeSave(save);ui.top.hidden=true;ui.bars.hidden=true;ui.hotbar.hidden=true;ui.resultTitle.textContent=reason==='death'?'Fallen, not broken':reason==='manual'?'Early extraction':'The bell has sounded';ui.resultEyebrow.textContent=reason==='timer'?'Five minutes survived':'Expedition ended';ui.resultCopy.textContent=reason==='death'?'Your recovered gold and equipment reached the sanctuary. Death cost only the time you had left.':'Everything recovered is secure. Spend your gold, change equipment, and return at a higher threat.';
   ui.resultGrid.innerHTML=`<div><b>${state.runGold}</b><span>Gold secured</span></div><div><b>${state.runKills}</b><span>Enemies slain</span></div><div><b>${state.runLoot.length}</b><span>Items found</span></div><div><b>${Math.floor(state.elapsed)}s</b><span>Time fought</span></div>`;screen(ui.result);sound('gold');
 }
 
@@ -139,9 +148,15 @@ function frame(now){const dt=(now-last)/1000;last=now;animation+=dt;state.frames
 
 function interact(){if(state.mode!=='run')return;const props=chunks.activeChunks().flatMap(chunk=>chunk.props).sort((a,b)=>a.id.localeCompare(b.id));const target=props.filter(prop=>prop.kind==='gate'&&!worldState.isShortcutOpen(prop.id)).map(prop=>({prop,distance:Math.hypot(prop.x-state.player.x,prop.y-state.player.y)})).sort((a,b)=>a.distance-b.distance)[0];if(target&&target.distance<78){worldState.openShortcut(target.prop.id);spatial.rebuild(chunks.colliders());say('Permanent shortcut opened');sound('gold');return;}const shrine=props.filter(prop=>prop.kind==='shrine').map(prop=>({prop,distance:Math.hypot(prop.x-state.player.x,prop.y-state.player.y)})).sort((a,b)=>a.distance-b.distance)[0];if(shrine&&shrine.distance<72){worldState.discoverLandmark(shrine.prop.id);say('Landmark remembered');sound('skill');return;}say('Nothing nearby to use');}
 
-addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='Space'){e.preventDefault();dash();}if(/^Digit[1-4]$/.test(e.code))cast(Number(e.code.slice(-1)));if(e.code==='Escape'&&state.mode==='run'){state.paused=!state.paused;screen(state.paused?ui.pause:null);}if(e.code==='KeyE')interact();});
+addEventListener('keydown',e=>{if(state.mode==='menu'){
+  if(e.code==='Escape'){e.preventDefault();menuPane('main');return;}
+  const pane=[ui.mainMenu,ui.playMenu,ui.settings].find(node=>!node.hidden),buttons=[...pane.querySelectorAll('button:not([disabled])')],index=Math.max(0,buttons.indexOf(document.activeElement));
+  if(['ArrowDown','KeyS','ArrowUp','KeyW'].includes(e.code)){e.preventDefault();const delta=['ArrowDown','KeyS'].includes(e.code)?1:-1;buttons[(index+delta+buttons.length)%buttons.length]?.focus();return;}
+  if(e.code==='Enter'||e.code==='Space'){e.preventDefault();buttons[index]?.click();return;}
+}
+keys.add(e.code);if(e.code==='Space'){e.preventDefault();dash();}if(/^Digit[1-4]$/.test(e.code))cast(Number(e.code.slice(-1)));if(e.code==='Escape'&&state.mode==='run'){state.paused=!state.paused;screen(state.paused?ui.pause:null);}if(e.code==='KeyE')interact();});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>{keys.clear();pointer.down=false;touchMove.x=touchMove.y=0;});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();pointer.down=false;touchMove.x=touchMove.y=0;}});canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width*W;pointer.y=(e.clientY-r.top)/r.height*H;});canvas.addEventListener('pointerdown',e=>{if(state.mode!=='run')return;pointer.down=e.button===0;if(e.button===2){e.preventDefault();cast(2);}else primary();});addEventListener('pointerup',()=>pointer.down=false);canvas.addEventListener('contextmenu',e=>e.preventDefault());
-function bind(id,fn){$(id).addEventListener('click',fn);}bind('#enterHub',showHub);bind('#quickStart',startRun);bind('#startRun',startRun);bind('#hubBack',()=>{state.mode='menu';screen(ui.menu);drawAttract();});bind('#resultHub',showHub);bind('#again',startRun);bind('#resume',()=>{state.paused=false;screen(null);});bind('#abandon',()=>{state.paused=false;extract('manual');});
+function bind(id,fn){$(id).addEventListener('click',fn);}bind('#playMenu',()=>menuPane('play'));bind('#settingsMenu',()=>menuPane('settings'));bind('#playBack',()=>menuPane('main'));bind('#settingsBack',()=>menuPane('main'));bind('#enterHub',showHub);bind('#newCharacter',requestNewCharacter);bind('#toggleSound',()=>{preferences.sound=!preferences.sound;storePreferences();});bind('#toggleMotion',()=>{preferences.reducedMotion=!preferences.reducedMotion;storePreferences();});bind('#startRun',startRun);bind('#hubBack',showTitle);bind('#resultHub',showHub);bind('#again',startRun);bind('#resume',()=>{state.paused=false;screen(null);});bind('#abandon',()=>{state.paused=false;extract('manual');});
 document.querySelectorAll('.tab').forEach(tab=>tab.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===tab));document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!==tab.dataset.pane);});
 document.querySelectorAll('[data-touch]').forEach(b=>{b.onpointerdown=e=>{e.preventDefault();const k=b.dataset.touch;if(k==='attack')primary();if(k==='dash')dash();if(/^skill[1-4]$/.test(k))cast(Number(k.at(-1)));};});
 const stick=$('#stick'),nub=$('#nub');function moveStick(e){const r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),m=Math.min(38,l),nx=l?x/l:0,ny=l?y/l:0;touchMove.x=nx;touchMove.y=ny;nub.style.transform=`translate(${nx*m}px,${ny*m}px)`;}stick.onpointerdown=e=>{stick.setPointerCapture(e.pointerId);moveStick(e);};stick.onpointermove=e=>{if(stick.hasPointerCapture(e.pointerId))moveStick(e);};stick.onpointerup=()=>{touchMove.x=touchMove.y=0;nub.style.transform='';};
@@ -159,7 +174,7 @@ window.__GothicRevolt={
   forceExtract(){extract('timer');return this.snapshot();},
   addTestReward(){if(state.mode!=='run')startRun();state.runGold+=37;state.runLoot.push(makeItem(777,2));return this.snapshot();},
   grantSkills(ranks={}){for(const [id,rank] of Object.entries(ranks))if(TREES.some(tree=>tree.nodes.some(node=>node[0]===id)))save.skills[id]=clamp(Math.floor(rank),0,3);return this.snapshot();},
-  spawnProofRoster(){if(state.mode!=='run')startRun();state.enemies=[];for(const type of ['archer','caster','brute','knight']){spawnEnemy(type,type==='knight');const e=state.enemies.at(-1),i=state.enemies.length-1;e.x=state.player.x+130+i*105;e.y=state.player.y-65+i*45;}draw();return this.snapshot();},
+  spawnProofRoster(){if(state.mode!=='run')startRun();state.enemies=[];for(const type of ['archer','caster','brute','knight']){spawnEnemy(type,type==='knight');const e=state.enemies.at(-1),i=state.enemies.length-1;e.x=state.player.x-255+i*170;e.y=state.player.y-75+(i%2)*95;}draw();return this.snapshot();},
   finishTimer(){if(state.mode!=='run')startRun();ticker.tick=WORLD_CONFIG.expeditionTicks-1;state.tick=ticker.tick;state.elapsed=state.tick/WORLD_CONFIG.tickRate;state.timer=1/WORLD_CONFIG.tickRate;ticker.advanceTicks(1,update);draw();return this.snapshot();},
   enterProofBuilding(){if(state.mode!=='run')startRun();const building=chunks.activeBuildings()[0];state.player.x=(building.x+building.width/2)*WORLD_CONFIG.tileSize;state.player.y=(building.y+building.height/2)*WORLD_CONFIG.tileSize;chunks.update(state.player.x,state.player.y);spatial.rebuild(chunks.colliders());update(1/WORLD_CONFIG.tickRate,ticker.tick);draw();return this.snapshot();},
   chunkSignatures(points=[[0,0],[1,0],[-2,3],[8,-5]]){return points.map(([x,y])=>({x,y,signature:chunks.get(x,y).signature}));},
@@ -167,4 +182,5 @@ window.__GothicRevolt={
   reset(){clearSave();save=freshSave();save.maxThreat=1;save.selectedThreat=1;worldState=new PersistentWorldState(save,()=>storeSave(save));chunks=new ChunkManager(WORLD_CONFIG.seed,worldState);chunks.update(0,0);showHub();return this.snapshot();}
 };
 
-(async()=>{try{worldState=new PersistentWorldState(save,()=>storeSave(save));chunks=new ChunkManager(WORLD_CONFIG.seed,worldState);chunks.update(0,0);[sprites,tileAtlas]=await Promise.all([buildSpriteCache(CHARACTER_RECIPES,2),loadWorldAtlases()]);worldRenderer=new WorldRenderer(tileAtlas);state.mode='menu';screen(ui.menu);drawAttract();requestAnimationFrame(frame);}catch(error){console.error(error);ui.menu.querySelector('.lede').textContent='The world failed to materialize. Reload the page to try again.';state.mode='error';}})();
+storePreferences();
+(async()=>{try{worldState=new PersistentWorldState(save,()=>storeSave(save));chunks=new ChunkManager(WORLD_CONFIG.seed,worldState);chunks.update(0,0);[sprites,tileAtlas]=await Promise.all([buildSpriteCache(CHARACTER_RECIPES,2),loadWorldAtlases()]);worldRenderer=new WorldRenderer(tileAtlas);showTitle();requestAnimationFrame(frame);}catch(error){console.error(error);ui.menu.querySelector('.menu-shell').insertAdjacentHTML('beforeend','<p class="menu-note">The world failed to materialize. Reload the page to try again.</p>');state.mode='error';}})();
