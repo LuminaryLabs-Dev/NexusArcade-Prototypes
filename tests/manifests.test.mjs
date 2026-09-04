@@ -13,6 +13,10 @@ for (const game of index.games) {
   assert.equal(manifest.slug, game.slug);
   assert.equal(manifest.version, game.version);
   assert.match(manifest.source.ref, /^[a-f0-9]{40}$/);
+  if (!manifest.offlineReady) {
+    assert(manifest.runtimeDependencies?.length, `${game.id} must document why it requires a network connection`);
+    for (const dependency of manifest.runtimeDependencies) assert.match(dependency, /^https:\/\//);
+  }
   assert(manifest.files.some((file) => file.path === manifest.entry), `${game.id} entry is not installed`);
   const paths = new Set();
   for (const file of manifest.files) {

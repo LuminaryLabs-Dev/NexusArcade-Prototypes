@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000001",
+  "slug": "blood-maiden",
+  "version": "0.3.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/blood-maiden"
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 172311,
+      "sha256": "3cd6aa363e1ad8e8650402198d524cd80980cfb8149fd25571283521abf4da1e"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000002",
+  "slug": "bubble-raft-assault",
+  "version": "0.3.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/bubble-raft-assault"
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 73434,
+      "sha256": "2a6295a34bc8eed2cb18cb09e340200507f3020440a92b5c24c465ade3dba78f"
+    }
+  ]
+}

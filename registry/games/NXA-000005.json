@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000005",
+  "slug": "gothic-revolt",
+  "version": "0.3.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/gothic-revolt"
+  },
+  "files": [
+    {
+      "path": "assets/world/atlases/buildings.webp",
+      "bytes": 8056,
+      "sha256": "143dd812f27b9dd388f699e6055d82a47b921750b073ddf92660dd1a65450268"
+    },
+    {
+      "path": "assets/world/atlases/effects.webp",
+      "bytes": 7848,
+      "sha256": "6529880ff6fa27f3d3fe8673a0c6a0a2d6b6987c0ca3aef1296fbd1f63a132b1"
+    },
+    {
+      "path": "assets/world/atlases/ground.webp",
+      "bytes": 4622,
+      "sha256": "1d0769db80c1d1057e65798a18b69ea12da8053818f27a243a75fff6356ddc97"
+    },
+    {
+      "path": "assets/world/atlases/interiors.webp",
+      "bytes": 6944,
+      "sha256": "9d46ddbe9c9570e3df3a22974d90ccedb1ceb11d0cb346b36397c0b54d3dbfbc"
+    },
+    {
+      "path": "assets/world/atlases/props.webp",
+      "bytes": 5102,
+      "sha256": "5722a39dc7b0701b116fb43bdf93a05ade8c2409b1172ae82a03998f82fa17e7"
+    },
+    {
+      "path": "assets/world/atlases/roads.webp",
+      "bytes": 7860,
+      "sha256": "c2da00b3495f52eeba324fca0875c83d064d66a59164d634ca6354c02004b125"
+    },
+    {
+      "path": "assets/world/atlases/roofs.webp",
+      "bytes": 10266,
+      "sha256": "65cb18581eb206647f80ebbdbc2fdbecedb1fb20267a826d2d26b3a41607f14f"
+    },
+    {
+      "path": "assets/world/atlases/rotwood.webp",
+      "bytes": 78890,
+      "sha256": "d45138e0e723d60def94502bd4c6acb565ae228070780ad1e8e379baec8c5158"
+    },
+    {
+      "path": "assets/world/manifests/biomes.json",
+      "bytes": 1133,
+      "sha256": "7af73f8f46ac93e9f0f872986cc957b7178d4343aa121467a4de640bb1b94bf0"
+    },
+    {
+      "path": "assets/world/manifests/buildings.json",
+      "bytes": 1960,
+      "sha256": "5a7b9ee49679ac01afa0bc7bffaf106f2d8d58fa40d83eb27cbdb1d18c795c8c"
+    },
+    {
+      "path": "assets/world/manifests/rotwood-kit.json",
+      "bytes": 1969,
+      "sha256": "5eab08c31c5fac1680b2876731d266e21fbe5cf5c676fa3752ca2ae165c30025"
+    },
+    {
+      "path": "assets/world/manifests/tiles.json",
+      "bytes": 87015,
+      "sha256": "724cd673daeacbfdb2c492c0a89acfa7ea4fbffd300821a44c4ab925531881cb"
+    },
+    {
+      "path": "assets/world/manifests/towns.json",
+      "bytes": 585,
+      "sha256": "469894d3a34adcd8cb7f145e89f7c62106bbd2d0e4bc26cbde018db235f2c627"
+    },
+    {
+      "path": "cover.webp",
+      "bytes": 12802,
+      "sha256": "6fbb37b68143b4d59c594e15d99e08400ef08978d4e50b6d5caedf21fc095f1f"
+    },
+    {
+      "path": "index.html",
+      "bytes": 17340,
+      "sha256": "d5a95b7943b7938ce9e1deb58675967135ea578b9cae4a02aba7118075f1c713"
+    },
+    {
+      "path": "src/art/rotwood-kit.js",
+      "bytes": 1842,
+      "sha256": "8c67c5a39471a145d217fa23c4c8a00b55461c6d2b9e2d38c9abfe1c9da12a4e"
+    },
+    {
+      "path": "src/collision/collision-shapes.js",
+      "bytes": 852,
+      "sha256": "b8da24d384bead7dd75ea5d193513a5b74cb396a063b042d1beefdb5d5b65a72"
+    },
+    {
+      "path": "src/collision/collision-solver.js",
+      "bytes": 2059,
+      "sha256": "66ebd4d4e9b759904545c7a4b5485f80c575e1d9ac293831b5e9a5672758ab03"
+    },
+    {
+      "path": "src/collision/spatial-hash.js",
+      "bytes": 1482,
+      "sha256": "bc3821fcd424d76a7fd7b605a6c80ae8dac5b136a42f69d484b309a5bc7dca84"
+    },
+    {
+      "path": "src/data.js",
+      "bytes": 2963,
+      "sha256": "db9bec019ab00682b770e42f5a709df2b335596e2f5dc645dbe93403062baaab"
+    },
+    {
+      "path": "src/effects/spire-effect.js",
+      "bytes": 988,
+      "sha256": "078ef49a90da388889c97c71386cf93abe633a58dba6c8491c4f41a401eee26d"
+    },
+    {
+      "path": "src/effects/tether-effect.js",
+      "bytes": 2732,
+      "sha256": "a4aa8e70ddbd8dc8889e8db68886d58e1a81f83a8ff2e416c0f5aef3b704a288"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 37810,
+      "sha256": "2fc9083304b239d45744a71df05dad4d47c5297236a790da8f6b61251d43d322"
+    },
+    {
+      "path": "src/navigation/chunk-portals.js",
+      "bytes": 1116,
+      "sha256": "605ccb4fa704015e0267d0de94d658145066c8f69f7e47853845a2f1aa5d6f59"
+    },
+    {
+      "path": "src/navigation/flow-field.js",
+      "bytes": 1685,
+      "sha256": "27328e619f17bee819a831be9a71976b2aea2e00c32551c6fe3d0204b253dfc6"
+    },
+    {
+      "path": "src/navigation/pathfinder.js",
+      "bytes": 1519,
+      "sha256": "6533dabe46ed85f3ab3e5dbbe289e956d398ba7be9db0edd84fcc79ef8eacff9"
+    },
+    {
+      "path": "src/navigation/steering.js",
+      "bytes": 568,
+      "sha256": "d0e9c76d273e2acbf28c2e993aabb6481ce5050dd5ac5cdad32ee9381a215e68"
+    },
+    {
+      "path": "src/procedural/character-generator.js",
+      "bytes": 10013,
+      "sha256": "0d71b275ed81aba872063c1f33e85721b89d1791a20493c5f4408f0636f50957"
+    },
+    {
+      "path": "src/procedural/raster.js",
+      "bytes": 1721,
+      "sha256": "229975733d177d5988369d9007705d8e3f2d5b260963115e4cabcbe0608a43e5"
+    },
+    {
+      "path": "src/rendering/building-renderer.js",
+      "bytes": 4889,
+      "sha256": "55729a54188a2e2e11fc7d8836966992b3ca0686ae665d71c7bfc60e5e95e04d"
+    },
+    {
+      "path": "src/rendering/roof-renderer.js",
+      "bytes": 6390,
+      "sha256": "134a3a93b6ecf40b1a5520f9ba15b9af91ba1f20b2db062c415467b8165303f0"
+    },
+    {
+      "path": "src/rendering/tile-atlas.js",
+      "bytes": 1650,
+      "sha256": "73d3cae40c9d7c0e49c317e43372e096dbbbb177ab6bdb7c58cf2e8d72260d68"
+    },
+    {
+      "path": "src/rendering/world-renderer.js",
+      "bytes": 7079,
+      "sha256": "8b80d519a8f1b71248b4290f6696787b42b83f54888cf9fdef7a7c8db166a55e"
+    },
+    {
+      "path": "src/save-system.js",
+      "bytes": 3697,
+      "sha256": "d0a9fe982d09b11f021f65eb0b6678f79a75369f34f653c3d928fcd7b4443814"
+    },
+    {
+      "path": "src/simulation/entity-registry.js",
+      "bytes": 326,
+      "sha256": "a66d129b5b2af6a3f6f5d17d3e5e95127eda9534d1ebd8ee540c6552a77c6545"
+    },
+    {
+      "path": "src/simulation/fixed-tick.js",
+      "bytes": 907,
+      "sha256": "c6d21810d4cfa6fe8fc0eb956a2555479e766c247e6a03b2c350dfbf44b1582a"
+    },
+    {
+      "path": "src/simulation/seeded-random.js",
+      "bytes": 931,
+      "sha256": "6b56dd0ddcc953ecfa314ae4e9ae40909e0b576f8d81452d10e3e55dfac263c9"
+    },
+    {
+      "path": "src/world/biome-composer.js",
+      "bytes": 545,
+      "sha256": "8523b96167850200a9852bdb0cfc44ab98d45f878b4cd6c8655700c69beddfc3"
+    },
+    {
+      "path": "src/world/biome-generator.js",
+      "bytes": 1451,
+      "sha256": "44728c99a4b311c2882e72d8714ae7c365c6604bbeb5ab8dcb71b58b666d654e"
+    },
+    {
+      "path": "src/world/building-generator.js",
+      "bytes": 6330,
+      "sha256": "4948c33850fc4bbf0f5d08921029507653acf4aa96a6681026a3916f0c29fa8d"
+    },
+    {
+      "path": "src/world/chunk-generator.js",
+      "bytes": 6145,
+      "sha256": "98064948f5c7da2946b5fd515020d7743a45c338bebf157f9b15ff592b1a9cbe"
+    },
+    {
+      "path": "src/world/chunk-manager.js",
+      "bytes": 2471,
+      "sha256": "1c5e61ac3188d5429c070b9e54d1ab5e0147642b89d513fe999097bf29dd6363"
+    },
+    {
+      "path": "src/world/path-factory.js",
+      "bytes": 2766,
+      "sha256": "b0fc76d19c98639123d1d471e2df4bbb0095ac2947e38462d51e79e09d570179"
+    },
+    {
+      "path": "src/world/place-factory.js",
+      "bytes": 3267,
+      "sha256": "89ea4709572e6e41a75cdb0f7193af103bb100b1c4121f04bd09508a4222fb13"
+    },
+    {
+      "path": "src/world/road-generator.js",
+      "bytes": 3254,
+      "sha256": "fd0ef8b07cf08a31f461191c1d329af95b1496ca467483c2264bfcf37dea618f"
+    },
+    {
+      "path": "src/world/world-config.js",
+      "bytes": 1107,
+      "sha256": "db7ef4d568609653c8b0beea13a75257493f6ebe0e3e42f124fdd6ad015c04b6"
+    },
+    {
+      "path": "src/world/world-state.js",
+      "bytes": 1350,
+      "sha256": "8793cb0a5d50ea125b6b535f97b2f2798b2f6fda4b768e0fc09c40555a43a6f5"
+    },
+    {
+      "path": "tools/generate-rotwood-kit.mjs",
+      "bytes": 30490,
+      "sha256": "9b888e274523663f89fc930a3aab725df61e0459458ce72779a242ee3e57eb6a"
+    },
+    {
+      "path": "tools/generate-world-atlases.mjs",
+      "bytes": 8697,
+      "sha256": "1c563fc585c52a7ec0a8aa9638eb458e33298c445ae92083ddaf5cc3387dd11f"
+    }
+  ]
+}

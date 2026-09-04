@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000003",
+  "slug": "bumble-beez",
+  "version": "0.2.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/bumble-beez"
+  },
+  "files": [
+    {
+      "path": "cover.png",
+      "bytes": 22735,
+      "sha256": "63a1afdecb05e4b57cb3084bc7caec23ae5f1f7dc0a48097fb5d8d6d7aef8004"
+    },
+    {
+      "path": "game.mjs",
+      "bytes": 16980,
+      "sha256": "46f577db6ba8e6ec8347da52f9c45f33cade5189e21dee83944e98e1376be8d4"
+    },
+    {
+      "path": "generated/bee-sheet.png",
+      "bytes": 862,
+      "sha256": "e97640f395b8a42c26d73c9f981cfe3148c333c4da171b70ab114bdd29a7c31c"
+    },
+    {
+      "path": "generated/icon-sheet.png",
+      "bytes": 323,
+      "sha256": "1c8f2d4f0ca8a273ae870d563d91a658ed22217e3d59590ab9a177bf669577a8"
+    },
+    {
+      "path": "generated/sniper-sheet.png",
+      "bytes": 740,
+      "sha256": "7bdc5a0d55e5b2f04866274ff9e994ff873be0fd09293a1acd5b8a92ee5ff7a0"
+    },
+    {
+      "path": "generated/world.json",
+      "bytes": 2391,
+      "sha256": "0ebaee5a83c39bb05a627b2956049b173612c7df491d06a5157268bf67b8fa35"
+    },
+    {
+      "path": "index.html",
+      "bytes": 532,
+      "sha256": "e3ced8fda3faa6c2833fa70bea1999d458b304eeafbcddc82d0b7ad84091a73a"
+    },
+    {
+      "path": "style.css",
+      "bytes": 969,
+      "sha256": "b0f41823b0e34e56c4bd0b078fc6dfdabff2868776ce0cccf982f2273f6c9e95"
+    }
+  ]
+}

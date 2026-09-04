@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000007",
+  "slug": "rift-runner",
+  "version": "0.1.2",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/rift-runner"
+  },
+  "files": [
+    {
+      "path": "cover.webp",
+      "bytes": 8104,
+      "sha256": "e25c4420e7f61e7fa6f9384ca7eb5d402a53bbea7d33183d232bc67c7e92ad6f"
+    },
+    {
+      "path": "index.html",
+      "bytes": 64961,
+      "sha256": "7e161a5cd19979e4a0672847a333d24cc0e0fa43fef57c3ef1e81601a0986a82"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/EffectComposer.js",
+      "bytes": 4652,
+      "sha256": "2ce97bd795adb981bb3dc37169c6596aaa4d8f11576a6cc689228dd1c5948712"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/MaskPass.js",
+      "bytes": 2232,
+      "sha256": "f8f7ca398020b2ee58ec93e7de778b2def6e3bd58cc9af0d5338d0d11dc2231f"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/OutputPass.js",
+      "bytes": 2525,
+      "sha256": "2510d0f53bcd109ff3851cd7c90142393c2305394e0427be3325c25cc5936904"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/Pass.js",
+      "bytes": 1707,
+      "sha256": "631e5a4f4ffb23d5be5d570bda053d8cb5a4d127989f97d54164989a8af2040d"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/RenderPass.js",
+      "bytes": 1942,
+      "sha256": "b6598817bcc0cc9b7a57bffbecdc6f8a4c87cbe561d75740db7ee88b203df4a9"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/ShaderPass.js",
+      "bytes": 1577,
+      "sha256": "1cc96cf0690d37833b31d8034a1d08a00c769c8fa9e4b3b038ceca643269a49c"
+    },
+    {
+      "path": "vendor/three/addons/postprocessing/UnrealBloomPass.js",
+      "bytes": 12407,
+      "sha256": "d1cae5c417ae0b7686f7ae510cfb3f41418ed52220e52be95eef245e83236e4c"
+    },
+    {
+      "path": "vendor/three/addons/shaders/CopyShader.js",
+      "bytes": 572,
+      "sha256": "db35e693053361d8a9c0e4b8118ba4eb448178a785b279409df97bf232814c80"
+    },
+    {
+      "path": "vendor/three/addons/shaders/LuminosityHighPassShader.js",
+      "bytes": 1193,
+      "sha256": "5b9b22d86df4e6e84da8997c85d60f4262951767ef6c865a27a8f5e34669a0b9"
+    },
+    {
+      "path": "vendor/three/addons/shaders/OutputShader.js",
+      "bytes": 1500,
+      "sha256": "0dcd1bd6787565cc605ccb1253617d1aaa41d8382f41da2b93596ea3823582b2"
+    },
+    {
+      "path": "vendor/three/three.module.js",
+      "bytes": 1284652,
+      "sha256": "5916c8dfb5f4e3eede312de305345868d4a0a8105383b080c6985565d6e79b46"
+    }
+  ]
+}

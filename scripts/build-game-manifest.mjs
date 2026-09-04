@@ -13,14 +13,20 @@ export function buildGameManifest({ metadata, source, files }) {
   if (!files.length || !files.some((file) => file.path === "index.html")) throw new Error(`${metadata.id}: install files must include index.html`);
   const uniquePaths = new Set(files.map((file) => file.path));
   if (uniquePaths.size !== files.length) throw new Error(`${metadata.id}: duplicate install path`);
-  return {
+  const manifest = {
     schemaVersion: 1,
     id: metadata.id,
     slug: metadata.slug,
     version: metadata.version,
     entry: "index.html",
-    offlineReady: true,
+    offlineReady: metadata.offlineReady !== false,
     source,
     files: [...files].sort((a, b) => a.path.localeCompare(b.path)),
   };
+  if (metadata.runtimeDependencies !== undefined) {
+    if (!Array.isArray(metadata.runtimeDependencies) || metadata.runtimeDependencies.some((url) => typeof url !== "string" || !url.startsWith("https://"))) throw new Error(`${metadata.id}: runtimeDependencies must contain HTTPS URLs`);
+    manifest.runtimeDependencies = [...metadata.runtimeDependencies];
+  }
+  if (!manifest.offlineReady && !manifest.runtimeDependencies?.length) throw new Error(`${metadata.id}: online-only games must document runtime dependencies`);
+  return manifest;
 }

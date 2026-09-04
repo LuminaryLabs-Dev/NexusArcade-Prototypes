@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000004",
+  "slug": "chroma-break",
+  "version": "0.1.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/chroma-break"
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 44339,
+      "sha256": "70fa5fb10a9219caf2347cb6af4494c03d42eb8d651e48fe75340e266d1cc4a8"
+    }
+  ]
+}

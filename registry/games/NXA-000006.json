@@ -1,21 +1,37 @@
 {
+  "schemaVersion": 1,
   "id": "NXA-000006",
-  "title": "Knockout Circuit",
   "slug": "knockout-circuit",
-  "description": "Piston-punch five named robot bosses, stack circuit upgrades, or play a predicted host-authoritative peer-to-peer match.",
-  "genre": "Arcade Fighter",
-  "status": "prototype",
   "version": "0.4.0",
+  "entry": "index.html",
   "offlineReady": false,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "d004453ab03ff5065f127d64348a38fad76847bb",
+    "basePath": "prototypes/knockout-circuit"
+  },
+  "files": [
+    {
+      "path": "app.mjs",
+      "bytes": 31179,
+      "sha256": "07fcad09bddaab2e4ac9399d2008f8ac1fe3b31633f90da3c78659444ab052c8"
+    },
+    {
+      "path": "index.html",
+      "bytes": 14966,
+      "sha256": "1c7f7a71fb7f86561ff1d8c7b8484c626f9c0eeb32d609844cf3c39786d3a3d8"
+    },
+    {
+      "path": "simulation.mjs",
+      "bytes": 12549,
+      "sha256": "92d1d6e037dbe5d47981c100ef3443a2a7276ff94742efb982ec248fc7f2424d"
+    }
+  ],
   "runtimeDependencies": [
     "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@8a60167fc945109408851c586a9355b1147438d5/src/index.js",
     "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@2ef76f03c9f9713415bf9cc22757319058a0ef47/kits/network/multiplayer-host-kit/controller.js",
     "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@2ef76f03c9f9713415bf9cc22757319058a0ef47/kits/network/peerjs-transport-provider-kit/index.js",
     "https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-  ],
-  "featured": true,
-  "accent": "gold",
-  "sortOrder": 1,
-  "controls": ["A / D", "Arrow keys", "Space", "Touch", "Saved circuit", "PeerJS", "60 Hz prediction", "Ready/rematch", "Reconnect"]
+  ]
 }

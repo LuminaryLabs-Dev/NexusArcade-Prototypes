@@ -6,6 +6,11 @@
   "genre": "Arcade Driving",
   "status": "prototype",
   "version": "0.1.0",
+  "offlineReady": false,
+  "runtimeDependencies": [
+    "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@b941c9b2995e3449c6987908657753e2cf2df242/src/index.js",
+    "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+  ],
   "featured": false,
   "accent": "orange",
   "sortOrder": 2,

@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000008",
+  "slug": "the-long-haul",
+  "version": "0.1.0",
+  "entry": "index.html",
+  "offlineReady": false,
+  "source": {
+    "repository": "LuminaryLabs-Publish/TheLongHaul",
+    "ref": "5473ba546175b8b3671fe4a66265d63d4b1dc4a2",
+    "basePath": "."
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 10831,
+      "sha256": "0a479556959f389d123c1ee7603b8cfc77646e980419372db1869dca4ec4c8d3"
+    },
+    {
+      "path": "src/app/app-chunk-1.js",
+      "bytes": 6692,
+      "sha256": "945e0f15c14571d688c0a17519ffdddabd159b68b4faefb4ff06c531dc9330e2"
+    },
+    {
+      "path": "src/app/app-chunk-10.js",
+      "bytes": 6495,
+      "sha256": "e73fe5d8a9fd0fadf68e8f45c1c63fdcee4e3d2cd15217ee1888a8dd142a5ccb"
+    },
+    {
+      "path": "src/app/app-chunk-11.js",
+      "bytes": 2976,
+      "sha256": "9743df92ad0a8e4da3c154785eb8d43babd06635244d0c0357e361da4a4bbbc2"
+    },
+    {
+      "path": "src/app/app-chunk-12.js",
+      "bytes": 7520,
+      "sha256": "46386b79577717d409aca9fe604ad466f21f09a42ae135a0981eb7a229cff5aa"
+    },
+    {
+      "path": "src/app/app-chunk-13.js",
+      "bytes": 3095,
+      "sha256": "4e6ba8f26a4cac767a5dd6cabfe6a68f7704ae0ed2d8ced38e40b2a4d1ce1617"
+    },
+    {
+      "path": "src/app/app-chunk-14.js",
+      "bytes": 14123,
+      "sha256": "503a44403cab1d4459173729d66eac03dd65d5fb6ba8460d89af635020a40562"
+    },
+    {
+      "path": "src/app/app-chunk-15.js",
+      "bytes": 3897,
+      "sha256": "5651eb932f3570255e01cee04e893245924747bd3e32dfb2b199d94c2f2b1cf5"
+    },
+    {
+      "path": "src/app/app-chunk-16.js",
+      "bytes": 5647,
+      "sha256": "82f583b329f3ff902a90eb92da8e821dfeace85dcc5f9541e4521a6a3b321e25"
+    },
+    {
+      "path": "src/app/app-chunk-17.js",
+      "bytes": 10797,
+      "sha256": "213dfd7e19a729534a64b6d156b748608c51faec8e5a20e52c24fecc7f0bdec1"
+    },
+    {
+      "path": "src/app/app-chunk-2.js",
+      "bytes": 6672,
+      "sha256": "6a0491ed8ecffd950568c84cd9e5b11bf61d6f4315ca67d3b03b2b9fcd156256"
+    },
+    {
+      "path": "src/app/app-chunk-3.js",
+      "bytes": 6629,
+      "sha256": "f4097cad7576ea191a33e1bde0beb3dff75158ce8f039e1a85bf3fea04f7c4b5"
+    },
+    {
+      "path": "src/app/app-chunk-4.js",
+      "bytes": 5056,
+      "sha256": "0c8ac9e057523bd4ad0bc2223a3874ff776220504da0526c729502b61284c5d8"
+    },
+    {
+      "path": "src/app/app-chunk-5.js",
+      "bytes": 8456,
+      "sha256": "27507d37b171372203fb36de3bfef6c9fca0a5a9505a8fb7a351fcdf096a684c"
+    },
+    {
+      "path": "src/app/app-chunk-6.js",
+      "bytes": 7865,
+      "sha256": "2c3b7a93ec1f0e74f9bfb68a82ee26728528d00d9262adec2b610ccc89f353f8"
+    },
+    {
+      "path": "src/app/app-chunk-7.js",
+      "bytes": 6405,
+      "sha256": "e042be4d666d78e994e486aa88ebf4bfc16f0cff37ea2836cf64dbd081e03312"
+    },
+    {
+      "path": "src/app/app-chunk-8.js",
+      "bytes": 6801,
+      "sha256": "b7c9b8ac527d38b8a2775d2201b7be862d094bbaa6560ba33aad519bc0c4acfc"
+    },
+    {
+      "path": "src/app/app-chunk-9.js",
+      "bytes": 4916,
+      "sha256": "db685206bc6add4fe9d8385a4aa4b9580e1cca5e1abed4caa05637ad33803262"
+    },
+    {
+      "path": "src/app/bootstrap.mjs",
+      "bytes": 1652,
+      "sha256": "f724b410c8625e83b60fccc024bb2001a5690a383434070fbca43205044d13ef"
+    },
+    {
+      "path": "src/game/cell-descriptor.mjs",
+      "bytes": 9251,
+      "sha256": "2a3c41403b72f491b69096f6c2f1993e0a3ae5295e48d8a960f97761164fc407"
+    },
+    {
+      "path": "src/game/course-kit.mjs",
+      "bytes": 3177,
+      "sha256": "ad24dbb1ca5bd2301b92b9e505519260ea2fba992885636a669c3024dca19438"
+    },
+    {
+      "path": "src/game/delivery-contract-catalog-kit.mjs",
+      "bytes": 3006,
+      "sha256": "8872f434ac3ab3dba48414aac8940e6e2e80fb12ffc98bd900c1c1dc48601674"
+    },
+    {
+      "path": "src/game/delivery-kit.mjs",
+      "bytes": 2911,
+      "sha256": "35c9e47b0e7611d2b93ae637a114c4b8440859a8456b461014b6f35eaa70c65f"
+    },
+    {
+      "path": "src/game/generator.mjs",
+      "bytes": 9227,
+      "sha256": "f2adeb092cdb975160a09cd8222c3e043b59f873b7a8cae59ca2d13f0d908e37"
+    },
+    {
+      "path": "src/game/horizon-lod-policy-kit.mjs",
+      "bytes": 3185,
+      "sha256": "eba48f81407ce3ec3b4dfcd52015a89e52dbd075f24d2e2b13f1b66499ba11b8"
+    },
+    {
+      "path": "src/game/product-kits.mjs",
+      "bytes": 3438,
+      "sha256": "65bed9ad65b3e5d018d689b5110668cea6e16821f747b248e8fec7e468cff6f9"
+    },
+    {
+      "path": "src/game/road-class-catalog-kit.mjs",
+      "bytes": 2687,
+      "sha256": "1774b6e821c1ca42056a759caeadd7ef523a7a32bdf5518f9a60f1bd71ee5fcb"
+    },
+    {
+      "path": "src/game/run-kit.mjs",
+      "bytes": 5817,
+      "sha256": "747e52d81eebbe11c8f8db4929ac8347875432862fb314d7ec54aa8e7af60abd"
+    },
+    {
+      "path": "src/game/score.mjs",
+      "bytes": 1219,
+      "sha256": "d513c638b47fe6460c9cd72172ac63382874d56817a011db7e33cb107ddb5800"
+    },
+    {
+      "path": "src/game/shared.mjs",
+      "bytes": 6881,
+      "sha256": "baa908f04cf2fb3761ef596d1c7cb67fe658140bed06f8a5870c978d4806f5dc"
+    },
+    {
+      "path": "src/game/terrain-policy-kit.mjs",
+      "bytes": 2978,
+      "sha256": "51117107d0761f512a2d612b1b565c8f5d6a8fc05131957eee14b918f5bf0386"
+    },
+    {
+      "path": "src/game/truck-dynamics-profile-kit.mjs",
+      "bytes": 3370,
+      "sha256": "8792ae1aaa40c9a726dbf0ebefb13e61d963b063156e16ef1ce3d995b2cae640"
+    },
+    {
+      "path": "src/game/truck-kit.mjs",
+      "bytes": 14822,
+      "sha256": "22801eb6b537da2de45f083c03edc486cbe449fab5d9f9736d3320fd90eed8f7"
+    },
+    {
+      "path": "src/game/wildlife-kit.mjs",
+      "bytes": 2602,
+      "sha256": "a3ef3ff4e4080d1e8728d6923d6eb9189ceb0a4e92f32c15f9836bd93649f145"
+    },
+    {
+      "path": "src/game/world-atlas-kit.mjs",
+      "bytes": 5238,
+      "sha256": "ff5f0f66f5f73c3d4afcf317277f3abe1291cdf80555ca752cdd57635604d723"
+    },
+    {
+      "path": "src/game/world-base.mjs",
+      "bytes": 2849,
+      "sha256": "f050230f3b31dcd61fb498b66f1fe412a841a962bf5235408b2c5d147bc884e6"
+    },
+    {
+      "path": "src/game/world-feature-adapter-kit.mjs",
+      "bytes": 17472,
+      "sha256": "a6035223392df93e671f14917f4be7f0ed66c873537955578b6849477380dc76"
+    },
+    {
+      "path": "src/game/world-profile-kit.mjs",
+      "bytes": 3321,
+      "sha256": "4f10faa8b6b4f8804b3746d2fdef15f007b4fb881b541c464cba0261b95bf07b"
+    },
+    {
+      "path": "src/long-haul-core.mjs",
+      "bytes": 8350,
+      "sha256": "8b5d1404aa422334e713010a8ba775c2d743cd1de00df51852ac3a1673591cda"
+    },
+    {
+      "path": "src/long-haul-game.mjs",
+      "bytes": 637,
+      "sha256": "3c40c2be0eb39cc8c8c56fe24d5395455facab69445b07a8d41da1b22e511c18"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 13134,
+      "sha256": "959d103bded87f64344d288e83b899ee711447351ca49ce50d20932ec8883b42"
+    }
+  ],
+  "runtimeDependencies": [
+    "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@b941c9b2995e3449c6987908657753e2cf2df242/src/index.js",
+    "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+  ]
+}
