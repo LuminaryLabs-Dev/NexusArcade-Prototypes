@@ -9,7 +9,6 @@ import { assertPublishablePath, fileRecord, hashDirectory } from "./hash-game-fi
 const exec = promisify(execFile);
 const ROOT = process.cwd();
 const REGISTRY_VERSION = "0.1.0";
-const REGISTRY_REF = `registry-v${REGISTRY_VERSION}`;
 const LOCAL_REPOSITORY = "LuminaryLabs-Dev/NexusArcade-Prototypes";
 const EXCLUDED_LOCAL = new Set(["game.json", "game.ref.json", "index.parts.json"]);
 
@@ -43,7 +42,9 @@ function thumbnailUrl(source, thumbnail) {
 
 async function build() {
   const lock = await json("registry/source-lock.json");
+  const registryLock = await json("registry/ref-lock.json");
   if (!/^[a-f0-9]{40}$/.test(lock.localSourceRef || "")) throw new Error("registry/source-lock.json requires localSourceRef as a full commit SHA");
+  if (!/^(?:registry-v\d+\.\d+\.\d+|[a-f0-9]{40})$/.test(registryLock.ref || "")) throw new Error("registry/ref-lock.json requires an immutable tag or full commit SHA");
   const entries = (await readdir(path.join(ROOT, "prototypes"), { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_") && !entry.name.startsWith("."))
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -86,7 +87,7 @@ async function build() {
   }
   games.sort((a, b) => a.id.localeCompare(b.id));
   const index = { schemaVersion: 1, registryVersion: REGISTRY_VERSION, games };
-  const latest = { schemaVersion: 1, registryVersion: REGISTRY_VERSION, ref: REGISTRY_REF, indexPath: "registry/index.json" };
+  const latest = { schemaVersion: 1, registryVersion: REGISTRY_VERSION, ref: registryLock.ref, indexPath: "registry/index.json" };
   return { latest, index, manifests };
 }
 

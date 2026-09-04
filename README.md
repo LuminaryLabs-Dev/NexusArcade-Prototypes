@@ -4,7 +4,7 @@ A launchable prototype library for NexusArcade games.
 
 ## Installation registry
 
-The public installer contract lives under `registry/`. `registry/latest.json` is the only moving pointer; it selects an immutable `registry-v*` tag containing the sorted master index and one integrity manifest per permanent game ID.
+The public installer contract lives under `registry/`. `registry/latest.json` is the only moving pointer; it selects an immutable release commit (or `registry-v*` tag) containing the sorted master index and one integrity manifest per permanent game ID.
 
 Game files are installed through jsDelivr from full 40-character commit SHAs. The registry records every file's exact byte length and SHA-256 digest. Run `npm test` to rebuild the Pages output, validate IDs and verify each manifest against its immutable source bytes.
 
@@ -12,8 +12,8 @@ To prepare a registry release after changing game files:
 
 1. Commit the game/source changes.
 2. Put that commit SHA in `registry/source-lock.json`.
-3. Run `npm run build` and commit the generated registry.
-4. Tag the registry commit with the version named by `registry/latest.json`.
+3. Run `npm run build:registry` and commit the generated registry.
+4. Put that immutable registry commit SHA (or release tag) in `registry/ref-lock.json`, regenerate, and commit the moving pointer.
 
 Permanent IDs are never reassigned. Catalog display order remains independent through `featured` and `sortOrder`.
 
