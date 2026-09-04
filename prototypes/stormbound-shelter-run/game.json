@@ -1,0 +1,25 @@
+{
+  "id": "NXA-000009",
+  "title": "Stormbound: Shelter Run",
+  "slug": "stormbound-shelter-run",
+  "description": "Steer a small vessel through escalating lightning and rogue waves, manage flooding and an overheating bilge pump, and use lighthouse shelters to repair while chasing a higher score.",
+  "genre": "Arcade Sailing Survival",
+  "status": "prototype",
+  "version": "0.1.0",
+  "offlineReady": false,
+  "runtimeDependencies": [
+    "https://cdn.tailwindcss.com",
+    "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+  ],
+  "featured": false,
+  "accent": "cyan",
+  "sortOrder": 9,
+  "controls": [
+    "A / D",
+    "Arrow keys",
+    "W / S",
+    "Space — Bilge pump",
+    "Escape — Pause",
+    "Touch — Turn and pump"
+  ]
+}

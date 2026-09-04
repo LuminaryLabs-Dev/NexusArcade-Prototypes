@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stormbound: Shelter Run</title>
+    <!-- Tailwind CSS for Responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js Library for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #030712;
+            font-family: 'Courier New', Courier, monospace;
+            color: #ffffff;
+            user-select: none;
+        }
+
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Glassmorphism HUD Panels */
+        .glass-panel {
+            background: rgba(8, 15, 28, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .bar-fill {
+            transition: width 0.1s ease-out, background-color 0.2s ease;
+        }
+
+        /* Warning animation for critical meters */
+        @keyframes flash-warning {
+            0% { background-color: rgba(244, 67, 54, 0.9); box-shadow: 0 0 10px rgba(244, 67, 54, 0.8); }
+            50% { background-color: rgba(127, 0, 0, 0.4); box-shadow: none; }
+            100% { background-color: rgba(244, 67, 54, 0.9); box-shadow: 0 0 10px rgba(244, 67, 54, 0.8); }
+        }
+        .warning-flash {
+            animation: flash-warning 0.6s infinite;
+        }
+
+        /* Lightning Screen Flash Overlay */
+        #flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+            transition: opacity 0.05s ease-out;
+        }
+
+        /* Modal Screens */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 7, 18, 0.88);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D WebGL Canvas -->
+    <div id="webgl-container"></div>
+    <!-- Screen Flash Overlay for Lightning -->
+    <div id="flash-overlay"></div>
+
+    <!-- MAIN MENU OVERLAY -->
+    <div id="menu-screen" class="modal-overlay">
+        <div class="glass-panel p-8 max-w-lg w-full text-center flex flex-col items-center border border-blue-500/30">
+            <div class="text-cyan-400 text-xs tracking-widest uppercase mb-2">Arcade Sailing Survival</div>
+            <h1 class="text-4xl font-extrabold tracking-wider text-white mb-3 uppercase drop-shadow-[0_2px_12px_rgba(59,130,246,0.6)]">Stormbound: Shelter Run</h1>
+            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                Navigate your vessel through an escalating oceanic tempest. Dodge lightning strikes, ride rogue wave crests, and operate your bilge pump before the storm swallows you whole.
+            </p>
+            <div class="bg-black/50 p-4 rounded-lg w-full text-left text-xs text-gray-300 mb-6 space-y-2 border border-white/10">
+                <div class="flex items-center gap-2"><span class="text-yellow-400 font-bold w-32">[A / D] [◄ / ►]</span> - Full 360° Rudder Turn</div>
+                <div class="flex items-center gap-2"><span class="text-yellow-400 font-bold w-32">[W / S] [▲ / ▼]</span> - Engine Boost / Reverse</div>
+                <div class="flex items-center gap-2"><span class="text-yellow-400 font-bold w-32">[SPACEBAR]</span> - Bilge Pump (Watch Heat!)</div>
+                <div class="flex items-center gap-2"><span class="text-yellow-400 font-bold w-32">[ESC]</span> - Pause Voyage</div>
+            </div>
+            <button id="start-btn" class="interactive w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-lg tracking-wider uppercase shadow-lg shadow-blue-600/40 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                Launch Into Storm
+            </button>
+        </div>
+    </div>
+
+    <!-- PAUSE SCREEN OVERLAY -->
+    <div id="pause-screen" class="modal-overlay hidden">
+        <div class="glass-panel p-8 max-w-sm w-full text-center flex flex-col items-center border border-blue-500/30">
+            <h2 class="text-2xl font-bold tracking-wider mb-6 text-white uppercase">Voyage Paused</h2>
+            <button id="resume-btn" class="interactive w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg mb-3 tracking-wide uppercase transition-colors">Resume</button>
+            <button id="quit-btn" class="interactive w-full py-3 bg-red-900/50 hover:bg-red-800/60 text-red-200 font-bold rounded-lg tracking-wide uppercase border border-red-500/30 transition-colors">Abandon Run</button>
+        </div>
+    </div>
+
+    <!-- RESULTS / GAME OVER SCREEN -->
+    <div id="results-screen" class="modal-overlay hidden">
+        <div class="glass-panel p-8 max-w-md w-full text-center flex flex-col items-center border border-red-500/30">
+            <div class="text-red-400 text-xs tracking-widest uppercase mb-1">Vessel Lost</div>
+            <h2 class="text-3xl font-extrabold tracking-wider text-white mb-6 uppercase drop-shadow-[0_2px_10px_rgba(239,68,68,0.5)]">The Sea Claims All</h2>
+            
+            <div class="bg-black/60 rounded-lg p-4 w-full mb-6 space-y-2.5 text-sm border border-white/10">
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-gray-400">Final Score:</span>
+                    <span id="res-score" class="text-yellow-400 font-bold text-lg">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Time Survived:</span>
+                    <span id="res-time" class="text-white font-mono">00:00.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Peak Storm Intensity:</span>
+                    <span id="res-intensity" class="text-cyan-400 font-mono">1.0x</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Close Calls Dodged:</span>
+                    <span id="res-closecalls" class="text-green-400 font-mono">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Water Pumped:</span>
+                    <span id="res-pumped" class="text-blue-400 font-mono">0 L</span>
+                </div>
+            </div>
+
+            <button id="restart-btn" class="interactive w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-lg tracking-wider uppercase shadow-lg shadow-blue-600/30 transition-all">
+                Sail Again
+            </button>
+        </div>
+    </div>
+
+    <!-- IN-GAME HUD UI -->
+    <div id="hud-layer" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10 flex flex-col justify-between p-6 box-border hidden">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-start w-full">
+            <div class="glass-panel px-5 py-3">
+                <div id="hud-score" class="text-3xl font-extrabold text-yellow-400 tracking-wider">000000</div>
+                <div id="hud-multiplier" class="text-xs text-cyan-300 tracking-wide mt-0.5">STORM INTENSITY: 1.0x</div>
+            </div>
+
+            <!-- Shore Beacon Indicator -->
+            <div id="hud-shore-beacon" class="glass-panel px-4 py-2 flex items-center gap-2 border border-emerald-500/40 text-emerald-300 font-bold text-sm tracking-wider uppercase animate-pulse">
+                <span>🏝️ SHELTER:</span>
+                <span id="shore-dist-text" class="text-white font-mono">SCANNING...</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div id="hud-timer" class="glass-panel px-4 py-2 text-xl font-bold tracking-wider font-mono text-white">00:00.00</div>
+                <button id="pause-btn" class="interactive glass-panel px-4 py-2 text-xs font-bold hover:bg-white/10 transition-colors uppercase tracking-wider">Pause</button>
+            </div>
+        </div>
+
+        <!-- Floating Notification Container -->
+        <div id="notification-container" class="absolute top-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2"></div>
+
+        <!-- Bottom Gauges -->
+        <div class="flex flex-col md:flex-row gap-4 items-end w-full justify-between">
+            <div class="glass-panel p-4 w-72">
+                <!-- Hull Integrity -->
+                <div class="flex justify-between text-xs uppercase tracking-wider mb-1 text-gray-300">
+                    <span>Hull Integrity</span>
+                    <span id="hull-text" class="font-bold text-green-400">100%</span>
+                </div>
+                <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden mb-3 border border-white/10">
+                    <div id="hull-bar" class="bar-fill h-full bg-green-500 w-full"></div>
+                </div>
+
+                <!-- Water Logging -->
+                <div class="flex justify-between text-xs uppercase tracking-wider mb-1 text-gray-300">
+                    <span>Water Logging</span>
+                    <span id="water-text" class="font-bold text-blue-400">0%</span>
+                </div>
+                <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden mb-3 border border-white/10">
+                    <div id="water-bar" class="bar-fill h-full bg-blue-500 w-0"></div>
+                </div>
+
+                <!-- Bilge Pump Heat -->
+                <div class="flex justify-between text-xs uppercase tracking-wider mb-1 text-gray-300">
+                    <span>Pump Heat [SPACE]</span>
+                    <span id="pump-text" class="font-bold text-yellow-400">READY</span>
+                </div>
+                <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden border border-white/10">
+                    <div id="pump-bar" class="bar-fill h-full bg-yellow-500 w-0"></div>
+                </div>
+            </div>
+
+            <!-- Mobile Touch Control Helpers -->
+            <div class="flex gap-2 interactive md:hidden">
+                <button id="btn-left" class="glass-panel px-6 py-5 text-xl font-bold active:bg-blue-600/50">◀</button>
+                <button id="btn-pump" class="glass-panel px-6 py-5 text-xs font-bold bg-blue-600/40 active:bg-blue-600">PUMP</button>
+                <button id="btn-right" class="glass-panel px-6 py-5 text-xl font-bold active:bg-blue-600/50">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME ENGINE LOGIC -->
+    <script>
+        // Sound Synthesizer using Web Audio API
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+            }
+
+            playThunder() {
+                if (!this.ctx || this.isMuted) return;
+                const now = this.ctx.currentTime;
+                
+                // Noise buffer for thunder crash
+                const bufferSize = this.ctx.sampleRate * 1.5;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+                filter.frequency.exponentialRampToValueAtTime(80, now + 1.2);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.8, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.4);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                noise.start(now);
+            }
+
+            playSplash() {
+                if (!this.ctx || this.isMuted) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            playPumpSound() {
+                if (!this.ctx || this.isMuted) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(330, now + 0.1);
+
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+
+            playCloseCall() {
+                if (!this.ctx || this.isMuted) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            playHarborSound() {
+                if (!this.ctx || this.isMuted) return;
+                const now = this.ctx.currentTime;
+                [440, 554.37, 659.25, 880].forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.5);
+                });
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        const GameState = {
+            MENU: 'MENU',
+            PLAYING: 'PLAYING',
+            PAUSED: 'PAUSED',
+            GAMEOVER: 'GAMEOVER'
+        };
+        let currentState = GameState.MENU;
+
+        const keys = { left: false, right: false, up: false, down: false, pump: false };
+        const touchInput = { pump: false };
+
+        let scene, camera, renderer, clock;
+        let oceanMesh, oceanMaterial;
+        let boatMesh, boatPhysics, vesselStatus, hazardManager, scoreManager;
+        let rainParticles, sprayParticles;
+        let hazardTimer = 0;
+        let shoreManager;
+
+        function createShoreMesh() {
+            const shoreGroup = new THREE.Group();
+            
+            // Island / Shore base terrain (scaled down to fit inside shelter perimeter)
+            const landGeo = new THREE.CylinderGeometry(12, 18, 8, 32);
+            const landMat = new THREE.MeshStandardMaterial({ color: 0x2e4e3f, roughness: 0.9 });
+            const land = new THREE.Mesh(landGeo, landMat);
+            land.position.y = 2.5;
+            shoreGroup.add(land);
+
+            // Sandy Coastline
+            const beachGeo = new THREE.CylinderGeometry(18, 24, 1.8, 32);
+            const beachMat = new THREE.MeshStandardMaterial({ color: 0xd2b48c, roughness: 0.8 });
+            const beach = new THREE.Mesh(beachGeo, beachMat);
+            beach.position.y = -0.2;
+            shoreGroup.add(beach);
+
+            // Rocks along shoreline
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const rockGeo = new THREE.DodecahedronGeometry(2.0 + Math.random() * 1.5);
+                const rockMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.9 });
+                const rock = new THREE.Mesh(rockGeo, rockMat);
+                rock.position.set(Math.cos(angle) * 21, 0.8, Math.sin(angle) * 21);
+                shoreGroup.add(rock);
+            }
+
+            // Lighthouse Base & Tower
+            const towerGeo = new THREE.CylinderGeometry(1.8, 3.0, 20, 16);
+            const towerMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
+            const tower = new THREE.Mesh(towerGeo, towerMat);
+            tower.position.set(0, 12, 0);
+            shoreGroup.add(tower);
+
+            // Red stripes on lighthouse
+            const stripeGeo = new THREE.CylinderGeometry(2.3, 2.7, 5, 16);
+            const stripeMat = new THREE.MeshStandardMaterial({ color: 0xd32f2f });
+            const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+            stripe.position.set(0, 13, 0);
+            shoreGroup.add(stripe);
+
+            // Lighthouse Top / Lamp Room
+            const lampGeo = new THREE.CylinderGeometry(1.8, 1.8, 4, 12);
+            const lampMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            const lamp = new THREE.Mesh(lampGeo, lampMat);
+            lamp.position.set(0, 24, 0);
+            shoreGroup.add(lamp);
+
+            // Rotating Light Beam
+            const beamGeo = new THREE.ConeGeometry(18, 70, 16);
+            beamGeo.rotateX(Math.PI / 2);
+            beamGeo.translate(0, 0, 35);
+            const beamMat = new THREE.MeshBasicMaterial({ color: 0xfff59d, transparent: true, opacity: 0.4, side: THREE.DoubleSide });
+            const beam = new THREE.Mesh(beamGeo, beamMat);
+            beam.position.set(0, 24, 0);
+            beam.name = "lighthouseBeam";
+            shoreGroup.add(beam);
+
+            // Point light for glowing lighthouse
+            const light = new THREE.PointLight(0xffeb3b, 3, 90);
+            light.position.set(0, 24, 0);
+            shoreGroup.add(light);
+
+            // Harbor Safe Zone Marker (Wide Surface Ring)
+            const zoneGeo = new THREE.RingGeometry(24, 55, 64);
+            zoneGeo.rotateX(-Math.PI / 2);
+            const zoneMat = new THREE.MeshBasicMaterial({ color: 0x00ff66, side: THREE.DoubleSide, transparent: true, opacity: 0.55 });
+            const zone = new THREE.Mesh(zoneGeo, zoneMat);
+            zone.position.set(0, 0.8, 0);
+            zone.name = "safeZoneRing";
+            shoreGroup.add(zone);
+
+            // Glowing Safe Zone Vertical Beacon Cylinder (Visible through wave swell & distance)
+            const cylGeo = new THREE.CylinderGeometry(55, 55, 14, 32, 1, true);
+            const cylMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+            const cyl = new THREE.Mesh(cylGeo, cylMat);
+            cyl.position.set(0, 6.0, 0);
+            cyl.name = "safeZoneCylinder";
+            shoreGroup.add(cyl);
+
+            return shoreGroup;
+        }
+
+        class ShoreManager {
+            constructor(scene, vessel, status, scoreMgr) {
+                this.scene = scene;
+                this.vessel = vessel;
+                this.status = status;
+                this.scoreMgr = scoreMgr;
+                
+                this.mesh = createShoreMesh();
+                this.scene.add(this.mesh);
+                
+                this.shelteredCooldown = 0;
+                this.active = false;
+                
+                // Instantly spawn shelter on creation
+                this.spawnShoreAhead(true);
+            }
+
+            spawnShoreAhead(initial = false) {
+                // Determine target spawn angle ahead of vessel with slight variance
+                const angle = this.vessel.rotation.y + (Math.random() * 0.8 - 0.4);
+                const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+                const spawnDistance = initial ? 110 : (130 + Math.random() * 40);
+                
+                const targetPos = this.vessel.position.clone().add(forward.multiplyScalar(spawnDistance));
+                this.mesh.position.set(targetPos.x, 0, targetPos.z);
+                this.mesh.visible = true;
+                this.active = true;
+
+                triggerNotification(initial ? '🏝️ SHELTER BEACON LOCATED!' : '🏝️ NEW SHELTER DETECTED AHEAD!');
+            }
+
+            reset() {
+                this.shelteredCooldown = 0;
+                this.spawnShoreAhead(true);
+            }
+
+            update(deltaTime) {
+                // Ensure a shelter is always active
+                if (!this.active) {
+                    this.spawnShoreAhead();
+                    return;
+                }
+
+                // Rotate Lighthouse Beam & Pulse Safe Zone Visuals
+                const beam = this.mesh.getObjectByName('lighthouseBeam');
+                if (beam) {
+                    beam.rotation.z += 1.5 * deltaTime;
+                }
+
+                const safeRing = this.mesh.getObjectByName('safeZoneRing');
+                const safeCyl = this.mesh.getObjectByName('safeZoneCylinder');
+                const pulse = 0.4 + Math.sin(Date.now() * 0.005) * 0.15;
+                if (safeRing && safeRing.material) {
+                    safeRing.material.opacity = pulse + 0.15;
+                }
+                if (safeCyl && safeCyl.material) {
+                    safeCyl.material.opacity = pulse * 0.5;
+                }
+
+                // Calculate distance and direction to shelter
+                const dx = this.mesh.position.x - this.vessel.position.x;
+                const dz = this.mesh.position.z - this.vessel.position.z;
+                const dist = Math.hypot(dx, dz);
+
+                // Calculate relative direction arrow based on vessel heading
+                const targetAngle = Math.atan2(dx, dz);
+                let relAngle = targetAngle - this.vessel.rotation.y;
+                while (relAngle > Math.PI) relAngle -= Math.PI * 2;
+                while (relAngle < -Math.PI) relAngle += Math.PI * 2;
+
+                let arrow = "⬆️";
+                if (relAngle >= -Math.PI * 0.25 && relAngle <= Math.PI * 0.25) arrow = "⬆️";
+                else if (relAngle > Math.PI * 0.25 && relAngle <= Math.PI * 0.65) arrow = "↗️";
+                else if (relAngle > Math.PI * 0.65 && relAngle <= Math.PI * 0.85) arrow = "➡️";
+                else if (relAngle > Math.PI * 0.85 || relAngle < -Math.PI * 0.85) arrow = "⬇️";
+                else if (relAngle < -Math.PI * 0.25 && relAngle >= -Math.PI * 0.65) arrow = "↖️";
+                else if (relAngle < -Math.PI * 0.65 && relAngle >= -Math.PI * 0.85) arrow = "⬅️";
+
+                // Update HUD Beacon UI with arrow indicator
+                const beaconDistEl = document.getElementById('shore-dist-text');
+                if (beaconDistEl) {
+                    beaconDistEl.textContent = `${arrow} ${Math.floor(dist)}m`;
+                }
+
+                // Safe Harbor Zone Logic (Matches safe ring radius)
+                if (dist <= 55) {
+                    // Repair Hull
+                    this.status.hull = Math.min(this.status.maxHull, this.status.hull + 30 * deltaTime);
+                    // Drain Logged Water
+                    this.status.waterLogged = Math.max(0, this.status.waterLogged - 40 * deltaTime);
+                    // Cool Pump
+                    this.status.pumpOverheat = Math.max(0, this.status.pumpOverheat - 60 * deltaTime);
+
+                    if (this.shelteredCooldown <= 0) {
+                        this.scoreMgr.currentScore += 1200;
+                        triggerNotification('🛡️ IN SHELTER! REPAIRING VESSEL +1200 PTS');
+                        audio.playHarborSound();
+                        this.shelteredCooldown = 8.0;
+                    }
+                }
+
+                if (this.shelteredCooldown > 0) {
+                    this.shelteredCooldown -= deltaTime;
+                }
+
+                // Always guarantee a shelter: if player sails out of range (>250m), spawn a new shelter ahead
+                if (dist > 250) {
+                    this.spawnShoreAhead();
+                }
+            }
+        }
+
+        class VesselStatus {
+            constructor() {
+                this.maxHull = 100;
+                this.hull = 100;
+                this.maxWater = 100;
+                this.waterLogged = 0;
+                this.passiveLeakRate = 0.5;
+                this.pumpRate = 16.0;
+                this.isPumping = false;
+                this.pumpOverheat = 0;
+                this.isOverheated = false;
+                this.isSunk = false;
+            }
+
+            applyDamage(amount) {
+                this.hull = Math.max(0, this.hull - amount);
+                audio.playSplash();
+                if (this.hull === 0) this.isSunk = true;
+            }
+
+            update(deltaTime) {
+                if (this.isSunk) return;
+
+                // Passive leak scaled by hull damage
+                const damageRatio = 1 - (this.hull / this.maxHull);
+                const effectiveLeak = this.passiveLeakRate + (damageRatio * 9.0);
+                this.waterLogged = Math.min(this.maxWater, this.waterLogged + effectiveLeak * deltaTime);
+
+                const activePump = keys.pump || touchInput.pump;
+                if (activePump && !this.isOverheated) {
+                    this.isPumping = true;
+                    this.waterLogged = Math.max(0, this.waterLogged - this.pumpRate * deltaTime);
+                    this.pumpOverheat += 32 * deltaTime;
+                    
+                    if (Math.random() < 0.3) audio.playPumpSound();
+
+                    if (this.pumpOverheat >= 100) {
+                        this.isOverheated = true;
+                        this.isPumping = false;
+                    }
+                } else {
+                    this.isPumping = false;
+                    this.pumpOverheat = Math.max(0, this.pumpOverheat - 35 * deltaTime);
+                    if (this.isOverheated && this.pumpOverheat === 0) {
+                        this.isOverheated = false;
+                    }
+                }
+
+                if (this.waterLogged >= this.maxWater) {
+                    this.isSunk = true;
+                }
+            }
+        }
+
+        function createOceanMaterial() {
+            return new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0 },
+                    uBigWavesElevation: { value: 1.2 },
+                    uBigWavesFrequency: { value: new THREE.Vector2(0.12, 0.08) },
+                    uBigWaveSpeed: { value: 0.9 },
+                    uSurfaceColor: { value: new THREE.Color('#05162a') },
+                    uFoamColor: { value: new THREE.Color('#64b5f6') }
+                },
+                vertexShader: `
+                    uniform float uTime;
+                    uniform float uBigWavesElevation;
+                    uniform vec2 uBigWavesFrequency;
+                    uniform float uBigWaveSpeed;
+                    varying float vElevation;
+
+                    void main() {
+                        vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                        float elevation = sin(modelPosition.x * uBigWavesFrequency.x + uTime * uBigWaveSpeed) *
+                                          cos(modelPosition.z * uBigWavesFrequency.y + uTime * uBigWaveSpeed) *
+                                          uBigWavesElevation;
+                        elevation += sin(modelPosition.x * 0.4 + uTime * 1.8) * 0.15;
+                        modelPosition.y += elevation;
+                        vec4 viewPosition = viewMatrix * modelPosition;
+                        gl_Position = projectionMatrix * viewPosition;
+                        vElevation = elevation;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 uSurfaceColor;
+                    uniform vec3 uFoamColor;
+                    varying float vElevation;
+
+                    void main() {
+                        float mixStrength = (vElevation + 1.5) / 3.0;
+                        mixStrength = clamp(mixStrength, 0.0, 1.0);
+                        vec3 color = mix(uSurfaceColor, uFoamColor, pow(mixStrength, 2.8));
+                        gl_FragColor = vec4(color, 0.95);
+                    }
+                `,
+                side: THREE.DoubleSide,
+                transparent: true
+            });
+        }
+
+        function getWaveHeight(x, z, time, hazardMgr = null) {
+            const bigWaves = Math.sin(x * 0.12 + time * 0.9) * Math.cos(z * 0.08 + time * 0.9) * 1.2;
+            const ripples = Math.sin(x * 0.4 + time * 1.8) * 0.15;
+            const rogue = hazardMgr ? hazardMgr.getRogueElevation(x, z) : 0;
+            return bigWaves + ripples + rogue;
+        }
+
+        function createBoatModel() {
+            const boatGroup = new THREE.Group();
+            const modelInner = new THREE.Group();
+            modelInner.name = "modelInner";
+            boatGroup.add(modelInner);
+
+            // Main Hull
+            const hullGeo = new THREE.BoxGeometry(1.3, 0.85, 3.8);
+            const hullMat = new THREE.MeshStandardMaterial({ color: 0x6d4c41, roughness: 0.6 });
+            const hull = new THREE.Mesh(hullGeo, hullMat);
+            hull.position.y = 0.2;
+            modelInner.add(hull);
+
+            // Deck Cabin
+            const cabinGeo = new THREE.BoxGeometry(1.0, 0.6, 1.4);
+            const cabinMat = new THREE.MeshStandardMaterial({ color: 0x3e2723 });
+            const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+            cabin.position.set(0, 0.7, -0.3);
+            modelInner.add(cabin);
+
+            // Mast
+            const mastGeo = new THREE.CylinderGeometry(0.06, 0.08, 4.8);
+            const mastMat = new THREE.MeshStandardMaterial({ color: 0xd7ccc8 });
+            const mast = new THREE.Mesh(mastGeo, mastMat);
+            mast.position.set(0, 2.4, 0.2);
+            modelInner.add(mast);
+
+            // Sail
+            const sailGeo = new THREE.ConeGeometry(1.3, 3.6, 4);
+            const sailMat = new THREE.MeshStandardMaterial({ color: 0xeceff1, side: THREE.DoubleSide });
+            const sail = new THREE.Mesh(sailGeo, sailMat);
+            sail.position.set(0, 2.4, -0.3);
+            sail.rotation.x = 0.1;
+            modelInner.add(sail);
+
+            // Lantern
+            const lanternGeo = new THREE.SphereGeometry(0.15, 8, 8);
+            const lanternMat = new THREE.MeshBasicMaterial({ color: 0xffb74d });
+            const lantern = new THREE.Mesh(lanternGeo, lanternMat);
+            lantern.position.set(0, 1.2, 1.8);
+            modelInner.add(lantern);
+
+            boatGroup.scale.set(1.1, 1.1, 1.1);
+            return boatGroup;
+        }
+
+        class BoatBuoyancyPhysics {
+            constructor(boatMesh, status) {
+                this.boat = boatMesh;
+                this.status = status;
+                this.length = 4.0;
+                this.width = 2.0;
+
+                this.samples = {
+                    bow: new THREE.Vector3(0, 0, this.length / 2),
+                    stern: new THREE.Vector3(0, 0, -this.length / 2),
+                    port: new THREE.Vector3(-this.width / 2, 0, 0),
+                    starboard: new THREE.Vector3(this.width / 2, 0, 0)
+                };
+            }
+
+            update(time, deltaTime, hazardMgr) {
+                const modelInner = this.boat.getObjectByName('modelInner');
+
+                if (this.status.isSunk) {
+                    this.boat.position.y -= 2.5 * deltaTime;
+                    if (modelInner) {
+                        modelInner.rotation.x += 0.4 * deltaTime;
+                        modelInner.rotation.z += 0.2 * deltaTime;
+                    }
+                    return;
+                }
+
+                const worldBow = this.samples.bow.clone().applyMatrix4(this.boat.matrixWorld);
+                const worldStern = this.samples.stern.clone().applyMatrix4(this.boat.matrixWorld);
+                const worldPort = this.samples.port.clone().applyMatrix4(this.boat.matrixWorld);
+                const worldStarboard = this.samples.starboard.clone().applyMatrix4(this.boat.matrixWorld);
+
+                const hBow = getWaveHeight(worldBow.x, worldBow.z, time, hazardMgr);
+                const hStern = getWaveHeight(worldStern.x, worldStern.z, time, hazardMgr);
+                const hPort = getWaveHeight(worldPort.x, worldPort.z, time, hazardMgr);
+                const hStarboard = getWaveHeight(worldStarboard.x, worldStarboard.z, time, hazardMgr);
+
+                const waterWeightOffset = (this.status.waterLogged / this.status.maxWater) * 1.6;
+                const targetY = ((hBow + hStern + hPort + hStarboard) / 4) - waterWeightOffset;
+
+                const floodRatio = this.status.waterLogged / this.status.maxWater;
+                const damping = THREE.MathUtils.lerp(0.09, 0.02, floodRatio);
+
+                this.boat.position.y = THREE.MathUtils.lerp(this.boat.position.y, targetY, damping);
+
+                const pitchAngle = Math.atan2(hBow - hStern, this.length);
+                const rollAngle = Math.atan2(hPort - hStarboard, this.width);
+
+                if (modelInner) {
+                    modelInner.rotation.x = THREE.MathUtils.lerp(modelInner.rotation.x, pitchAngle, damping);
+                    modelInner.rotation.z = THREE.MathUtils.lerp(modelInner.rotation.z, rollAngle, damping);
+                }
+            }
+        }
+
+        class StormHazardManager {
+            constructor(scene, vessel, status, scoreMgr) {
+                this.scene = scene;
+                this.vessel = vessel;
+                this.status = status;
+                this.scoreMgr = scoreMgr;
+
+                this.rogueWaves = [];
+                this.lightningStrikes = [];
+
+                // Warning Ring
+                const ringGeo = new THREE.RingGeometry(3.0, 3.6, 32);
+                ringGeo.rotateX(-Math.PI / 2);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0xff3333, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+                this.warningMarker = new THREE.Mesh(ringGeo, ringMat);
+                this.warningMarker.visible = false;
+                this.scene.add(this.warningMarker);
+
+                // Lightning Bolt Mesh
+                const boltGeo = new THREE.CylinderGeometry(0.15, 1.2, 120, 8);
+                const boltMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                this.boltMesh = new THREE.Mesh(boltGeo, boltMat);
+                this.boltMesh.visible = false;
+                this.scene.add(this.boltMesh);
+            }
+
+            spawnRogueWave(origin, direction) {
+                this.rogueWaves.push({
+                    position: origin.clone(),
+                    direction: direction.normalize(),
+                    amplitude: 5.5,
+                    radius: 18.0,
+                    speed: 20.0,
+                    lifetime: 7.0,
+                    age: 0
+                });
+            }
+
+            getRogueElevation(x, z) {
+                let extra = 0;
+                for (const rw of this.rogueWaves) {
+                    const dist = Math.hypot(x - rw.position.x, z - rw.position.z);
+                    if (dist < rw.radius) {
+                        const factor = Math.exp(-Math.pow(dist / (rw.radius * 0.5), 2));
+                        extra += rw.amplitude * factor;
+                    }
+                }
+                return extra;
+            }
+
+            triggerLightning(targetPos, delay = 2.0) {
+                this.lightningStrikes.push({
+                    target: targetPos.clone(),
+                    timer: delay,
+                    radius: 4.5,
+                    damage: 35,
+                    state: 'telegraph'
+                });
+            }
+
+            update(deltaTime) {
+                // Rogue Waves Update
+                for (let i = this.rogueWaves.length - 1; i >= 0; i--) {
+                    const rw = this.rogueWaves[i];
+                    rw.age += deltaTime;
+                    rw.position.addScaledVector(rw.direction, rw.speed * deltaTime);
+                    if (rw.age >= rw.lifetime) this.rogueWaves.splice(i, 1);
+                }
+
+                // Lightning Update
+                for (let i = this.lightningStrikes.length - 1; i >= 0; i--) {
+                    const strike = this.lightningStrikes[i];
+                    strike.timer -= deltaTime;
+
+                    if (strike.state === 'telegraph') {
+                        this.warningMarker.position.copy(strike.target);
+                        this.warningMarker.position.y = 0.4;
+                        this.warningMarker.visible = true;
+
+                        if (strike.timer <= 0) {
+                            strike.state = 'strike';
+                            strike.timer = 0.2;
+                        }
+                    } else if (strike.state === 'strike') {
+                        this.warningMarker.visible = false;
+                        this.boltMesh.position.set(strike.target.x, 50, strike.target.z);
+                        this.boltMesh.visible = true;
+
+                        // Screen Flash
+                        const flashEl = document.getElementById('flash-overlay');
+                        flashEl.style.opacity = '0.8';
+                        setTimeout(() => { flashEl.style.opacity = '0'; }, 80);
+
+                        audio.playThunder();
+
+                        const dist = Math.hypot(this.vessel.position.x - strike.target.x, this.vessel.position.z - strike.target.z);
+                        if (dist <= strike.radius) {
+                            this.status.applyDamage(strike.damage);
+                            this.status.waterLogged = Math.min(100, this.status.waterLogged + 25);
+                        } else if (dist <= 9.0) {
+                            this.scoreMgr.addCloseCall(350);
+                            triggerNotification('CLOSE CALL! +350');
+                            audio.playCloseCall();
+                        }
+
+                        strike.state = 'complete';
+                    } else if (strike.state === 'complete' && strike.timer <= 0) {
+                        this.boltMesh.visible = false;
+                        this.lightningStrikes.splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        class RunScoreManager {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.runTime = 0;
+                this.currentScore = 0;
+                this.multiplier = 1.0;
+                this.stormIntensity = 1.0;
+                this.stats = {
+                    closeCalls: 0,
+                    litresPumped: 0,
+                    maxIntensity: 1.0
+                };
+            }
+
+            addCloseCall(pts = 300) {
+                this.stats.closeCalls++;
+                this.currentScore += pts * this.multiplier;
+            }
+
+            recordPumped(litres) {
+                this.stats.litresPumped += litres;
+            }
+
+            update(deltaTime, status) {
+                if (status.isSunk) return;
+                this.runTime += deltaTime;
+
+                this.stormIntensity = 1.0 + Math.floor(this.runTime / 20) * 0.4;
+                this.stats.maxIntensity = Math.max(this.stats.maxIntensity, this.stormIntensity);
+
+                const floodRatio = status.waterLogged / status.maxWater;
+                const damageRatio = 1.0 - (status.hull / status.maxHull);
+                this.multiplier = this.stormIntensity + (floodRatio * 1.5) + (damageRatio * 1.0);
+
+                this.currentScore += 120 * this.multiplier * deltaTime;
+            }
+
+            getResults() {
+                const mins = Math.floor(this.runTime / 60);
+                const secs = Math.floor(this.runTime % 60);
+                const ms = Math.floor((this.runTime % 1) * 100);
+                return {
+                    score: Math.floor(this.currentScore),
+                    time: `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`,
+                    intensity: `${this.stats.maxIntensity.toFixed(1)}x`,
+                    closeCalls: this.stats.closeCalls,
+                    pumped: `${Math.floor(this.stats.litresPumped)} L`
+                };
+            }
+        }
+
+        function createRainParticles() {
+            const particleCount = 1200;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 160;
+                positions[i + 1] = Math.random() * 40;
+                positions[i + 2] = (Math.random() - 0.5) * 160;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const material = new THREE.PointsMaterial({
+                color: 0x90caf9,
+                size: 0.2,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            return new THREE.Points(geometry, material);
+        }
+
+        function triggerNotification(text) {
+            const container = document.getElementById('notification-container');
+            const el = document.createElement('div');
+            el.className = 'glass-panel px-4 py-1.5 text-xs font-bold text-yellow-400 tracking-wider uppercase animate-bounce border border-yellow-500/40';
+            el.textContent = text;
+            container.appendChild(el);
+            setTimeout(() => { el.remove(); }, 1800);
+        }
+
+        function initGame() {
+            const container = document.getElementById('webgl-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color('#030712');
+            scene.fog = new THREE.FogExp2('#030712', 0.018);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 6, -12);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x2a3b5c, 1.2);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0x90caf9, 1.4);
+            directionalLight.position.set(20, 40, -20);
+            scene.add(directionalLight);
+
+            // Ocean Grid Mesh
+            oceanMaterial = createOceanMaterial();
+            const oceanGeo = new THREE.PlaneGeometry(400, 400, 128, 128);
+            oceanMesh = new THREE.Mesh(oceanGeo, oceanMaterial);
+            oceanMesh.rotation.x = -Math.PI / 2;
+            scene.add(oceanMesh);
+
+            // Rain Particles
+            rainParticles = createRainParticles();
+            scene.add(rainParticles);
+
+            // Initialize Core Systems
+            vesselStatus = new VesselStatus();
+            scoreManager = new RunScoreManager();
+            boatMesh = createBoatModel();
+            scene.add(boatMesh);
+
+            boatPhysics = new BoatBuoyancyPhysics(boatMesh, vesselStatus);
+            hazardManager = new StormHazardManager(scene, boatMesh, vesselStatus, scoreManager);
+            shoreManager = new ShoreManager(scene, boatMesh, vesselStatus, scoreManager);
+
+            clock = new THREE.Clock();
+
+            window.addEventListener('resize', onWindowResize);
+            setupInputListeners();
+            setupUIButtons();
+        }
+
+        function setupInputListeners() {
+            window.addEventListener('keydown', (e) => {
+                audio.init();
+                if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.left = true;
+                if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = true;
+                if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.up = true;
+                if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.down = true;
+                if (e.code === 'Space') { keys.pump = true; e.preventDefault(); }
+                if (e.code === 'Escape') {
+                    if (currentState === GameState.PLAYING) pauseGame();
+                    else if (currentState === GameState.PAUSED) resumeGame();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.left = false;
+                if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = false;
+                if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.up = false;
+                if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.down = false;
+                if (e.code === 'Space') keys.pump = false;
+            });
+
+            const bindTouch = (id, keyName) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('touchstart', (e) => { audio.init(); e.preventDefault(); keys[keyName] = true; if(keyName==='pump') touchInput.pump = true; });
+                el.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; if(keyName==='pump') touchInput.pump = false; });
+            };
+            bindTouch('btn-left', 'left');
+            bindTouch('btn-right', 'right');
+            bindTouch('btn-pump', 'pump');
+        }
+
+        function setupUIButtons() {
+            document.getElementById('start-btn').addEventListener('click', () => { audio.init(); startGame(); });
+            document.getElementById('pause-btn').addEventListener('click', pauseGame);
+            document.getElementById('resume-btn').addEventListener('click', resumeGame);
+            document.getElementById('quit-btn').addEventListener('click', returnToMenu);
+            document.getElementById('restart-btn').addEventListener('click', startGame);
+        }
+
+        function startGame() {
+            vesselStatus = new VesselStatus();
+            scoreManager = new RunScoreManager();
+            boatMesh.position.set(0, 0, 0);
+            boatMesh.rotation.set(0, 0, 0);
+            boatPhysics = new BoatBuoyancyPhysics(boatMesh, vesselStatus);
+            hazardManager = new StormHazardManager(scene, boatMesh, vesselStatus, scoreManager);
+            shoreManager = new ShoreManager(scene, boatMesh, vesselStatus, scoreManager);
+            hazardTimer = 0;
+            clock.start();
+
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('pause-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('hud-layer').classList.remove('hidden');
+
+            currentState = GameState.PLAYING;
+        }
+
+        function pauseGame() {
+            currentState = GameState.PAUSED;
+            document.getElementById('pause-screen').classList.remove('hidden');
+        }
+
+        function resumeGame() {
+            currentState = GameState.PLAYING;
+            document.getElementById('pause-screen').classList.add('hidden');
+            clock.getDelta();
+        }
+
+        function returnToMenu() {
+            currentState = GameState.MENU;
+            document.getElementById('pause-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('hud-layer').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+        }
+
+        function triggerGameOver() {
+            currentState = GameState.GAMEOVER;
+            const res = scoreManager.getResults();
+
+            document.getElementById('res-score').textContent = res.score.toLocaleString();
+            document.getElementById('res-time').textContent = res.time;
+            document.getElementById('res-intensity').textContent = res.intensity;
+            document.getElementById('res-closecalls').textContent = res.closeCalls;
+            document.getElementById('res-pumped').textContent = res.pumped;
+
+            document.getElementById('hud-layer').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        let boatSpeed = 9.0;
+        let turnSpeed = 2.8;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const deltaTime = Math.min(clock.getDelta(), 0.1);
+            const elapsedTime = clock.getElapsedTime();
+
+            if (currentState === GameState.PLAYING) {
+                // 1. Steering & Throttle Dynamics (Full 360° Turn Capability)
+                let steerInput = 0;
+                if (keys.left) steerInput += 1;
+                if (keys.right) steerInput -= 1;
+
+                let throttle = 1.0;
+                if (keys.up) throttle = 1.4;
+                if (keys.down) throttle = -0.5; // Allow reverse maneuvering
+
+                boatMesh.rotation.y += steerInput * turnSpeed * deltaTime;
+
+                const forwardDir = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), boatMesh.rotation.y);
+                boatMesh.position.addScaledVector(forwardDir, boatSpeed * throttle * deltaTime);
+
+                // Ocean Loop Boundary
+                if (boatMesh.position.z > 150) boatMesh.position.z -= 300;
+                if (boatMesh.position.z < -150) boatMesh.position.z += 300;
+                if (boatMesh.position.x > 150) boatMesh.position.x -= 300;
+                if (boatMesh.position.x < -150) boatMesh.position.x += 300;
+
+                // 2. Systems Update
+                vesselStatus.update(deltaTime);
+                scoreManager.update(deltaTime, vesselStatus);
+                if (vesselStatus.isPumping && !vesselStatus.isOverheated) {
+                    scoreManager.recordPumped(vesselStatus.pumpRate * deltaTime * 12);
+                }
+
+                // 3. Hazards Spawning Logic
+                hazardTimer += deltaTime;
+                if (hazardTimer > Math.max(2.5, 8.0 - scoreManager.stormIntensity)) {
+                    hazardTimer = 0;
+                    const aheadVec = forwardDir.clone().multiplyScalar(12 + Math.random() * 8);
+                    const strikePos = boatMesh.position.clone().add(aheadVec);
+                    hazardManager.triggerLightning(strikePos, 1.8);
+
+                    if (Math.random() < 0.35) {
+                        const waveOrigin = boatMesh.position.clone().add(new THREE.Vector3(-40, 0, 20));
+                        hazardManager.spawnRogueWave(waveOrigin, new THREE.Vector3(1, 0, 0));
+                    }
+                }
+                hazardManager.update(deltaTime);
+
+                if (shoreManager) {
+                    shoreManager.update(deltaTime);
+                }
+
+                // 4. Physics & Shader Updates
+                boatPhysics.update(elapsedTime, deltaTime, hazardManager);
+                oceanMaterial.uniforms.uTime.value = elapsedTime;
+                oceanMaterial.uniforms.uBigWavesElevation.value = 1.2 * scoreManager.stormIntensity;
+
+                // Rain Animation
+                const rainPositions = rainParticles.geometry.attributes.position.array;
+                for (let i = 1; i < rainPositions.length; i += 3) {
+                    rainPositions[i] -= 35 * deltaTime;
+                    if (rainPositions[i] < 0) rainPositions[i] = 40;
+                }
+                rainParticles.geometry.attributes.position.needsUpdate = true;
+                rainParticles.position.copy(boatMesh.position);
+
+                // 5. Camera Follow with Smooth Damping (Relative to Vessel Heading)
+                const heading = boatMesh.rotation.y;
+                const camOffset = new THREE.Vector3(0, 5.5, -11).applyAxisAngle(new THREE.Vector3(0, 1, 0), heading);
+                const targetCamPos = boatMesh.position.clone().add(camOffset);
+                camera.position.lerp(targetCamPos, 0.1);
+
+                const lookOffset = new THREE.Vector3(0, 1, 2.5).applyAxisAngle(new THREE.Vector3(0, 1, 0), heading);
+                camera.lookAt(boatMesh.position.clone().add(lookOffset));
+
+                // 6. Sink Condition Check
+                if (vesselStatus.isSunk) {
+                    triggerGameOver();
+                }
+
+                // 7. Update Realtime HUD DOM
+                updateHUD(vesselStatus, scoreManager);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updateHUD(status, scoreMgr) {
+            document.getElementById('hud-score').textContent = Math.floor(scoreMgr.currentScore).toString().padStart(6, '0');
+            document.getElementById('hud-multiplier').textContent = `STORM INTENSITY: ${scoreMgr.multiplier.toFixed(1)}x`;
+            
+            const mins = Math.floor(scoreMgr.runTime / 60);
+            const secs = Math.floor(scoreMgr.runTime % 60);
+            const ms = Math.floor((scoreMgr.runTime % 1) * 100);
+            document.getElementById('hud-timer').textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}.${ms.toString().padStart(2,'0')}`;
+
+            const hullPct = Math.max(0, Math.floor((status.hull / status.maxHull) * 100));
+            document.getElementById('hull-text').textContent = `${hullPct}%`;
+            const hullBar = document.getElementById('hull-bar');
+            hullBar.style.width = `${hullPct}%`;
+            if (hullPct < 30) hullBar.classList.add('warning-flash'); else hullBar.classList.remove('warning-flash');
+
+            const waterPct = Math.min(100, Math.floor((status.waterLogged / status.maxWater) * 100));
+            document.getElementById('water-text').textContent = `${waterPct}%`;
+            const waterBar = document.getElementById('water-bar');
+            waterBar.style.width = `${waterPct}%`;
+            if (waterPct > 70) waterBar.classList.add('warning-flash'); else waterBar.classList.remove('warning-flash');
+
+            const heatPct = Math.floor(status.pumpOverheat);
+            const pumpBar = document.getElementById('pump-bar');
+            pumpBar.style.width = `${heatPct}%`;
+            const pumpText = document.getElementById('pump-text');
+
+            if (status.isOverheated) {
+                pumpText.textContent = 'OVERHEATED!';
+                pumpText.className = 'font-bold text-red-500 animate-pulse';
+                pumpBar.style.backgroundColor = '#f44336';
+            } else if (status.isPumping) {
+                pumpText.textContent = 'PUMPING...';
+                pumpText.className = 'font-bold text-cyan-400';
+                pumpBar.style.backgroundColor = '#00bcd4';
+            } else {
+                pumpText.textContent = 'READY';
+                pumpText.className = 'font-bold text-yellow-400';
+                pumpBar.style.backgroundColor = '#ffeb3b';
+            }
+        }
+
+        // Initialize and Start Animation Loop on Window Load
+        window.onload = function() {
+            initGame();
+            animate();
+        };
+    </script>
+</body>
+</html>

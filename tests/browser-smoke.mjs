@@ -325,7 +325,7 @@ async function multiplayerScenario() {
 }
 
 try {
-  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===8");
+  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===9");
   await scenario('Chroma Break', 'games/chroma-break/', 'window.__CHROMA_BREAK__', '__CHROMA_BREAK__.start();__CHROMA_BREAK__.aim(640,120);__CHROMA_BREAK__.fire();__CHROMA_BREAK__.step(.25)', "__CHROMA_BREAK__.snapshot().mode==='running' && __CHROMA_BREAK__.snapshot().shots===1");
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await multiplayerScenario();
@@ -336,6 +336,7 @@ try {
   await scenario('Rift Runner', 'games/rift-runner/', "document.querySelector('#panel')?.textContent.includes('PRESS ENTER')", "document.dispatchEvent(new KeyboardEvent('keydown',{code:'Enter',key:'Enter',bubbles:true}));setTimeout(()=>document.dispatchEvent(new KeyboardEvent('keyup',{code:'Enter',key:'Enter',bubbles:true})),80)", "document.querySelector('#hud')?.style.display==='block'", 20000);
   await scenario('The Long Haul', 'games/the-long-haul/', 'window.__longHaulBooted===true', null, "document.querySelector('#title-screen')?.classList.contains('active')", 25000);
   await scenario('Bumble Beez', 'games/bumble-beez/?autoplay=1', "document.querySelector('#status')?.textContent==='Bumble Beez ready'", null, "window.__BUMBLE_STATE__?.mode==='playing' && window.__BUMBLE_STATE__.time>=1");
+  await scenario('Stormbound: Shelter Run', 'games/stormbound-shelter-run/', "document.querySelector('#menu-screen') && document.querySelector('#webgl-container canvas')", "document.querySelector('#start-btn').click();setTimeout(()=>document.dispatchEvent(new KeyboardEvent('keydown',{code:'Escape',key:'Escape',bubbles:true})),250)", "!document.querySelector('#hud-layer').classList.contains('hidden') && !document.querySelector('#pause-screen').classList.contains('hidden')", 25000);
 } finally {
   socket.close(); server.close(); await stopChrome();
 }
