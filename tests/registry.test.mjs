@@ -11,7 +11,7 @@ assert.deepEqual(latest, { schemaVersion: 1, registryVersion: "0.1.0", ref: lock
 assert.match(latest.ref, /^(?:registry-v\d+\.\d+\.\d+|[a-f0-9]{40})$/);
 assert.equal(index.schemaVersion, 1);
 assert.equal(index.registryVersion, latest.registryVersion);
-assert.equal(index.games.length, 8);
+assert.equal(index.games.length, 9);
 assert.deepEqual(index.games.map((game) => game.id), [...index.games.map((game) => game.id)].sort());
 assert.equal(new Set(index.games.map((game) => game.id)).size, index.games.length);
 const { stdout, stderr } = await exec(process.execPath, ["scripts/build-registry.mjs", "--check"]);

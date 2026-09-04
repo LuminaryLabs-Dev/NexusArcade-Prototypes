@@ -56,7 +56,7 @@
         "Escape"
       ],
       "manifestPath": "registry/games/NXA-000003.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@d004453ab03ff5065f127d64348a38fad76847bb/prototypes/bumble-beez/cover.png"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@630e2fe7b1f76ff11e9f513148470637ace4cf23/prototypes/bumble-beez/cover.png"
     },
     {
       "id": "NXA-000004",
@@ -95,7 +95,7 @@
         "Touch"
       ],
       "manifestPath": "registry/games/NXA-000005.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@d004453ab03ff5065f127d64348a38fad76847bb/prototypes/gothic-revolt/cover.webp"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@630e2fe7b1f76ff11e9f513148470637ace4cf23/prototypes/gothic-revolt/cover.webp"
     },
     {
       "id": "NXA-000006",
@@ -137,7 +137,7 @@
         "Gamepad"
       ],
       "manifestPath": "registry/games/NXA-000007.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@d004453ab03ff5065f127d64348a38fad76847bb/prototypes/rift-runner/cover.webp"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@630e2fe7b1f76ff11e9f513148470637ace4cf23/prototypes/rift-runner/cover.webp"
     },
     {
       "id": "NXA-000008",
@@ -154,6 +154,26 @@
         "Keyboard"
       ],
       "manifestPath": "registry/games/NXA-000008.json"
+    },
+    {
+      "id": "NXA-000009",
+      "slug": "stormbound-shelter-run",
+      "title": "Stormbound: Shelter Run",
+      "description": "Steer a small vessel through escalating lightning and rogue waves, manage flooding and an overheating bilge pump, and use lighthouse shelters to repair while chasing a higher score.",
+      "genre": "Arcade Sailing Survival",
+      "version": "0.1.0",
+      "status": "prototype",
+      "featured": false,
+      "sortOrder": 9,
+      "controls": [
+        "A / D",
+        "Arrow keys",
+        "W / S",
+        "Space — Bilge pump",
+        "Escape — Pause",
+        "Touch — Turn and pump"
+      ],
+      "manifestPath": "registry/games/NXA-000009.json"
     }
   ]
 }

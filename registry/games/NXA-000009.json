@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000009",
+  "slug": "stormbound-shelter-run",
+  "version": "0.1.0",
+  "entry": "index.html",
+  "offlineReady": false,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "630e2fe7b1f76ff11e9f513148470637ace4cf23",
+    "basePath": "prototypes/stormbound-shelter-run"
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 58677,
+      "sha256": "c6adefb0a4f9c91b14fac739fe68c79c90d496eeb605a9d78259171b9ca9f458"
+    }
+  ],
+  "runtimeDependencies": [
+    "https://cdn.tailwindcss.com",
+    "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+  ]
+}
