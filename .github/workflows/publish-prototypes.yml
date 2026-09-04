@@ -32,10 +32,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Validate gameplay contracts and JavaScript
-        run: |
-          node scripts/validate-repo.mjs
-          node tests/knockout-circuit-multiplayer.mjs
-          node tests/gothic-revolt-save.mjs
+        run: npm test
 
       - name: Build prototype catalog
         env:

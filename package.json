@@ -1,0 +1,13 @@
+{
+  "name": "nexus-arcade-prototypes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs && node scripts/build-registry.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "build:registry": "node scripts/build-registry.mjs",
+    "pretest": "node scripts/build-site.mjs",
+    "test": "node scripts/validate-repo.mjs && node tests/ids.test.mjs && node tests/manifests.test.mjs && node tests/registry.test.mjs && node tests/knockout-circuit-multiplayer.mjs && node tests/gothic-revolt-save.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

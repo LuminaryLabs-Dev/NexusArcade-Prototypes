@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import { promisify } from "node:util";
+
+const exec = promisify(execFile);
+const latest = JSON.parse(await readFile("registry/latest.json", "utf8"));
+const index = JSON.parse(await readFile("registry/index.json", "utf8"));
+assert.deepEqual(latest, { schemaVersion: 1, registryVersion: "0.1.0", ref: "registry-v0.1.0", indexPath: "registry/index.json" });
+assert.equal(index.schemaVersion, 1);
+assert.equal(index.registryVersion, latest.registryVersion);
+assert.equal(index.games.length, 8);
+assert.deepEqual(index.games.map((game) => game.id), [...index.games.map((game) => game.id)].sort());
+assert.equal(new Set(index.games.map((game) => game.id)).size, index.games.length);
+const { stdout, stderr } = await exec(process.execPath, ["scripts/build-registry.mjs", "--check"]);
+assert.match(stdout, /deterministic and current/);
+assert.equal(stderr, "");
+console.log("master registry is sorted, pinned and deterministic");

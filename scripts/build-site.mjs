@@ -41,9 +41,12 @@ async function json(file, label, slug) {
   catch (error) { fail(`${slug}: invalid ${label} (${error.message})`); }
 }
 function gameFrom(manifest, slug, sourceType) {
+  const id = text(manifest.id, 'id', slug);
+  if (!/^NXA-[0-9]{6}$/.test(id)) fail(`${slug}: "id" must match NXA-000000`);
   const manifestSlug = text(manifest.slug, 'slug', slug);
   if (manifestSlug !== slug) fail(`${slug}: manifest slug "${manifestSlug}" must match its folder name`);
   return {
+    id,
     slug,
     title: text(manifest.title, 'title', slug),
     description: optionalString(manifest.description),
@@ -105,7 +108,7 @@ async function localPrototype(sourceDir, slug) {
   if (!(await exists(manifestPath))) fail(`${slug}: missing game.json`);
   const hasIndex = await exists(path.join(sourceDir, 'index.html'));
   const hasParts = await exists(path.join(sourceDir, 'index.parts.json'));
-  if (hasIndex === hasParts) fail(`${slug}: provide exactly one of index.html or index.parts.json`);
+  if (!hasIndex && !hasParts) fail(`${slug}: provide index.html or index.parts.json`);
 
   const manifest = await json(manifestPath, 'game.json', slug);
   const game = gameFrom(manifest, slug, 'local');
@@ -113,7 +116,7 @@ async function localPrototype(sourceDir, slug) {
   await noSecrets(sourceDir, slug);
   const outDir = path.join(GAMES_OUT, slug);
   await cp(sourceDir, outDir, { recursive: true });
-  if (hasParts) await assembleParts(sourceDir, outDir, slug);
+  if (hasParts && !hasIndex) await assembleParts(sourceDir, outDir, slug);
   return game;
 }
 async function referencedSource(reference, slug) {
