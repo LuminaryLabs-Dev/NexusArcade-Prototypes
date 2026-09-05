@@ -326,8 +326,25 @@ async function multiplayerScenario() {
 }
 
 try {
-  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===10");
-  await runWrongFloorBrowserChecks({ call, event, evaluate, waitFor, listeners, baseUrl: `http://127.0.0.1:${port}`, delay });
+  await scenario(
+    'catalog',
+    '',
+    "document.querySelectorAll('.featured-slide').length===5",
+    null,
+    "document.querySelectorAll('.card').length===10 && [...document.querySelectorAll('.featured-slide h2')].some(node=>node.textContent==='Wrong Floor') && [...document.querySelectorAll('.card .title')].some(node=>node.textContent==='Wrong Floor')"
+  );
+  if (process.env.WRONG_FLOOR_REVIEW === '1') {
+    await runWrongFloorBrowserChecks({ call, event, evaluate, waitFor, listeners, baseUrl: `http://127.0.0.1:${port}`, delay });
+  } else {
+    await scenario(
+      'Wrong Floor',
+      'games/wrong-floor/?review=1',
+      "window.__wrongFloor && document.querySelector('#scene')?.width >= 640 && __wrongFloor.inspect().renderer?.triangles > 0",
+      null,
+      "document.querySelector('#title-screen') && !document.querySelector('#fatal-error')?.textContent",
+      30000
+    );
+  }
   await scenario('Chroma Break', 'games/chroma-break/', 'window.__CHROMA_BREAK__', '__CHROMA_BREAK__.start();__CHROMA_BREAK__.aim(640,120);__CHROMA_BREAK__.fire();__CHROMA_BREAK__.step(.25)', "__CHROMA_BREAK__.snapshot().mode==='running' && __CHROMA_BREAK__.snapshot().shots===1");
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await multiplayerScenario();

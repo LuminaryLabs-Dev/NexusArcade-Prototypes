@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      wrong_floor_full_review:
+        description: Run Wrong Floor's five-minute browser acceptance review
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   actions: read
@@ -50,8 +56,9 @@ jobs:
       - name: Open every game in Chrome
         env:
           KNOCKOUT_REVIEW_DIR: ${{ contains(github.event.head_commit.message, '[record-gameplay]') && '_review/knockout-circuit' || '' }}
-          WRONG_FLOOR_REVIEW_DIR: _review/wrong-floor
-          WRONG_FLOOR_FULL_RUN: '1'
+          WRONG_FLOOR_REVIEW: ${{ github.event_name == 'workflow_dispatch' && inputs.wrong_floor_full_review && '1' || '0' }}
+          WRONG_FLOOR_REVIEW_DIR: ${{ github.event_name == 'workflow_dispatch' && inputs.wrong_floor_full_review && '_review/wrong-floor' || '' }}
+          WRONG_FLOOR_FULL_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.wrong_floor_full_review && '1' || '0' }}
         run: node tests/browser-smoke.mjs
 
       - name: Upload gameplay review evidence
@@ -63,7 +70,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Wrong Floor review evidence
-        if: always()
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.wrong_floor_full_review
         uses: actions/upload-artifact@v4
         with:
           name: wrong-floor-review

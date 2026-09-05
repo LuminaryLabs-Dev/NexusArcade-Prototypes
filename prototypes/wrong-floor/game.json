@@ -6,10 +6,10 @@
   "genre": "Horror / Observation",
   "status": "prototype",
   "version": "0.1.1",
-  "featured": false,
+  "featured": true,
   "thumbnail": "cover.webp",
   "accent": "orange",
-  "sortOrder": 10,
+  "sortOrder": 1,
   "controls": ["WASD / Arrows: look", "Hold Space / Gamepad A: close", "Enter / Gamepad B: recenter", "Escape / Start: pause"],
   "offlineReady": true
 }

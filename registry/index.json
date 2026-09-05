@@ -183,8 +183,8 @@
       "genre": "Horror / Observation",
       "version": "0.1.1",
       "status": "prototype",
-      "featured": false,
-      "sortOrder": 10,
+      "featured": true,
+      "sortOrder": 1,
       "controls": [
         "WASD / Arrows: look",
         "Hold Space / Gamepad A: close",
