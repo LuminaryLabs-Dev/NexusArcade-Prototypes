@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "id": "NXA-000010",
+  "slug": "wrong-floor",
+  "version": "0.1.0",
+  "entry": "index.html",
+  "offlineReady": true,
+  "source": {
+    "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
+    "ref": "3d188c2cb150186c7d6685d22e2ba1cc167b0483",
+    "basePath": "prototypes/wrong-floor"
+  },
+  "files": [
+    {
+      "path": "content/difficulty.json",
+      "bytes": 526,
+      "sha256": "fa78e6a011d8a4377246a07c3cc877ce6f090896f4abb93886ecd0c834bf1985"
+    },
+    {
+      "path": "content/encounters.json",
+      "bytes": 17377,
+      "sha256": "2f04f28fc263fc72170a72717f1aa98995f17539ca8ed1ed230604103cb7d8bd"
+    },
+    {
+      "path": "cover.webp",
+      "bytes": 142798,
+      "sha256": "6f5daa45dd2120d90d23058a0cf3a14ab40ac514cc2b88c2c92352d43a67be80"
+    },
+    {
+      "path": "index.html",
+      "bytes": 6756,
+      "sha256": "19dc23382ad997f01bc24ebc62b348cff37fda3a7660702771ecf642c8473e53"
+    },
+    {
+      "path": "src/audio.mjs",
+      "bytes": 9434,
+      "sha256": "034ead32355e65ef19df50eadf9676ea2b45d163ab425e2105e132135eccf5ee"
+    },
+    {
+      "path": "src/director.mjs",
+      "bytes": 6090,
+      "sha256": "e9c4822443adf24d47c9e4bc37310f876c052ff82d686b4bd97bccc99da90614"
+    },
+    {
+      "path": "src/elevator.mjs",
+      "bytes": 1589,
+      "sha256": "2ae15dd4e72bd279f52c38d78ee34af43c2de4351800486d4b5f8f14c8797c8d"
+    },
+    {
+      "path": "src/factory-worker.mjs",
+      "bytes": 923,
+      "sha256": "151c64ffd425ba4ed00a03eec04d51abeff019f10803cdaa21b6a3ab29985791"
+    },
+    {
+      "path": "src/game.mjs",
+      "bytes": 5790,
+      "sha256": "0f8bda4886c7da33d41170516a13edd47640501e5001f1a6fc5056dbdadb56d7"
+    },
+    {
+      "path": "src/input.mjs",
+      "bytes": 4904,
+      "sha256": "e7984801701f123d0843b203306b0f1ba448928251ba9515c60d507687f7c2d6"
+    },
+    {
+      "path": "src/main.mjs",
+      "bytes": 6957,
+      "sha256": "f2d85500eb950743df554d23251f306cf4721919852bb071b992463483190c60"
+    },
+    {
+      "path": "src/scene.mjs",
+      "bytes": 22380,
+      "sha256": "43f7a884a1b1e2e930beb1602fc5d7a74b3aa4db689686f2831bb6932adae7e0"
+    },
+    {
+      "path": "src/storage.mjs",
+      "bytes": 2827,
+      "sha256": "c98d8b581ed5feda60af6cbc38a496bcbb3118a2915672ffe8b0ac43426d67d4"
+    },
+    {
+      "path": "src/ui.mjs",
+      "bytes": 8552,
+      "sha256": "3a1908887695c3c435269da246da300c0efeb0dc40c7e48e37c9cf4b05e4d284"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 9634,
+      "sha256": "6707d1b4a6e3ac8f93b3a209a8b6684175c0d471a7af66a1be49d5705636b317"
+    },
+    {
+      "path": "vendor/factory-kits/LICENSE",
+      "bytes": 1073,
+      "sha256": "3d95bc172fb1aa6fb70de75f238657dcdceb5d54c087d383d0e7bb43ec18c5d2"
+    },
+    {
+      "path": "vendor/factory-kits/src/contracts.js",
+      "bytes": 11726,
+      "sha256": "dd8b7c466c77f6da66dbc4759ebc2cbb2875ed820406df82b47f443bface300d"
+    },
+    {
+      "path": "vendor/factory-kits/src/domain.js",
+      "bytes": 6869,
+      "sha256": "2b7870f12b03b4cd427acbdf258b7c2d05f3b82b207fc0bdbf89cd8b3b23bc31"
+    },
+    {
+      "path": "vendor/factory-kits/src/domains/factory/material/procedural/kits/distressed-kit/index.js",
+      "bytes": 1832,
+      "sha256": "7df8bc152373b07009ce044013b9af1e61417f0d6613159ffade20d9e69e1c61"
+    },
+    {
+      "path": "vendor/factory-kits/src/domains/factory/object/creature/kits/horror-kit/index.js",
+      "bytes": 6904,
+      "sha256": "e6071aa33cd3bc8113d32efb36ee6dd1d0f04302810f3cd7b393315c37e9647a"
+    },
+    {
+      "path": "vendor/factory-kits/src/domains/factory/object/structure/kits/liminal-kit/index.js",
+      "bytes": 3830,
+      "sha256": "09fce5682d2d41347b790917591bbc03b16349933fdf5d3f43993828942a278d"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/distressed.js",
+      "bytes": 1190,
+      "sha256": "3557032902cb944fdcc3e12d5d7579956af3c1d5a27f571e3134a0e1426a7c70"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/geometry.js",
+      "bytes": 7485,
+      "sha256": "85520fcaa4bcc1b8acdb654408d80ad7627e3d1352083b8b4aab28f8fbe5e32f"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/glb.js",
+      "bytes": 7847,
+      "sha256": "2b20d6bdeb2faf074aa14db50caf3f9c362789c7360e65ab39ab1654d42a55ed"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/hash.js",
+      "bytes": 3140,
+      "sha256": "2ba3f571837ace170286053aa7fbbbb6ec313555ffcd677730978c3b2c96e2a5"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/random.js",
+      "bytes": 1677,
+      "sha256": "ff3954d6d6bb855d7da280137282da8fea064df3fc7f51e86a02d2070e11cc1f"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/raster/png.js",
+      "bytes": 1987,
+      "sha256": "b6d62688b2dfb9c23dd3c979c4b9e01a16bc47b2fe16265e1ee02b536c764c4c"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/raster/surface.js",
+      "bytes": 2963,
+      "sha256": "8ce78d6d49644a0402f4dd17d80ea9ba1eccd59f3b754ca3323e15498ba2f645"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/sculpt-kit.js",
+      "bytes": 4804,
+      "sha256": "befc34b3469c470a719b7cb91e971a9c1cd301032003cd8b685c9fe91e36d763"
+    },
+    {
+      "path": "vendor/factory-kits/src/foundation/sculpt.js",
+      "bytes": 2254,
+      "sha256": "8317a5d1933fa338d0fe61fbe610743f8f599dff75354a63df2172a329cc0ed6"
+    },
+    {
+      "path": "vendor/three/LICENSE",
+      "bytes": 1081,
+      "sha256": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454"
+    },
+    {
+      "path": "vendor/three/three.module.js",
+      "bytes": 1284652,
+      "sha256": "5916c8dfb5f4e3eede312de305345868d4a0a8105383b080c6985565d6e79b46"
+    }
+  ]
+}
