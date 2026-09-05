@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "NXA-000010",
   "slug": "wrong-floor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entry": "index.html",
   "offlineReady": true,
   "source": {
     "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
-    "ref": "3d188c2cb150186c7d6685d22e2ba1cc167b0483",
+    "ref": "7757feb319ae30113968776ca63ee077931e7b82",
     "basePath": "prototypes/wrong-floor"
   },
   "files": [
@@ -63,13 +63,13 @@
     },
     {
       "path": "src/main.mjs",
-      "bytes": 6957,
-      "sha256": "f2d85500eb950743df554d23251f306cf4721919852bb071b992463483190c60"
+      "bytes": 6960,
+      "sha256": "5bfb0c5c79d98f6ff5eaf71c5473cb405d276ca050e82ae06c2e69011693e719"
     },
     {
       "path": "src/scene.mjs",
-      "bytes": 22380,
-      "sha256": "43f7a884a1b1e2e930beb1602fc5d7a74b3aa4db689686f2831bb6932adae7e0"
+      "bytes": 27435,
+      "sha256": "42f68c45cf105c87775a81979e6b0284bb7013e990524dd5046e611b24643339"
     },
     {
       "path": "src/storage.mjs",
@@ -78,13 +78,13 @@
     },
     {
       "path": "src/ui.mjs",
-      "bytes": 8552,
-      "sha256": "3a1908887695c3c435269da246da300c0efeb0dc40c7e48e37c9cf4b05e4d284"
+      "bytes": 8657,
+      "sha256": "5221aa7b8d322255bd2138ac0d4bbc1b4f935717f650055e411580f3f1e986e0"
     },
     {
       "path": "styles.css",
-      "bytes": 9634,
-      "sha256": "6707d1b4a6e3ac8f93b3a209a8b6684175c0d471a7af66a1be49d5705636b317"
+      "bytes": 30172,
+      "sha256": "936494c4b4def67d9470d0c5a380d96d83560ee3ee06809816bdf6a7a76f9441"
     },
     {
       "path": "vendor/factory-kits/LICENSE",

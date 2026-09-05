@@ -56,7 +56,7 @@
         "Escape"
       ],
       "manifestPath": "registry/games/NXA-000003.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@3d188c2cb150186c7d6685d22e2ba1cc167b0483/prototypes/bumble-beez/cover.png"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@7757feb319ae30113968776ca63ee077931e7b82/prototypes/bumble-beez/cover.png"
     },
     {
       "id": "NXA-000004",
@@ -95,7 +95,7 @@
         "Touch"
       ],
       "manifestPath": "registry/games/NXA-000005.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@3d188c2cb150186c7d6685d22e2ba1cc167b0483/prototypes/gothic-revolt/cover.webp"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@7757feb319ae30113968776ca63ee077931e7b82/prototypes/gothic-revolt/cover.webp"
     },
     {
       "id": "NXA-000006",
@@ -137,7 +137,7 @@
         "Gamepad"
       ],
       "manifestPath": "registry/games/NXA-000007.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@3d188c2cb150186c7d6685d22e2ba1cc167b0483/prototypes/rift-runner/cover.webp"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@7757feb319ae30113968776ca63ee077931e7b82/prototypes/rift-runner/cover.webp"
     },
     {
       "id": "NXA-000008",
@@ -181,7 +181,7 @@
       "title": "Wrong Floor",
       "description": "Thirty floors. Five minutes. Close the doors before something gets inside.",
       "genre": "Horror / Observation",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "status": "prototype",
       "featured": false,
       "sortOrder": 10,
@@ -192,7 +192,7 @@
         "Escape / Start: pause"
       ],
       "manifestPath": "registry/games/NXA-000010.json",
-      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@3d188c2cb150186c7d6685d22e2ba1cc167b0483/prototypes/wrong-floor/cover.webp"
+      "thumbnail": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusArcade-Prototypes@7757feb319ae30113968776ca63ee077931e7b82/prototypes/wrong-floor/cover.webp"
     }
   ]
 }
