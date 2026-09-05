@@ -15,6 +15,7 @@ export function createUI(actions = {}) {
   let binding = false;
   let lastCaption = '';
   let lastFloor = '';
+  let lastMistakes = -1;
 
   function synchronize() {
     for (const input of form.querySelectorAll('input[name],select[name]')) {
@@ -108,9 +109,12 @@ export function createUI(actions = {}) {
       byId('round-count').textContent = `${snapshot.practice ? 'PRACTICE' : 'STOP'} ${String(index + 1).padStart(2, '0')} / ${total}`;
     }
     const mistakes = Math.max(0, Math.min(3, snapshot.mistakes ?? 0));
-    [...byId('alarm-dots').children].forEach((dot, i) => dot.classList.toggle('used', i < mistakes));
-    byId('alarm-text').textContent = `${mistakes} of 3 false alarms`;
-    document.querySelector('.allowance').setAttribute('aria-label', `${3 - mistakes} false alarms remaining`);
+    if (lastMistakes !== mistakes) {
+      lastMistakes = mistakes;
+      [...byId('alarm-dots').children].forEach((dot, i) => dot.classList.toggle('used', i < mistakes));
+      byId('alarm-text').textContent = `${mistakes} of 3 false alarms`;
+      document.querySelector('.allowance').setAttribute('aria-label', `${3 - mistakes} false alarms remaining`);
+    }
     byId('hold-close').classList.toggle('held', snapshot.phase === 'closing');
     byId('hold-close').disabled = snapshot.resolved || !['opening','observing','closing'].includes(snapshot.phase);
     if (snapshot.practice && screen === 'playing') caption(snapshot.round?.danger ? 'Something is wrong. Hold Close until the doors seal.' : 'This floor is normal. Wait and let the doors close by themselves.');

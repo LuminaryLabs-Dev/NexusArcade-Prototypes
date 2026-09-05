@@ -10,7 +10,7 @@ const params=new URLSearchParams(location.search),review=params.get('review')===
 const desktop=params.has('standalone');
 let save=loadSave(),game=null,scene=null,input=null,ui=null,audio=null,frame=0,previous=0;
 let loading=false,disposed=false,terminalAt=null,manual=false,preview=null,startToken=0;
-const titleState={mode:'title',roundIndex:-1,totalRounds:30,door:{openness:1},round:{seed:'wrong-floor-title-6',danger:true,entity:'tall',variant:1,environment:'hotel'},clueVisible:true,threatProgress:.12};
+const titleState={mode:'title',roundIndex:0,totalRounds:30,door:{openness:1},round:{seed:'wrong-floor-title-6',danger:true,entity:'tall',variant:1,environment:'hotel'},clueVisible:true,threatProgress:.12};
 function fatal(error){console.error(error);const node=document.getElementById('fatal-error');node.hidden=false;node.textContent=`The elevator could not start. ${error.message}. Reload to try again.`;ui?.setReady(false,'ELEVATOR UNAVAILABLE');}
 function randomSeed(){const values=new Uint32Array(2);crypto.getRandomValues(values);return [...values].map(n=>n.toString(36)).join('-');}
 function setMenu(screen){input?.setMenu(screen!=='playing');}
@@ -44,7 +44,7 @@ function tick(now){if(disposed)return;frame=requestAnimationFrame(tick);const dt
 function dispose(){if(disposed)return;disposed=true;startToken++;cancelAnimationFrame(frame);input?.dispose();ui?.dispose();audio?.dispose();scene?.dispose();window.removeEventListener('pagehide',dispose);}
 try{
   scene=createScene(document.getElementById('scene'));audio=createAudio();
-  ui=createUI({play:seed=>start({seed}).catch(()=>{}),practice:seed=>start({seed,practice:true}).catch(()=>{}),resume,pause,title,retry:()=>start({}).catch(()=>{}),recenter:()=>scene.recenter(),exit:()=>{if(desktop)window.close();else if(window.parent!==window){title();ui.caption('Use the library Close control to exit.');}else location.assign('../../');},screenChanged:setMenu,settingsChanged:settings=>{save.settings=settings;writeSave(save);audio.setSettings(settings);}});
+  ui=createUI({play:seed=>start({seed}).catch(()=>{}),practice:seed=>start({seed,practice:true}).catch(()=>{}),resume,pause,title,retry:()=>start({}).catch(()=>{}),recenter:()=>scene.recenter(),exit:()=>{if(desktop)window.close();else if(window.parent!==window){title();ui.setReady(true,'USE THE LIBRARY CLOSE BUTTON TO EXIT');}else location.assign('../../');},screenChanged:setMenu,settingsChanged:settings=>{save.settings=settings;writeSave(save);audio.setSettings(settings);}});
   input=createInput(document.getElementById('scene'),{onPause:pause,onBlur:()=>{if(game?.snapshot().mode==='running')pause();},onRecenter:()=>scene.recenter(),onConfirm:()=>ui.confirm(),onMenuMove:delta=>ui.menuMove(delta)});
   ui.updateSettings(save.settings);audio.setSettings(save.settings);ui.show('title');ui.setReady(false);
   if(desktop)for(const b of document.querySelectorAll('[data-action="exit"]'))b.textContent='Quit game';

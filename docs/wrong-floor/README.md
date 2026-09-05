@@ -43,6 +43,10 @@ The `?review=1` route enables explicit inspection hooks for reproducible screens
 
 Local Chromium was blocked before page load by the execution environment's socket restriction. The cloud browser also blocks localhost. Those results are unverified, not passing. CI Chrome screenshots and post-publication review are required before making visual quality claims. Target cabinet/native performance and human listening/playtests must be recorded independently.
 
+The first published source (`3d188c2`, release pointer `9fca405`) failed CI run [33940174778](https://github.com/LuminaryLabs-Dev/NexusArcade-Prototypes/actions/runs/33940174778): only 71.57 active seconds advanced over 900 wall seconds. Deployment was blocked. Actual title, normal-floor and pause screenshots exposed a floor-display error, overly smooth entity shading and tunnel-like office architecture. Version 0.1.1 repairs these findings and removes redundant drawing-buffer resets, canvas uploads and rendering work. Those changes require a new measured browser result; they are not performance proof by themselves.
+
+The browser review now records a ten-second default-quality render preflight, deterministic outcomes and all twelve encounter images before the full real-time session. A failed preflight leaves evidence and blocks deployment promptly. The full run uses actual keyboard events and the application's real clock; its bounded silent screencast retains original frame timestamps. Neither scripted controls nor silent capture establish human playability or audio quality.
+
 ## Publication sequence
 
 1. Commit game source and validation tooling.
