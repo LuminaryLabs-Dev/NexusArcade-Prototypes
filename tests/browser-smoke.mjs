@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import { runWrongFloorBrowserChecks } from './wrong-floor-browser.mjs';
 
 const ROOT = path.resolve('_site');
 const REVIEW_DIR = process.env.KNOCKOUT_REVIEW_DIR ? path.resolve(process.env.KNOCKOUT_REVIEW_DIR) : null;
@@ -325,7 +326,8 @@ async function multiplayerScenario() {
 }
 
 try {
-  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===9");
+  await scenario('catalog', '', "document.querySelectorAll('.featured-slide').length===4", null, "document.querySelectorAll('.card').length===10");
+  await runWrongFloorBrowserChecks({ call, event, evaluate, waitFor, listeners, baseUrl: `http://127.0.0.1:${port}`, delay });
   await scenario('Chroma Break', 'games/chroma-break/', 'window.__CHROMA_BREAK__', '__CHROMA_BREAK__.start();__CHROMA_BREAK__.aim(640,120);__CHROMA_BREAK__.fire();__CHROMA_BREAK__.step(.25)', "__CHROMA_BREAK__.snapshot().mode==='running' && __CHROMA_BREAK__.snapshot().shots===1");
   await scenario('Knockout Circuit', 'games/knockout-circuit/', 'window.KnockoutCircuit', 'KnockoutCircuit.startNewCampaign()', "KnockoutCircuit.getUiState().mode==='campaign' && KnockoutCircuit.getState().fighters[1].name==='Boiler Bruiser'");
   await multiplayerScenario();

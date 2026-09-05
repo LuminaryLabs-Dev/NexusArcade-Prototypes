@@ -12,6 +12,7 @@ const expected = new Map([
   ["rift-runner", "NXA-000007"],
   ["the-long-haul", "NXA-000008"],
   ["stormbound-shelter-run", "NXA-000009"],
+  ["wrong-floor", "NXA-000010"],
 ]);
 const seen = new Set();
 for (const [slug, id] of expected) {

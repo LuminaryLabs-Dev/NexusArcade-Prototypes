@@ -50,6 +50,8 @@ jobs:
       - name: Open every game in Chrome
         env:
           KNOCKOUT_REVIEW_DIR: ${{ contains(github.event.head_commit.message, '[record-gameplay]') && '_review/knockout-circuit' || '' }}
+          WRONG_FLOOR_REVIEW_DIR: _review/wrong-floor
+          WRONG_FLOOR_FULL_RUN: '1'
         run: node tests/browser-smoke.mjs
 
       - name: Upload gameplay review evidence
@@ -59,6 +61,14 @@ jobs:
           name: knockout-circuit-60s-review
           path: _review/knockout-circuit
           if-no-files-found: error
+
+      - name: Upload Wrong Floor review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrong-floor-review
+          path: _review/wrong-floor
+          if-no-files-found: warn
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

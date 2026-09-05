@@ -102,3 +102,6 @@ The public library is the Pages root. Each game launches at:
 ```
 
 The build fails rather than publishing a malformed prototype or a deployment directory containing secret-like files. CI also parses every script, runs deterministic multiplayer and save checks, verifies reference allowlists, and opens every built game in Chrome before upload.
+# Wrong Floor
+
+`prototypes/wrong-floor/` is a thirty-stop procedural elevator horror game (`NXA-000010`). Hold Space/gamepad A to close, use WASD/arrows/stick to inspect, and Escape/Start to pause. See [the game documentation](docs/wrong-floor/README.md) for rules, factory provenance, accessibility, saves and validation limitations. The [standalone wrapper](standalone/wrong-floor/README.md) packages the same runtime for Windows and Linux. `npm test` includes its deterministic rules; the Chrome smoke gate captures its gameplay review evidence.
