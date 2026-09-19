@@ -1,0 +1,13 @@
+{
+  "id": "NXA-000011",
+  "title": "Moonline Express",
+  "slug": "moonline-express",
+  "description": "Route glowing night trains through four live junctions, chain perfect deliveries, and keep the midnight station from locking up.",
+  "genre": "Arcade Routing",
+  "status": "prototype",
+  "version": "0.1.0",
+  "featured": true,
+  "accent": "violet",
+  "sortOrder": 2,
+  "controls": ["Buttons 1–4 / Touch: switch junctions", "Arrow keys: select junction", "Space / Enter: switch", "Escape / P: pause"]
+}
