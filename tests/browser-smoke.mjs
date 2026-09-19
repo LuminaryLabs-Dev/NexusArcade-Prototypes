@@ -331,7 +331,7 @@ try {
     '',
     "document.querySelectorAll('.featured-slide').length===5",
     null,
-    "document.querySelectorAll('.card').length===10 && [...document.querySelectorAll('.featured-slide h2')].some(node=>node.textContent==='Wrong Floor') && [...document.querySelectorAll('.card .title')].some(node=>node.textContent==='Wrong Floor')"
+    "(()=>{const text=document.querySelector('.sub')?.textContent||'';const count=Number(text.match(/^\\d+/)?.[0]);return Number.isFinite(count)&&document.querySelectorAll('.card').length===count&&[...document.querySelectorAll('.featured-slide h2')].some(node=>node.textContent==='Wrong Floor')&&[...document.querySelectorAll('.card .title')].some(node=>node.textContent==='Wrong Floor')})()"
   );
   if (process.env.WRONG_FLOOR_REVIEW === '1') {
     await runWrongFloorBrowserChecks({ call, event, evaluate, waitFor, listeners, baseUrl: `http://127.0.0.1:${port}`, delay });
