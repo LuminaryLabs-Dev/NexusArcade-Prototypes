@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "id": "NXA-000001",
-  "slug": "blood-maiden",
-  "version": "0.3.0",
+  "id": "NXA-000011",
+  "slug": "moonline-express",
+  "version": "0.1.0",
   "entry": "index.html",
   "offlineReady": true,
   "source": {
     "repository": "LuminaryLabs-Dev/NexusArcade-Prototypes",
     "ref": "67623f17365a2752cbdb72e4a227eb8ba0ee4c9e",
-    "basePath": "prototypes/blood-maiden"
+    "basePath": "prototypes/moonline-express"
   },
   "files": [
     {
       "path": "index.html",
-      "bytes": 172311,
-      "sha256": "3cd6aa363e1ad8e8650402198d524cd80980cfb8149fd25571283521abf4da1e"
+      "bytes": 17042,
+      "sha256": "a6780b367e773035ad4357b82a538c45950f3cceb68ce46a3c5dca99825dbaf6"
     }
   ]
 }
