@@ -120,13 +120,23 @@ export async function runWrongFloorBrowserChecks({ call, event, evaluate, waitFo
     assert.ok(webgl.width >= 640 && webgl.height >= 400, 'renderer has a useful drawing buffer');
     assert.ok(webgl.inspection.renderer?.triangles > 0, 'actual triangles were rendered');
     assert.ok(webgl.layout.scrollWidth <= webgl.layout.width && webgl.layout.scrollHeight <= webgl.layout.height, 'game fits desktop viewport');
+    const introBeforeReady = await run('__wrongFloor.snapshot()');
+    assert.equal(introBeforeReady.mode, 'intro', 'Floor 30 is a dedicated intro state');
+    assert.equal(introBeforeReady.round.floor, 30, 'opening is Floor 30');
+    assert.equal(introBeforeReady.elapsed, 0, 'Floor 30 does not consume active game time');
     await screenshot('00-title.png');
-
-    // This uses trusted browser input, not the deterministic review controls.
-    await click('#play-button');
-    await wait('__wrongFloor.snapshot().mode === "running" && __wrongFloor.snapshot().roundTime > 1.0', 60000);
+    await wait('__wrongFloor.snapshot().descendReady === true && __wrongFloor.inspect().descendReady === true', 60000);
+    const flicker = await run(`new Promise(resolve=>{let min=Infinity,max=-Infinity,start=performance.now();function sample(){const v=__wrongFloor.inspect().introLightIntensity;min=Math.min(min,v);max=Math.max(max,v);if(performance.now()-start>=5000)resolve({min,max});else requestAnimationFrame(sample);}sample();})`);
+    assert.ok(flicker.max - flicker.min > 4, `Floor 30 fluorescent light visibly flickers: ${JSON.stringify(flicker)}`);
+    const descendPoint = await run('__wrongFloor.inspect().descendScreen');
+    assert.ok(Number.isFinite(descendPoint.x) && Number.isFinite(descendPoint.y), 'physical DESCEND button projects into the viewport');
+    assert.ok(descendPoint.x >= 0 && descendPoint.x <= 1280 && descendPoint.y >= 0 && descendPoint.y <= 800, 'DESCEND button is on screen');
+    await call('Input.dispatchMouseEvent', { type: 'mousePressed', x: descendPoint.x, y: descendPoint.y, button: 'left', clickCount: 1 }, sessionId);
+    await call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: descendPoint.x, y: descendPoint.y, button: 'left', clickCount: 1 }, sessionId);
+    await wait('__wrongFloor.snapshot().mode === "running" && __wrongFloor.snapshot().round.floor === 29 && __wrongFloor.snapshot().opened === true', 15000);
     const beforeClose = await run('__wrongFloor.snapshot()');
-    assert.equal(beforeClose.round.danger, false, 'first floor establishes a safe baseline');
+    assert.ok(beforeClose.elapsed < 1, 'active clock begins only after Floor 29 opens');
+    assert.equal(beforeClose.round.danger, false, 'Floor 29 establishes the first safe baseline');
     await screenshot('01-normal-floor.png');
     await key('Space', true);
     await wait('__wrongFloor.snapshot().mistakes === 1');
@@ -134,7 +144,7 @@ export async function runWrongFloorBrowserChecks({ call, event, evaluate, waitFo
     const afterClose = await run('__wrongFloor.snapshot()');
     assert.equal(afterClose.outcome, 'false-alarm');
     assert.equal(afterClose.door.openness, 0);
-    interactions.push({ action: 'Mouse Start, real Space hold and release', before: beforeClose, after: afterClose });
+    interactions.push({ action: 'Physical DESCEND click, verified Floor 30 light flicker, then real Space hold and release', before: beforeClose, after: afterClose });
     await tap('Escape');
     await wait('__wrongFloor.snapshot().mode === "paused"');
     const paused = await run('__wrongFloor.snapshot()');

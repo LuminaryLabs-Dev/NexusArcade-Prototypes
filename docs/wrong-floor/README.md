@@ -1,10 +1,10 @@
 # Wrong Floor
 
-A first-person, seeded observation horror game. Survive thirty elevator stops in 300 seconds of active simulation. Each stop occupies ten seconds; an early seal leaves more time travelling. Tutorial, loading, pause and results are outside that clock.
+A first-person, seeded observation horror game. Floor 30 is an untimed diegetic opening inside the elevator. Activating the physical DESCEND control carries the player to Floor 29; the scored descent then runs for thirty elevator stops through Ground in exactly 300 seconds of active simulation. Each scored stop occupies ten seconds; an early seal leaves more time travelling. Floor 30, loading, pause and results are outside that clock.
 
 ## Controls and rules
 
-WASD/arrows or gamepad stick inspect; hold Space/gamepad A to seal; Enter/B recenters; Escape/Start pauses. Pointer drag and an on-screen hold button support touch. Close can be remapped. A fresh press is required after each opening. Fully sealing takes 1.2 seconds. Releasing briefly stops then reopens unresolved doors. Seal wins an exact arrival tie.
+On Floor 30 the camera is fixed and gameplay input is locked; activate the illuminated physical DESCEND control with pointer/touch, Enter or gamepad A. Once Floor 29 opens, WASD/arrows or gamepad stick inspect; hold Space/gamepad A to seal; Enter/B recenters; Escape/Start pauses. Pointer drag and an on-screen hold button support touch. Close can be remapped. A fresh press is required after each opening. Fully sealing takes 1.2 seconds. Releasing briefly stops then reopens unresolved doors. Seal wins an exact arrival tie.
 
 Wait through normal floors. Seal on danger. Three false alarms shut down the lift; intrusion ends immediately. Twelve normal floors and eighteen dangerous floors include all twelve entity variations. The first three floors establish office, hotel and basement baselines. No adjacent identical entities or more than three consecutive dangers. Hard variants follow their introductions. The final round is dangerous. Assisted timing has a separate best score.
 

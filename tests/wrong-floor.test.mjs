@@ -22,10 +22,22 @@ test('seeded director preserves balance, teaching, timing, baselines, and all au
     assert.deepEqual(schedule, createSchedule(seed));
     assert.equal(schedule.filter(r => !r.danger).length, 12);
     assert.deepEqual(schedule.slice(0, 3).map(r => r.environment), ['office', 'hotel', 'basement']);
+    assert.equal(schedule[0].floor, 29);
+    assert.equal(schedule.at(-1).floor, 'G');
     assert.equal(new Set(schedule.filter(r => r.danger).map(r => `${r.entity}:${r.variant}`)).size, ENCOUNTERS.length);
     assert.ok(schedule.slice(24, 29).some(r => !r.danger), 'late normal floor prevents blind closure');
   }
   assert.notDeepEqual(createSchedule(1), createSchedule(2));
+});
+
+test('an initially open first playable floor starts at zero active time', () => {
+  const game = createGame({ seed: 'floor-29-open', initialOpen: true });
+  const state = game.snapshot();
+  assert.equal(state.round.floor, 29);
+  assert.equal(state.elapsed, 0);
+  assert.equal(state.roundTime, 0);
+  assert.equal(state.opened, true);
+  assert.equal(state.door.openness, 1);
 });
 
 test('complete runs last exactly 300 active seconds across different frame rates', () => {

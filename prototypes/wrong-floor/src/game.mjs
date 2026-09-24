@@ -2,7 +2,7 @@ import { createSchedule, validateSchedule, DIFFICULTY } from './director.mjs';
 import { ElevatorDoors, DOOR_TIMING } from './elevator.mjs';
 
 const EPS = 1e-9;
-export function createGame({ seed = 'wrong-floor', assisted = false, practice = false } = {}) {
+export function createGame({ seed = 'wrong-floor', assisted = false, practice = false, initialOpen = false } = {}) {
   const schedule = createSchedule(seed, { assisted, practice });
   const errors = validateSchedule(schedule, { practice });
   if (errors.length) throw new Error(`Invalid encounter schedule: ${errors.join(', ')}`);
@@ -102,6 +102,11 @@ export function createGame({ seed = 'wrong-floor', assisted = false, practice = 
     };
   };
   emit('arrival', { floor: round().floor, environment: round().environment });
+  if (initialOpen) {
+    door.advance(DOOR_TIMING.open, { opening: true });
+    opened = true;
+    emit('opened');
+  }
   return {
     update, snapshot,
     pause() { if (mode === 'running') { mode = 'paused'; closeActive = false; heldPreviously = true; emit('paused'); } },

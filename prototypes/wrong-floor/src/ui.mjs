@@ -59,7 +59,7 @@ export function createUI(actions = {}) {
       byId('result-seed').textContent = `${data.assisted ? 'ASSISTED TIMING · ' : ''}${data.seed ? `DESCENT ${data.seed}` : ''}`;
     }
     synchronize();
-    const focusTarget = screen === 'playing' ? byId('scene') : screens[screen]?.querySelector('button:not(:disabled),input');
+    const focusTarget = screen === 'playing' || screen === 'title' ? byId('scene') : screens[screen]?.querySelector('button:not(:disabled),input');
     focusTarget?.focus({ preventScroll: true });
     actions.screenChanged?.(screen);
   }
@@ -67,7 +67,7 @@ export function createUI(actions = {}) {
   function invoke(action) {
     if (action === 'settings') return show('settings');
     if (action === 'back') return show(settingsReturn === 'settings' ? 'title' : settingsReturn);
-    if (action === 'play' || action === 'practice') return actions[action]?.(byId('seed-input').value.trim());
+    if (action === 'play' || action === 'practice') return actions[action]?.();
     actions[action]?.();
   }
 
@@ -102,7 +102,8 @@ export function createUI(actions = {}) {
   function update(snapshot = {}) {
     const total = snapshot.totalRounds ?? 30;
     const index = Math.max(0, snapshot.roundIndex ?? 0);
-    const floor = snapshot.mode === 'won' ? 'L' : String(Math.max(1, total - index)).padStart(2, '0');
+    const floorValue = snapshot.mode === 'won' ? 'G' : (snapshot.round?.floor ?? Math.max(1, total - index));
+    const floor = typeof floorValue === 'number' ? String(floorValue).padStart(2, '0') : String(floorValue);
     if (lastFloor !== floor) {
       lastFloor = floor;
       byId('floor-number').textContent = floor;
@@ -140,9 +141,9 @@ export function createUI(actions = {}) {
     if (active?.matches('select')) { active.selectedIndex = (active.selectedIndex + 1) % active.options.length; active.dispatchEvent(new Event('input', { bubbles: true })); } else if (active?.matches('button,summary,input[type=checkbox]')) active.click();
   }
   function setReady(ready = true, text) {
-    byId('play-button').disabled = !ready;
-    document.querySelector('[data-action="practice"]').disabled = !ready;
-    byId('load-status').textContent = text || (ready ? 'ELEVATOR READY' : 'PREPARING ELEVATOR');
+    const descend = byId('descend-accessible');
+    if (descend) descend.disabled = !ready;
+    byId('load-status').textContent = text || (ready ? 'DESCEND READY' : 'PREPARING DESCENT');
   }
   synchronize();
   return { show, update, caption, setReady, getSettings, updateSettings, menuMove, confirm, getScreen: () => screen, dispose: () => controller.abort() };

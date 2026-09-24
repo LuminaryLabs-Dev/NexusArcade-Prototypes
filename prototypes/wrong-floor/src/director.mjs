@@ -85,8 +85,9 @@ export function createSchedule(seed, { assisted = false, practice = false } = {}
     const allowance = index < 10 ? 3 : index < 20 ? 2.6 : 2.2;
     const encounter = danger ? ENCOUNTERS.find(item => item.entity === entity && item.variant === variant) : null;
     previous = danger ? entity : null;
+    const floor = practice ? 2 - index : (index === 29 ? 'G' : 29 - index);
     return {
-      index, floor: practice ? 2 - index : 30 - index, danger, entity, variant,
+      index, floor, danger, entity, variant,
       environment: index < 3 ? ENVIRONMENTS[index] : ENVIRONMENTS[Math.floor(random() * 3)],
       seed: seedNumber(`${seed}:decor:${index}`), clueAt,
       arrivalAt: danger ? clueAt + allowance + (assisted ? 0.8 : 0) : null,
@@ -101,6 +102,8 @@ export function validateSchedule(rounds, { practice = false } = {}) {
   const errors = [];
   if (rounds.length !== (practice ? 2 : 30)) errors.push('Incorrect round count');
   if (!practice && rounds.filter(round => round.danger).length !== 18) errors.push('Incorrect danger balance');
+  if (!practice && rounds[0]?.floor !== 29) errors.push('Scored descent must begin on Floor 29');
+  if (!practice && rounds.at(-1)?.floor !== 'G') errors.push('Scored descent must end on Ground');
   if (!practice && rounds.slice(0, 3).some(round => round.danger)) errors.push('Missing normal baselines');
   const taught = new Set(); let streak = 0;
   rounds.forEach((round, index) => {

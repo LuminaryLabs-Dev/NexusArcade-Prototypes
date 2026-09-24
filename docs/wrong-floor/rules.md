@@ -1,10 +1,12 @@
 # Wrong Floor: deterministic rules and integration contract
 
-Status: implementation contract for prototype 0.1.0. Horror quality and device performance require separately recorded visual/audio review.
+Status: implementation contract for prototype 0.2.0. Horror quality and device performance require separately recorded visual/audio review.
 
 ## Experience
 
-A successful standard or assisted run lasts exactly 300 active simulation seconds: 30 rounds of ten seconds. The first three stops establish normal office, hotel, and basement environments. Every run contains 12 normal and 18 dangerous stops. Practice is a separate two-stop, twenty-second loop and never contributes to scored personal bests.
+Floor 30 is an untimed opening/tutorial state inside the elevator. Its fixed corner camera, illuminated controls, restrained fluorescent flicker and physical DESCEND interaction establish the interface before scored play begins. After DESCEND closes the doors and the lift reaches Floor 29, the doors open and gameplay input unlocks.
+
+A successful standard or assisted run then lasts exactly 300 active simulation seconds: 30 scored rounds of ten seconds from Floor 29 through Ground. The first three scored stops establish normal office, hotel and basement environments. Every run contains 12 normal and 18 dangerous stops. Practice is a separate two-stop, twenty-second loop and never contributes to scored personal bests.
 
 Normal floors resolve at six seconds and close automatically. Dangerous clues appear between 1.3 and 2.4 seconds after arrival. Arrival follows the clue by three seconds in rounds 1–10, 2.6 seconds in rounds 11–20, and 2.2 seconds in rounds 21–30. Assisted mode adds 0.8 seconds to threat response time without extending a round. Correct early closure leaves the remaining time for travel.
 
